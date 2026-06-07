@@ -236,6 +236,33 @@ body {
 .py-btn:active { transform: scale(0.95); }
 .py-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
+/* server bar */
+.server-bar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 8px 12px; display: flex; gap: 8px; align-items: center;
+}
+.server-input {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; color: var(--text);
+  font-size: 10px; font-family: inherit; outline: none; direction: ltr;
+  transition: border-color 0.2s;
+}
+.server-input:focus { border-color: var(--accent); }
+.server-input::placeholder { color: var(--muted); }
+.server-connect-btn {
+  background: var(--accent); border: none; border-radius: 8px;
+  padding: 7px 12px; color: #000; font-size: 10px;
+  font-family: inherit; font-weight: bold; cursor: pointer;
+  white-space: nowrap; transition: all 0.15s;
+}
+.server-connect-btn:active { transform: scale(0.95); }
+.server-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0; transition: background 0.3s;
+}
+.server-dot.ok { background: var(--green); }
+.server-dot.err { background: var(--red); }
+
 /* pip installer */
 .pip-bar {
   background: var(--card); border-bottom: 1px solid var(--border);
@@ -519,6 +546,14 @@ body {
     <button class="py-btn" onclick="clearOutput()">مسح النتائج</button>
   </div>
 
+  <!-- Server connection bar -->
+  <div class="server-bar">
+    <span style="font-size:10px;color:var(--accent);white-space:nowrap">🌐</span>
+    <input class="server-input" id="server-url" placeholder="https://your-app.railway.app  (اتركه فارغاً لـ Pyodide)">
+    <button class="server-connect-btn" onclick="connectServer()">اتصال</button>
+    <div class="server-dot" id="server-dot" title="حالة الخادم"></div>
+  </div>
+
   <!-- pip installer -->
   <div class="pip-bar">
     <span style="font-size:10px;color:var(--py2);white-space:nowrap">pip install</span>
@@ -562,6 +597,15 @@ print('مرحباً من Pharaoh Pro!')
 <div class="page" id="page-settings">
   <div class="page-titlebar">⚙️ SETTINGS</div>
   <div class="settings-list">
+    <div class="settings-section">SERVER</div>
+    <div class="settings-item">
+      <div>
+        <div class="settings-label">رابط Railway</div>
+        <div class="settings-sublabel">خادم Python الحقيقي</div>
+      </div>
+      <input class="settings-input" id="settings-server" dir="ltr" placeholder="https://..." oninput="document.getElementById('server-url').value=this.value">
+    </div>
+
     <div class="settings-section">DEVICE IDs</div>
     <div class="settings-item">
       <div>
@@ -700,6 +744,112 @@ const GAMES_DATA = [
   {name:"Merge Dragons",package:"com.gramgames.mergedragons",dev_key:"fyKVEgAYzuD6jBZocaq3yh",level_events:[{display:"Dragon Power reached",template:"event_{}_dragon_power"}],cat:"merge"},
   {name:"Yarn Loop",package:"com.combo.yarnflow",dev_key:"TGm97uKTJF7qFCvREggWtf",level_events:[{display:"Level completed",template:"level_complete_{}"}],cat:"other"}
 ];
+
+/* ─── SERVER STATE ─── */
+let serverUrl = localStorage.getItem('pp_server') || '';
+let serverConnected = false;
+
+if (serverUrl) {
+  document.getElementById('server-url').value = serverUrl;
+  connectServer();
+}
+
+async function connectServer() {
+  let url = document.getElementById('server-url').value.trim();
+  if (!url) {
+    // بدون خادم — استخدم Pyodide
+    serverConnected = false;
+    setServerDot('');
+    return;
+  }
+  if (!url.startsWith('http')) url = 'https://' + url;
+  url = url.replace(/\/$/, '');
+  setServerDot('');
+  showToast('loading', null, 'جاري الاتصال...', url);
+  try {
+    const res = await fetch(url + '/', { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      serverUrl = url;
+      localStorage.setItem('pp_server', url);
+      serverConnected = true;
+      setServerDot('ok');
+      document.getElementById('py-badge').textContent = '🌐 Server';
+      document.getElementById('py-badge').style.background = '#1a3020';
+      document.getElementById('py-badge').style.color = '#5de8a0';
+      document.getElementById('btn-run').disabled = false;
+      document.getElementById('btn-run2').disabled = false;
+      document.getElementById('btn-pip').disabled = false;
+      showToast('success', '✅', 'متصل بالخادم!', 'كل المكتبات متاحة الآن');
+    }
+  } catch(e) {
+    setServerDot('err');
+    showToast('error', '❌', 'فشل الاتصال', 'تحقق من الرابط');
+  }
+}
+
+function setServerDot(cls) {
+  const d = document.getElementById('server-dot');
+  d.className = 'server-dot' + (cls ? ' ' + cls : '');
+}
+
+async function runWithServer() {
+  const code = document.getElementById('code-editor').value.trim();
+  if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
+  clearOutput();
+  appendOutput('// ▶ جاري التشغيل على الخادم...\n', 'sys');
+  document.getElementById('btn-run').disabled = true;
+  document.getElementById('btn-run2').disabled = true;
+  const start = Date.now();
+  try {
+    const res = await fetch(serverUrl + '/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+      signal: AbortSignal.timeout(35000)
+    });
+    const data = await res.json();
+    const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+    if (data.stdout) appendOutput(data.stdout, 'stdout');
+    if (data.stderr) appendOutput(data.stderr, 'stderr');
+    if (data.returncode === 0) {
+      appendOutput('\n// ✅ اكتمل في ' + elapsed + 'ث\n', 'success');
+    } else {
+      appendOutput('\n// ❌ خطأ في الكود\n', 'error');
+    }
+  } catch(e) {
+    appendOutput('❌ خطأ: ' + e.message + '\n', 'error');
+  } finally {
+    document.getElementById('btn-run').disabled = false;
+    document.getElementById('btn-run2').disabled = false;
+  }
+}
+
+async function pipWithServer(pkg) {
+  const btn = document.getElementById('btn-pip');
+  btn.disabled = true; btn.textContent = '⏳';
+  showToast('loading', null, 'pip install ' + pkg, 'جاري التثبيت...');
+  try {
+    const res = await fetch(serverUrl + '/pip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ package: pkg }),
+      signal: AbortSignal.timeout(65000)
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('success', '✅', 'تم التثبيت', pkg + ' جاهز!');
+      appendOutput('✅ تم تثبيت: ' + pkg + '\n', 'success');
+      document.getElementById('pip-input').value = '';
+    } else {
+      showToast('error', '❌', 'فشل التثبيت', data.message || '');
+      appendOutput('❌ فشل: ' + (data.message || '') + '\n', 'error');
+    }
+  } catch(e) {
+    showToast('error', '❌', 'خطأ', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'تثبيت';
+  }
+}
 
 /* ─── STATE ─── */
 let curGaid = localStorage.getItem('pp_gaid') || '70ebe327-e224-4b1e-adb0-b09a27f78a0f';
@@ -996,6 +1146,7 @@ function setPyStatus(cls, text) {
 }
 
 async function runPython() {
+  if (serverConnected) { await runWithServer(); return; }
   if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر اكتمال التحميل'); return; }
   const code = document.getElementById('code-editor').value.trim();
   if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
@@ -1031,9 +1182,10 @@ sys.stderr = OutputCapture('stderr')
 }
 
 async function installPackage() {
-  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر التحميل'); return; }
   const pkg = document.getElementById('pip-input').value.trim().toLowerCase();
   if (!pkg) return;
+  if (serverConnected) { await pipWithServer(pkg); return; }
+  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر التحميل'); return; }
 
   const btn = document.getElementById('btn-pip');
   btn.disabled = true;
