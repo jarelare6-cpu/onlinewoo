@@ -1,10 +1,12 @@
+cat << 'EOF' > main.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import subprocess
 import sys
 import os
 import tempfile
-import threading
+import json
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -96,13 +98,46 @@ def pip_list():
             [sys.executable, '-m', 'pip', 'list', '--format=json'],
             capture_output=True, text=True
         )
-        import json
         packages = json.loads(result.stdout)
         return jsonify({'packages': packages})
     except:
         return jsonify({'packages': []})
 
 
+# ═══ مسار البروكسي الجديد لاستقبال أحداث الألعاب وتمريرها وتخطي الـ CORS ═══
+@app.route('/api/send-event', methods=['POST'])
+def proxy_send_event():
+    data = request.get_json()
+    if not data or 'package' not in data or 'dev_key' not in data or 'body' not in data:
+        return jsonify({'success': False, 'error': 'Missing raw payload fields'}), 400
+
+    package = data['package']
+    dev_key = data['dev_key']
+    body_data = data['body']
+
+    url = f"https://api2.appsflyer.com/inappevent/{package}"
+    headers = {
+        "Content-Type": "application/json",
+        "authentication": dev_key
+    }
+
+    try:
+        # إرسال الطلب من السيرفر مباشرة لـ AppsFlyer لتفادي القيود
+        response = requests.post(url, headers=headers, json=body_data, timeout=15)
+        
+        return jsonify({
+            'success': True,
+            'status_code': response.status_code,
+            'response': response.text
+        })
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+EOF
