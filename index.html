@@ -1,3 +1,4 @@
+cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -459,7 +460,6 @@ body {
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
 <div class="header">
   <div class="header-title">⚡ PHARAOH PRO</div>
   <div class="header-right">
@@ -468,12 +468,8 @@ body {
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     PAGE 1: GAMES (Pharaoh Pusher)
-════════════════════════════════════════════ -->
 <div class="page active" id="page-games">
 
-  <!-- IDs bar -->
   <div class="ids-bar">
     <div class="id-chip" onclick="openIdModal()">
       <span class="id-label">GAID</span>
@@ -485,9 +481,7 @@ body {
     </div>
   </div>
 
-  <!-- List / Detail views -->
   <div id="view-main" class="view active">
-    <!-- Filter tabs -->
     <div class="tabs">
       <div class="tab active" onclick="filterGames('all',this)">الكل</div>
       <div class="tab" onclick="filterGames('puzzle',this)">Puzzle</div>
@@ -495,11 +489,9 @@ body {
       <div class="tab" onclick="filterGames('merge',this)">Merge</div>
       <div class="tab" onclick="filterGames('other',this)">Other</div>
     </div>
-    <!-- Search -->
     <div class="search-bar">
       <input class="search-input" placeholder="ابحث باسم اللعبة أو Package..." oninput="searchGames(this.value)" dir="rtl">
     </div>
-    <!-- Games Grid -->
     <div class="games-grid" id="games-grid"></div>
     <div class="no-results" id="no-results">لا توجد نتائج</div>
   </div>
@@ -532,13 +524,9 @@ body {
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     PAGE 2: PYTHON TERMINAL
-════════════════════════════════════════════ -->
 <div class="page py-page" id="page-python">
   <div class="page-titlebar">🐍 PYTHON TERMINAL — Pyodide</div>
 
-  <!-- Toolbar -->
   <div class="py-toolbar">
     <span class="py-status loading" id="py-status">جاري تحميل Python...</span>
     <button class="py-btn primary" id="btn-run" onclick="runPython()" disabled>▶ تشغيل</button>
@@ -546,54 +534,42 @@ body {
     <button class="py-btn" onclick="clearOutput()">مسح النتائج</button>
   </div>
 
-  <!-- Server connection bar -->
   <div class="server-bar">
     <span style="font-size:10px;color:var(--accent);white-space:nowrap">🌐</span>
-    <input class="server-input" id="server-url" placeholder="https://your-app.railway.app  (اتركه فارغاً لـ Pyodide)">
+    <input class="server-input" id="server-url" placeholder="https://your-app.railway.app  (مطلوب لتخطي CORS)">
     <button class="server-connect-btn" onclick="connectServer()">اتصال</button>
     <div class="server-dot" id="server-dot" title="حالة الخادم"></div>
   </div>
 
-  <!-- pip installer -->
   <div class="pip-bar">
     <span style="font-size:10px;color:var(--py2);white-space:nowrap">pip install</span>
     <input class="pip-input" id="pip-input" placeholder="اسم المكتبة (مثال: numpy, pandas, requests...)" dir="ltr">
     <button class="pip-btn" id="btn-pip" onclick="installPackage()" disabled>تثبيت</button>
   </div>
 
-  <!-- Installed packages -->
   <div class="pkg-chips" id="pkg-chips">
     <span class="pkg-empty" id="pkg-empty">لا توجد مكتبات مثبتة بعد</span>
   </div>
 
-  <!-- Code Editor -->
   <div class="editor-container">
     <textarea class="code-editor" id="code-editor" placeholder="# اكتب كود Python هنا...
 print('مرحباً من Pharaoh Pro!')
 " spellcheck="false" oninput="updateLineNums()" onkeydown="handleTab(event)"></textarea>
   </div>
 
-  <!-- Run bar -->
   <div class="py-toolbar" style="padding:8px 12px;">
     <span style="font-size:10px;color:var(--muted)">OUTPUT</span>
     <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ تشغيل الكود</button>
   </div>
 
-  <!-- Output -->
   <div class="output-area" id="output-area"><span class="out-line-sys">// في انتظار تشغيل الكود...</span></div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     PAGE 3: SNIPPETS
-════════════════════════════════════════════ -->
 <div class="page" id="page-snippets">
   <div class="page-titlebar">📦 SNIPPETS — أمثلة جاهزة</div>
   <div class="snippet-list" id="snippet-list"></div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     PAGE 4: SETTINGS
-════════════════════════════════════════════ -->
 <div class="page" id="page-settings">
   <div class="page-titlebar">⚙️ SETTINGS</div>
   <div class="settings-list">
@@ -601,7 +577,7 @@ print('مرحباً من Pharaoh Pro!')
     <div class="settings-item">
       <div>
         <div class="settings-label">رابط Railway</div>
-        <div class="settings-sublabel">خادم Python الحقيقي</div>
+        <div class="settings-sublabel">خادم الباك أند والوسيط للـ CORS</div>
       </div>
       <input class="settings-input" id="settings-server" dir="ltr" placeholder="https://..." oninput="document.getElementById('server-url').value=this.value">
     </div>
@@ -650,7 +626,6 @@ print('مرحباً من Pharaoh Pro!')
   </div>
 </div>
 
-<!-- ═══ BOTTOM NAV ═══ -->
 <nav class="nav-bar">
   <div class="nav-item active" id="nav-games" onclick="switchPage('games')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -678,7 +653,6 @@ print('مرحباً من Pharaoh Pro!')
   </div>
 </nav>
 
-<!-- ═══ ID MODAL ═══ -->
 <div class="modal-overlay" id="id-modal">
   <div class="modal">
     <div class="modal-title">✏️ تعديل Device IDs</div>
@@ -697,7 +671,6 @@ print('مرحباً من Pharaoh Pro!')
   </div>
 </div>
 
-<!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast">
   <div class="toast-icon" id="toast-icon"></div>
   <div class="toast-body">
@@ -706,9 +679,6 @@ print('مرحباً من Pharaoh Pro!')
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     SCRIPTS
-════════════════════════════════════════════ -->
 <script>
 /* ─── GAMES DATA ─── */
 const GAMES_DATA = [
@@ -751,13 +721,13 @@ let serverConnected = false;
 
 if (serverUrl) {
   document.getElementById('server-url').value = serverUrl;
+  document.getElementById('settings-server').value = serverUrl;
   connectServer();
 }
 
 async function connectServer() {
   let url = document.getElementById('server-url').value.trim();
   if (!url) {
-    // بدون خادم — استخدم Pyodide
     serverConnected = false;
     setServerDot('');
     return;
@@ -779,7 +749,7 @@ async function connectServer() {
       document.getElementById('btn-run').disabled = false;
       document.getElementById('btn-run2').disabled = false;
       document.getElementById('btn-pip').disabled = false;
-      showToast('success', '✅', 'متصل بالخادم!', 'كل المكتبات متاحة الآن');
+      showToast('success', '✅', 'متصل بالخادم!', 'كل الحركات ستمر عبر ريلواي الآن لتفادي CORS');
     }
   } catch(e) {
     setServerDot('err');
@@ -971,30 +941,52 @@ async function sendLevelEvent() {
 
 async function sendPurchase() { await sendEvent('purchase', 'af_purchase'); }
 
+/* ═══ الدالة المعدلة حتمياً للمرور عبر ريلواي لتخطي الـ CORS ═══ */
 async function sendEvent(type, evName) {
   if (!activeGame) return;
-  showToast('loading', null, 'جاري الإرسال...', evName);
-  const body = {
+  
+  if (!serverConnected || !serverUrl) {
+    showToast('error', '🌐', 'خطأ في السيرفر', 'يرجى ربط سيرفر Railway أولاً لتخطي الـ CORS المباشر');
+    addLog(evName, 'CORS ERR', false);
+    return;
+  }
+
+  showToast('loading', null, 'جاري التمرير عبر Railway Proxy...', evName);
+  
+  const appsFlyerBody = {
     appsflyer_id: curAfid,
     advertising_id: curGaid,
     eventName: evName,
     eventTime: new Date().toISOString(),
     eventValue: type === 'purchase' ? JSON.stringify({af_revenue:"4.99",af_currency:"USD"}) : "{}"
   };
-  const url = `https://api2.appsflyer.com/inappevent/${activeGame.package}`;
+
+  const proxyPayload = {
+    package: activeGame.package,
+    dev_key: activeGame.dev_key,
+    body: appsFlyerBody
+  };
+
   try {
-    const res = await fetch(url, {
+    const res = await fetch(serverUrl + '/api/send-event', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'authentication': activeGame.dev_key },
-      body: JSON.stringify(body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proxyPayload)
     });
+
+    const data = await res.json();
     const status = res.status;
-    const ok = status === 200;
-    addLog(evName, status, ok);
-    showToast(ok ? 'success' : 'error', ok ? '✅' : '❌', ok ? `Status: ${status} OK` : `Status: ${status} Error`, evName);
+    
+    if (res.ok && data.success) {
+      addLog(evName, `Railway: ${data.status_code}`, true);
+      showToast('success', '✅', `تم الإرسال بنجاح (${data.status_code})`, evName);
+    } else {
+      addLog(evName, `ERR: ${status}`, false);
+      showToast('error', '❌', `فشل التمرير: ${data.error || status}`, evName);
+    }
   } catch(e) {
     addLog(evName, 'NET ERR', false);
-    showToast('error', '🔌', 'خطأ في الشبكة', e.message || 'تحقق من الاتصال');
+    showToast('error', '🔌', 'خطأ في الاتصال بالسيرفر', e.message || 'تحقق من الشبكة والبروكسي');
   }
 }
 
@@ -1076,7 +1068,6 @@ function clearAllData() {
 async function loadPyodideRuntime() {
   setPyStatus('loading', '🐍 تحميل Python...');
   try {
-    // Dynamically load Pyodide from CDN
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
     document.head.appendChild(script);
@@ -1089,7 +1080,6 @@ async function loadPyodideRuntime() {
           stderr: (text) => appendOutput(text, 'stderr'),
         });
 
-        // Redirect print to our output
         pyodide.runPython(`
 import sys, io
 class OutputCapture:
@@ -1106,14 +1096,15 @@ sys.stderr = OutputCapture('stderr')
 
         pyReady = true;
         setPyStatus('ready', '✅ Python جاهز');
+        if (!serverConnected) {
+          document.getElementById('py-badge').textContent = '🐍 Ready';
+          document.getElementById('py-badge').style.background = '#1a3020';
+          document.getElementById('py-badge').style.color = '#5de8a0';
+        }
         document.getElementById('btn-run').disabled = false;
         document.getElementById('btn-run2').disabled = false;
         document.getElementById('btn-pip').disabled = false;
-        document.getElementById('py-badge').textContent = '🐍 Ready';
-        document.getElementById('py-badge').style.background = '#1a3020';
-        document.getElementById('py-badge').style.color = '#5de8a0';
 
-        // Re-install saved packages
         for (const pkg of installedPkgs) {
           await silentInstall(pkg);
         }
@@ -1134,7 +1125,6 @@ sys.stderr = OutputCapture('stderr')
   }
 }
 
-// Global function callable from Python via js module
 window.appendPyOutput = function(text, kind) {
   appendOutput(text, kind === 'stderr' ? 'stderr' : 'stdout');
 };
@@ -1155,7 +1145,6 @@ async function runPython() {
   appendOutput('// ▶ تشغيل الكود...\n', 'sys');
 
   try {
-    // Reset stdout/stderr capture
     pyodide.runPython(`
 import sys
 class OutputCapture:
@@ -1276,7 +1265,7 @@ function handleTab(e) {
   }
 }
 
-function updateLineNums() {} // reserved
+function updateLineNums() {}
 
 /* ─── SNIPPETS ─── */
 const SNIPPETS = [
@@ -1311,7 +1300,6 @@ print(f"الجذر التربيعي لـ 144: {math.sqrt(144)}")`
     desc: 'تحليل وبناء بيانات JSON',
     code: `import json
 
-# بناء JSON
 data = {
     "game": "Coin Master",
     "package": "com.moonactive.coinmaster",
@@ -1321,12 +1309,10 @@ data = {
     ]
 }
 
-# تحويل لنص
 json_str = json.dumps(data, indent=2, ensure_ascii=False)
 print("JSON:")
 print(json_str)
 
-# تحليل النص مجدداً
 parsed = json.loads(json_str)
 print(f"\\nعدد الأحداث: {len(parsed['events'])}")
 print(f"اللعبة: {parsed['game']}")`
@@ -1344,15 +1330,12 @@ Package: com.moonactive.coinmaster
 Status: 200 OK
 """
 
-# استخراج GAID
 gaid = re.search(r'GAID: ([0-9a-f-]{36})', text)
 print(f"GAID: {gaid.group(1) if gaid else 'لم يُوجد'}")
 
-# استخراج الـ Package
 pkg = re.search(r'Package: ([\w.]+)', text)
 print(f"Package: {pkg.group(1) if pkg else 'لم يُوجد'}")
 
-# استخراج Status Code
 status = re.search(r'Status: (\d+)', text)
 print(f"Status Code: {status.group(1) if status else 'لم يُوجد'}")`
   },
@@ -1387,13 +1370,11 @@ for i in range(3):
     code: `# قم بتثبيت numpy أولاً من حقل pip أعلاه
 import numpy as np
 
-# إنشاء مصفوفة
 arr = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 print(f"المصفوفة: {arr}")
 print(f"المتوسط: {np.mean(arr)}")
 print(f"الانحراف المعياري: {np.std(arr):.4f}")
 
-# مصفوفة 2D
 matrix = np.reshape(arr, (2, 5))
 print(f"\\nمصفوفة 2x5:")
 print(matrix)`
@@ -1405,7 +1386,6 @@ print(matrix)`
     code: `# قم بتثبيت pandas أولاً من حقل pip أعلاه
 import pandas as pd
 
-# إنشاء DataFrame
 data = {
     'Game': ['Coin Master', 'Gardenscapes', 'Match Factory', 'Toon Blast'],
     'Events_Sent': [45, 32, 67, 28],
@@ -1446,7 +1426,6 @@ def build_event(package, dev_key, afid, gaid, event_name, revenue=None):
         "body": body
     }
 
-# مثال
 req = build_event(
     package="com.moonactive.coinmaster",
     dev_key="H3KjoCRVTiVgA5mWSAHtCe",
@@ -1480,10 +1459,10 @@ function loadSnippet(i) {
   showToast('success', '📋', 'تم التحميل', SNIPPETS[i].title + ' — اضغط ▶ للتشغيل');
 }
 
-/* ─── SERVICE WORKER ─── */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 </script>
 </body>
 </html>
+EOF
