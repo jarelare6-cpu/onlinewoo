@@ -1,4 +1,3 @@
-cat << 'EOF' > main.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import subprocess
@@ -122,9 +121,7 @@ def proxy_send_event():
     }
 
     try:
-        # إرسال الطلب من السيرفر مباشرة لـ AppsFlyer لتفادي القيود
         response = requests.post(url, headers=headers, json=body_data, timeout=15)
-        
         return jsonify({
             'success': True,
             'status_code': response.status_code,
@@ -140,4 +137,3 @@ def proxy_send_event():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-EOF
