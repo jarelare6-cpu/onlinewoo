@@ -8,10 +8,10 @@ cat << 'EOF' > index.html
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pharaoh Pro">
+<meta name="apple-mobile-web-app-title" content="online">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>PHARAOH PRO v17.0</title>
+<title>online</title>
 <style>
 :root {
   --bg: #0a0a14;
@@ -461,7 +461,7 @@ body {
 <body>
 
 <div class="header">
-  <div class="header-title">⚡ PHARAOH PRO</div>
+  <div class="header-title">⚡ Online</div>
   <div class="header-right">
     <span class="py-badge" id="py-badge">🐍 Loading...</span>
     <span class="header-badge">v17.0</span>
@@ -513,8 +513,8 @@ body {
         <div class="preview-text" id="event-preview"></div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="sendLevelEvent()">📤 إرسال حدث</button>
-        <button class="btn btn-secondary" onclick="sendPurchase()">💰 شراء</button>
+        <button class="btn btn-primary" onclick="sendLevelEvent()">📤 send event</button>
+        <button class="btn btn-secondary" onclick="sendPurchase()">💰 sendPurchase</button>
       </div>
       <div>
         <div class="log-section-title">EVENT LOG</div>
@@ -537,7 +537,7 @@ body {
   <div class="server-bar">
     <span style="font-size:10px;color:var(--accent);white-space:nowrap">🌐</span>
     <input class="server-input" id="server-url" placeholder="https://your-app.railway.app  (مطلوب لتخطي CORS)">
-    <button class="server-connect-btn" onclick="connectServer()">اتصال</button>
+    <button class="server-connect-btn" onclick="connectServer()">connect</button>
     <div class="server-dot" id="server-dot" title="حالة الخادم"></div>
   </div>
 
@@ -553,16 +553,16 @@ body {
 
   <div class="editor-container">
     <textarea class="code-editor" id="code-editor" placeholder="# اكتب كود Python هنا...
-print('مرحباً من Pharaoh Pro!')
+print('مرحباً من online!')
 " spellcheck="false" oninput="updateLineNums()" onkeydown="handleTab(event)"></textarea>
   </div>
 
   <div class="py-toolbar" style="padding:8px 12px;">
     <span style="font-size:10px;color:var(--muted)">OUTPUT</span>
-    <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ تشغيل الكود</button>
+    <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ play code</button>
   </div>
 
-  <div class="output-area" id="output-area"><span class="out-line-sys">// في انتظار تشغيل الكود...</span></div>
+  <div class="output-area" id="output-area"><span class="out-line-sys">// waiting code...</span></div>
 </div>
 
 <div class="page" id="page-snippets">
@@ -610,7 +610,7 @@ print('مرحباً من Pharaoh Pro!')
     <div class="settings-section">INFO</div>
     <div class="settings-item">
       <div class="settings-label">الإصدار</div>
-      <div style="font-size:11px;color:var(--muted)">v17.0 — Pharaoh Pro</div>
+      <div style="font-size:11px;color:var(--muted)">v17.0 — online</div>
     </div>
     <div class="settings-item">
       <div class="settings-label">محرك Python</div>
@@ -735,7 +735,7 @@ async function connectServer() {
   if (!url.startsWith('http')) url = 'https://' + url;
   url = url.replace(/\/$/, '');
   setServerDot('');
-  showToast('loading', null, 'جاري الاتصال...', url);
+  showToast('loading', null, 'connecting...', url);
   try {
     const res = await fetch(url + '/', { signal: AbortSignal.timeout(8000) });
     if (res.ok) {
@@ -1275,7 +1275,7 @@ const SNIPPETS = [
     desc: 'أول كود Python — طباعة رسالة وتاريخ اليوم',
     code: `from datetime import datetime
 
-print("مرحباً من Pharaoh Pro! 🐍")
+print("مرحباً من online! 🐍")
 print(f"التاريخ الآن: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")`
   },
   {
