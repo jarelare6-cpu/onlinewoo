@@ -1,6 +1,6 @@
 {
-  "name": "Pharaoh Pro",
-  "short_name": "Pharaoh Pro",
+  "name": "online",
+  "short_name": "online",
   "description": "AppsFlyer Event Pusher + Python Environment",
   "start_url": "/",
   "display": "standalone",
