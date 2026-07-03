@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -132,7 +132,7 @@ body {
   border: 1px solid var(--border); border-radius: 10px;
   padding: 9px 12px; color: var(--text);
   font-size: 12px; font-family: inherit; outline: none;
-  transition: border-color 0.2s; direction: rtl;
+  transition: border-color 0.2s;
 }
 .search-input:focus { border-color: var(--accent2); }
 .search-input::placeholder { color: var(--muted); }
@@ -244,7 +244,7 @@ body {
 .server-input {
   flex: 1; background: var(--card); border: 1px solid var(--border);
   border-radius: 8px; padding: 7px 10px; color: var(--text);
-  font-size: 10px; font-family: inherit; outline: none; direction: ltr;
+  font-size: 10px; font-family: inherit; outline: none;
   transition: border-color 0.2s;
 }
 .server-input:focus { border-color: var(--accent); }
@@ -314,26 +314,17 @@ body {
   color: #e8e8f0; font-size: 12px;
   font-family: 'Courier New', monospace;
   padding: 12px; outline: none; resize: vertical;
-  direction: ltr; text-align: left; line-height: 1.5;
+  text-align: left; line-height: 1.5;
   tab-size: 2;
 }
 .code-editor::placeholder { color: var(--muted); }
-.line-nums {
-  position: absolute; top: 0; right: 0;
-  padding: 12px 6px; font-size: 12px;
-  color: var(--muted); line-height: 1.5;
-  pointer-events: none; user-select: none;
-  font-family: 'Courier New', monospace;
-  text-align: right; min-width: 30px;
-  opacity: 0.4;
-}
 
 /* output */
 .output-area {
   background: #050510; min-height: 160px;
   padding: 10px 12px;
   font-size: 11px; font-family: 'Courier New', monospace;
-  line-height: 1.6; direction: ltr; text-align: left;
+  line-height: 1.6; text-align: left;
   overflow-y: auto; max-height: 300px;
   white-space: pre-wrap; word-break: break-all;
 }
@@ -343,107 +334,6 @@ body {
 .out-line-success { color: var(--green); }
 .out-line-error { color: var(--red); }
 .out-line-sys { color: var(--muted); font-style: italic; }
-
-/* ═══ SNIPPETS PAGE ═══ */
-.snippet-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-.snippet-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer;
-  transition: border-color 0.2s;
-}
-.snippet-card:active { border-color: var(--accent2); }
-.snippet-header {
-  padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
-}
-.snippet-title { font-size: 12px; color: var(--accent); font-weight: bold; }
-.snippet-tag {
-  font-size: 8px; padding: 2px 7px; border-radius: 20px;
-  background: var(--surface); color: var(--muted); letter-spacing: 0.5px;
-}
-.snippet-desc { padding: 0 12px 10px; font-size: 10px; color: var(--muted); line-height: 1.4; }
-.snippet-preview {
-  background: #050510; padding: 8px 12px;
-  font-size: 10px; color: var(--muted);
-  font-family: 'Courier New', monospace;
-  direction: ltr; text-align: left; line-height: 1.4;
-  overflow: hidden; max-height: 60px;
-  border-top: 1px solid var(--border);
-}
-
-/* ═══ SETTINGS PAGE ═══ */
-.settings-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-.settings-section { font-size: 9px; color: var(--muted); letter-spacing: 2px; padding: 8px 0 4px; }
-.settings-item {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.settings-label { font-size: 12px; color: var(--text); }
-.settings-sublabel { font-size: 10px; color: var(--muted); margin-top: 2px; }
-.toggle {
-  width: 42px; height: 24px; border-radius: 12px;
-  background: var(--border); position: relative; cursor: pointer;
-  transition: background 0.3s; flex-shrink: 0; border: none;
-}
-.toggle.on { background: var(--accent2); }
-.toggle::after {
-  content: ''; position: absolute; width: 18px; height: 18px;
-  border-radius: 50%; background: white; top: 3px; left: 3px;
-  transition: left 0.3s;
-}
-.toggle.on::after { left: 21px; }
-.settings-input {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; padding: 5px 10px;
-  color: var(--text); font-size: 11px; font-family: inherit;
-  outline: none; width: 140px; text-align: center;
-}
-
-/* ═══ MODAL ═══ */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px; width: calc(100% - 40px);
-  max-width: 380px; display: flex; flex-direction: column; gap: 12px;
-}
-.modal-title { font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
-.modal-input {
-  width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px 12px;
-  color: var(--text); font-size: 11px; font-family: inherit; outline: none;
-  direction: ltr; text-align: left;
-}
-.modal-input:focus { border-color: var(--accent); }
-.modal-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-
-/* ═══ TOAST ═══ */
-.toast {
-  position: fixed; bottom: 80px; left: 12px; right: 12px; z-index: 300;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px;
-  display: flex; align-items: center; gap: 10px;
-  transform: translateY(20px); opacity: 0;
-  transition: all 0.25s; pointer-events: none;
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: var(--green); }
-.toast.error { border-color: var(--red); }
-.toast.loading { border-color: var(--accent2); }
-.toast-icon { font-size: 18px; flex-shrink: 0; }
-.toast-body { flex: 1; min-width: 0; }
-.toast-title { font-size: 12px; font-weight: bold; color: var(--text); }
-.toast-detail { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spinner {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2px solid var(--border); border-top-color: var(--accent2);
-  animation: spin 0.6s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ═══ PAGE TITLE BAR ═══ */
 .page-titlebar {
@@ -467,6 +357,7 @@ body {
   </div>
 </div>
 
+<!-- ==================== GAMES PAGE ==================== -->
 <div class="page active" id="page-games">
 
   <div class="ids-bar">
@@ -482,21 +373,21 @@ body {
 
   <div id="view-main" class="view active">
     <div class="tabs">
-      <div class="tab active" onclick="filterGames('all',this)">الكل</div>
+      <div class="tab active" onclick="filterGames('all',this)">All</div>
       <div class="tab" onclick="filterGames('puzzle',this)">Puzzle</div>
       <div class="tab" onclick="filterGames('farm',this)">Farm</div>
       <div class="tab" onclick="filterGames('merge',this)">Merge</div>
       <div class="tab" onclick="filterGames('other',this)">Other</div>
     </div>
     <div class="search-bar">
-      <input class="search-input" placeholder="ابحث باسم اللعبة أو Package..." oninput="searchGames(this.value)" dir="rtl">
+      <input class="search-input" placeholder="Search by game name or package..." oninput="searchGames(this.value)">
     </div>
     <div class="games-grid" id="games-grid"></div>
-    <div class="no-results" id="no-results">لا توجد نتائج</div>
+    <div class="no-results" id="no-results">No results</div>
   </div>
 
   <div id="view-detail" class="view">
-    <div class="back-btn" onclick="goBack()">← رجوع</div>
+    <div class="back-btn" onclick="goBack()">← Back</div>
     <div class="detail-header">
       <div class="detail-game-name" id="detail-game-name"></div>
       <div class="detail-pkg" id="detail-pkg"></div>
@@ -508,77 +399,79 @@ body {
       </div>
       <div id="level-input-wrap">
         <div class="field-label">LEVEL NUMBER</div>
-        <input class="level-input" id="level-input" type="number" min="1" placeholder="أدخل رقم المستوى..." oninput="updateEventPreview()">
+        <input class="level-input" id="level-input" type="number" min="1" placeholder="Enter level number..." oninput="updateEventPreview()">
         <div class="preview-text" id="event-preview"></div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="sendLevelEvent()">📤 send event</button>
-        <button class="btn btn-secondary" onclick="sendPurchase()">💰 sendPurchase</button>
+        <button class="btn btn-primary" onclick="sendLevelEvent()">📤 Send Event</button>
+        <button class="btn btn-secondary" onclick="sendPurchase()">💰 Send Purchase</button>
       </div>
       <div>
         <div class="log-section-title">EVENT LOG</div>
-        <div class="log-list" id="event-log"><div class="log-empty">لا توجد أحداث بعد</div></div>
+        <div class="log-list" id="event-log"><div class="log-empty">No events yet</div></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ==================== PYTHON PAGE (Start) ==================== -->
 <div class="page py-page" id="page-python">
   <div class="page-titlebar">🐍 PYTHON TERMINAL — Pyodide</div>
 
   <div class="py-toolbar">
-    <span class="py-status loading" id="py-status">جاري تحميل Python...</span>
-    <button class="py-btn primary" id="btn-run" onclick="runPython()" disabled>▶ تشغيل</button>
-    <button class="py-btn" onclick="clearEditor()">مسح الكود</button>
-    <button class="py-btn" onclick="clearOutput()">مسح النتائج</button>
+    <span class="py-status loading" id="py-status">Loading Python...</span>
+    <button class="py-btn primary" id="btn-run" onclick="runPython()" disabled>▶ Run</button>
+    <button class="py-btn" onclick="clearEditor()">Clear Code</button>
+    <button class="py-btn" onclick="clearOutput()">Clear Output</button>
   </div>
 
   <div class="server-bar">
     <span style="font-size:10px;color:var(--accent);white-space:nowrap">🌐</span>
-    <input class="server-input" id="server-url" placeholder="https://your-app.railway.app  (مطلوب لتخطي CORS)">
-    <button class="server-connect-btn" onclick="connectServer()">connect</button>
-    <div class="server-dot" id="server-dot" title="حالة الخادم"></div>
+    <input class="server-input" id="server-url" placeholder="https://your-app.railway.app (required to bypass CORS)">
+    <button class="server-connect-btn" onclick="connectServer()">Connect</button>
+    <div class="server-dot" id="server-dot" title="Server status"></div>
   </div>
 
   <div class="pip-bar">
     <span style="font-size:10px;color:var(--py2);white-space:nowrap">pip install</span>
-    <input class="pip-input" id="pip-input" placeholder="اسم المكتبة (مثال: numpy, pandas, requests...)" dir="ltr">
-    <button class="pip-btn" id="btn-pip" onclick="installPackage()" disabled>تثبيت</button>
+    <input class="pip-input" id="pip-input" placeholder="Package name (e.g.: numpy, pandas, requests...)">
+    <button class="pip-btn" id="btn-pip" onclick="installPackage()" disabled>Install</button>
   </div>
 
   <div class="pkg-chips" id="pkg-chips">
-    <span class="pkg-empty" id="pkg-empty">لا توجد مكتبات مثبتة بعد</span>
+    <span class="pkg-empty" id="pkg-empty">No packages installed yet</span>
   </div>
 
   <div class="editor-container">
-    <textarea class="code-editor" id="code-editor" placeholder="# اكتب كود Python هنا...
-print('مرحباً من online!')
+    <textarea class="code-editor" id="code-editor" placeholder="# Write Python code here...
+print('Hello from Online!')
 " spellcheck="false" oninput="updateLineNums()" onkeydown="handleTab(event)"></textarea>
   </div>
 
   <div class="py-toolbar" style="padding:8px 12px;">
     <span style="font-size:10px;color:var(--muted)">OUTPUT</span>
-    <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ play code</button>
+    <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ Run Code</button>
   </div>
 
-  <div class="output-area" id="output-area"><span class="out-line-sys">// waiting code...</span></div>
+  <div class="output-area" id="output-area"><span class="out-line-sys">// waiting for code...</span></div>
 </div>
-
+<!-- ==================== SNIPPETS PAGE ==================== -->
 <div class="page" id="page-snippets">
-  <div class="page-titlebar">📦 SNIPPETS — أمثلة جاهزة</div>
+  <div class="page-titlebar">📦 SNIPPETS — Ready Examples</div>
   <div class="snippet-list" id="snippet-list"></div>
 </div>
 
+<!-- ==================== SETTINGS PAGE ==================== -->
 <div class="page" id="page-settings">
   <div class="page-titlebar">⚙️ SETTINGS</div>
   <div class="settings-list">
     <div class="settings-section">SERVER</div>
     <div class="settings-item">
       <div>
-        <div class="settings-label">رابط Railway</div>
-        <div class="settings-sublabel">خادم الباك أند والوسيط للـ CORS</div>
+        <div class="settings-label">Railway URL</div>
+        <div class="settings-sublabel">Backend server and CORS proxy</div>
       </div>
-      <input class="settings-input" id="settings-server" dir="ltr" placeholder="https://..." oninput="document.getElementById('server-url').value=this.value">
+      <input class="settings-input" id="settings-server" placeholder="https://..." oninput="document.getElementById('server-url').value=this.value">
     </div>
 
     <div class="settings-section">DEVICE IDs</div>
@@ -587,50 +480,51 @@ print('مرحباً من online!')
         <div class="settings-label">GAID</div>
         <div class="settings-sublabel">Google Advertising ID</div>
       </div>
-      <input class="settings-input" id="settings-gaid" dir="ltr" oninput="autoSaveId('gaid')">
+      <input class="settings-input" id="settings-gaid" oninput="autoSaveId('gaid')">
     </div>
     <div class="settings-item">
       <div>
         <div class="settings-label">AppsFlyer ID</div>
         <div class="settings-sublabel">AppsFlyer Identifier</div>
       </div>
-      <input class="settings-input" id="settings-afid" dir="ltr" oninput="autoSaveId('afid')">
+      <input class="settings-input" id="settings-afid" oninput="autoSaveId('afid')">
     </div>
 
     <div class="settings-section">PYTHON</div>
     <div class="settings-item">
       <div>
-        <div class="settings-label">تحميل Python تلقائياً</div>
-        <div class="settings-sublabel">عند فتح التطبيق</div>
+        <div class="settings-label">Auto-load Python</div>
+        <div class="settings-sublabel">When app opens</div>
       </div>
       <button class="toggle on" id="toggle-autoload" onclick="toggleSetting('autoload',this)"></button>
     </div>
 
     <div class="settings-section">INFO</div>
     <div class="settings-item">
-      <div class="settings-label">الإصدار</div>
-      <div style="font-size:11px;color:var(--muted)">v17.0 — online</div>
+      <div class="settings-label">Version</div>
+      <div style="font-size:11px;color:var(--muted)">v17.0 — Online</div>
     </div>
     <div class="settings-item">
-      <div class="settings-label">محرك Python</div>
+      <div class="settings-label">Python Engine</div>
       <div style="font-size:11px;color:var(--muted)">Pyodide 0.26 (WASM)</div>
     </div>
     <div class="settings-item" style="cursor:pointer" onclick="clearAllData()">
       <div>
-        <div class="settings-label" style="color:var(--red)">مسح جميع البيانات</div>
-        <div class="settings-sublabel">إعادة ضبط التطبيق</div>
+        <div class="settings-label" style="color:var(--red)">Clear All Data</div>
+        <div class="settings-sublabel">Reset app</div>
       </div>
       <span style="color:var(--red)">🗑</span>
     </div>
   </div>
 </div>
 
+<!-- ==================== NAVIGATION BAR ==================== -->
 <nav class="nav-bar">
   <div class="nav-item active" id="nav-games" onclick="switchPage('games')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
     </svg>
-    ألعاب
+    Games
   </div>
   <div class="nav-item" id="nav-python" onclick="switchPage('python')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -648,28 +542,30 @@ print('مرحباً من online!')
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
     </svg>
-    إعدادات
+    Settings
   </div>
 </nav>
 
+<!-- ==================== MODAL ==================== -->
 <div class="modal-overlay" id="id-modal">
   <div class="modal">
-    <div class="modal-title">✏️ تعديل Device IDs</div>
+    <div class="modal-title">✏️ Edit Device IDs</div>
     <div>
       <div class="modal-label">GAID (Google Advertising ID)</div>
-      <input class="modal-input" id="modal-gaid-input" dir="ltr" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      <input class="modal-input" id="modal-gaid-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
     </div>
     <div>
       <div class="modal-label">AppsFlyer ID</div>
-      <input class="modal-input" id="modal-afid-input" dir="ltr" placeholder="xxxxxxxxxx-xxxxxxxxxxxxxxxxxx">
+      <input class="modal-input" id="modal-afid-input" placeholder="xxxxxxxxxx-xxxxxxxxxxxxxxxxxx">
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="saveIds()">💾 حفظ</button>
-      <button class="btn btn-secondary" onclick="closeIdModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveIds()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeIdModal()">Cancel</button>
     </div>
   </div>
 </div>
 
+<!-- ==================== TOAST ==================== -->
 <div class="toast" id="toast">
   <div class="toast-icon" id="toast-icon"></div>
   <div class="toast-body">
@@ -678,6 +574,7 @@ print('مرحباً من online!')
   </div>
 </div>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
 /* ─── GAMES DATA ─── */
 const GAMES_DATA = [
@@ -734,7 +631,7 @@ async function connectServer() {
   if (!url.startsWith('http')) url = 'https://' + url;
   url = url.replace(/\/$/, '');
   setServerDot('');
-  showToast('loading', null, 'connecting...', url);
+  showToast('loading', null, 'Connecting...', url);
   try {
     const res = await fetch(url + '/', { signal: AbortSignal.timeout(8000) });
     if (res.ok) {
@@ -748,11 +645,11 @@ async function connectServer() {
       document.getElementById('btn-run').disabled = false;
       document.getElementById('btn-run2').disabled = false;
       document.getElementById('btn-pip').disabled = false;
-      showToast('success', '✅', 'متصل بالخادم!', 'كل الحركات ستمر عبر ريلواي الآن لتفادي CORS');
+      showToast('success', '✅', 'Connected!', 'All requests will now go through Railway to bypass CORS');
     }
   } catch(e) {
     setServerDot('err');
-    showToast('error', '❌', 'فشل الاتصال', 'تحقق من الرابط');
+    showToast('error', '❌', 'Connection failed', 'Check the URL');
   }
 }
 
@@ -763,9 +660,9 @@ function setServerDot(cls) {
 
 async function runWithServer() {
   const code = document.getElementById('code-editor').value.trim();
-  if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
+  if (!code) { showToast('error', '⚠', 'Code is empty', 'Write Python code first'); return; }
   clearOutput();
-  appendOutput('// ▶ جاري التشغيل على الخادم...\n', 'sys');
+  appendOutput('// ▶ Running on server...\n', 'sys');
   document.getElementById('btn-run').disabled = true;
   document.getElementById('btn-run2').disabled = true;
   const start = Date.now();
@@ -781,12 +678,12 @@ async function runWithServer() {
     if (data.stdout) appendOutput(data.stdout, 'stdout');
     if (data.stderr) appendOutput(data.stderr, 'stderr');
     if (data.returncode === 0) {
-      appendOutput('\n// ✅ اكتمل في ' + elapsed + 'ث\n', 'success');
+      appendOutput('\n// ✅ Completed in ' + elapsed + 's\n', 'success');
     } else {
-      appendOutput('\n// ❌ خطأ في الكود\n', 'error');
+      appendOutput('\n// ❌ Code error\n', 'error');
     }
   } catch(e) {
-    appendOutput('❌ خطأ: ' + e.message + '\n', 'error');
+    appendOutput('❌ Error: ' + e.message + '\n', 'error');
   } finally {
     document.getElementById('btn-run').disabled = false;
     document.getElementById('btn-run2').disabled = false;
@@ -796,7 +693,7 @@ async function runWithServer() {
 async function pipWithServer(pkg) {
   const btn = document.getElementById('btn-pip');
   btn.disabled = true; btn.textContent = '⏳';
-  showToast('loading', null, 'pip install ' + pkg, 'جاري التثبيت...');
+  showToast('loading', null, 'pip install ' + pkg, 'Installing...');
   try {
     const res = await fetch(serverUrl + '/pip', {
       method: 'POST',
@@ -806,17 +703,17 @@ async function pipWithServer(pkg) {
     });
     const data = await res.json();
     if (data.success) {
-      showToast('success', '✅', 'تم التثبيت', pkg + ' جاهز!');
-      appendOutput('✅ تم تثبيت: ' + pkg + '\n', 'success');
+      showToast('success', '✅', 'Installed', pkg + ' is ready!');
+      appendOutput('✅ Installed: ' + pkg + '\n', 'success');
       document.getElementById('pip-input').value = '';
     } else {
-      showToast('error', '❌', 'فشل التثبيت', data.message || '');
-      appendOutput('❌ فشل: ' + (data.message || '') + '\n', 'error');
+      showToast('error', '❌', 'Install failed', data.message || '');
+      appendOutput('❌ Failed: ' + (data.message || '') + '\n', 'error');
     }
   } catch(e) {
-    showToast('error', '❌', 'خطأ', e.message);
+    showToast('error', '❌', 'Error', e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'تثبيت';
+    btn.disabled = false; btn.textContent = 'Install';
   }
 }
 
@@ -837,8 +734,6 @@ renderGames(GAMES_DATA);
 loadSettingsValues();
 renderSnippets();
 renderInstalledPkgs();
-
-// Load Pyodide
 loadPyodideRuntime();
 
 /* ─── NAVIGATION ─── */
@@ -906,7 +801,7 @@ function openGame(idx) {
   lvlInput.style.display = hasNumber ? 'block' : 'none';
   lvlInput.value = '';
   document.getElementById('event-preview').textContent = hasNumber ? '' : activeGame.level_events[0].template;
-  document.getElementById('event-log').innerHTML = '<div class="log-empty">لا توجد أحداث بعد</div>';
+  document.getElementById('event-log').innerHTML = '<div class="log-empty">No events yet</div>';
   eventLog = [];
   showView('view-detail');
 }
@@ -933,24 +828,23 @@ async function sendLevelEvent() {
   const tmpl = activeGame.level_events[0].template;
   const hasNum = tmpl.includes('{}');
   const val = document.getElementById('level-input').value;
-  if (hasNum && !val) { showToast('error', '⚠', 'خطأ', 'أدخل رقم المستوى أولاً'); return; }
+  if (hasNum && !val) { showToast('error', '⚠', 'Error', 'Enter level number first'); return; }
   const evName = hasNum ? tmpl.replace('{}', val) : tmpl;
   await sendEvent('level', evName);
 }
 
 async function sendPurchase() { await sendEvent('purchase', 'af_purchase'); }
 
-/* ═══ الدالة المعدلة حتمياً للمرور عبر ريلواي لتخطي الـ CORS ═══ */
 async function sendEvent(type, evName) {
   if (!activeGame) return;
   
   if (!serverConnected || !serverUrl) {
-    showToast('error', '🌐', 'خطأ في السيرفر', 'يرجى ربط سيرفر Railway أولاً لتخطي الـ CORS المباشر');
+    showToast('error', '🌐', 'Server Error', 'Please connect Railway server first to bypass direct CORS');
     addLog(evName, 'CORS ERR', false);
     return;
   }
 
-  showToast('loading', null, 'جاري التمرير عبر Railway Proxy...', evName);
+  showToast('loading', null, 'Sending via Railway Proxy...', evName);
   
   const appsFlyerBody = {
     appsflyer_id: curAfid,
@@ -978,14 +872,14 @@ async function sendEvent(type, evName) {
     
     if (res.ok && data.success) {
       addLog(evName, `Railway: ${data.status_code}`, true);
-      showToast('success', '✅', `تم الإرسال بنجاح (${data.status_code})`, evName);
+      showToast('success', '✅', `Sent successfully (${data.status_code})`, evName);
     } else {
       addLog(evName, `ERR: ${status}`, false);
-      showToast('error', '❌', `فشل التمرير: ${data.error || status}`, evName);
+      showToast('error', '❌', `Proxy failed: ${data.error || status}`, evName);
     }
   } catch(e) {
     addLog(evName, 'NET ERR', false);
-    showToast('error', '🔌', 'خطأ في الاتصال بالسيرفر', e.message || 'تحقق من الشبكة والبروكسي');
+    showToast('error', '🔌', 'Server connection error', e.message || 'Check network and proxy');
   }
 }
 
@@ -1017,7 +911,7 @@ function saveIds() {
   if (a) { curAfid = a; localStorage.setItem('pp_afid', a); }
   updateIdDisplay();
   closeIdModal();
-  showToast('success', '✅', 'تم الحفظ', 'تم تحديث IDs بنجاح');
+  showToast('success', '✅', 'Saved', 'IDs updated successfully');
 }
 document.getElementById('id-modal').addEventListener('click', function(e) {
   if (e.target === this) closeIdModal();
@@ -1055,7 +949,7 @@ function toggleSetting(key, el) {
   localStorage.setItem('pp_setting_' + key, el.classList.contains('on') ? '1' : '0');
 }
 function clearAllData() {
-  if (confirm('هل أنت متأكد؟ سيتم حذف جميع البيانات المحفوظة.')) {
+  if (confirm('Are you sure? All saved data will be deleted.')) {
     localStorage.clear();
     location.reload();
   }
@@ -1065,14 +959,14 @@ function clearAllData() {
    🐍 PYTHON / PYODIDE ENGINE
 ══════════════════════════════════════════════ */
 async function loadPyodideRuntime() {
-  setPyStatus('loading', '🐍 تحميل Python...');
+  setPyStatus('loading', '🐍 Loading Python...');
   try {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
     document.head.appendChild(script);
     script.onload = async () => {
       try {
-        setPyStatus('loading', '⚙️ تهيئة البيئة...');
+        setPyStatus('loading', '⚙️ Initializing environment...');
         pyodide = await loadPyodide({
           indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
           stdout: (text) => appendOutput(text, 'stdout'),
@@ -1080,7 +974,7 @@ async function loadPyodideRuntime() {
         });
 
         pyodide.runPython(`
-import sys, io
+import sys
 class OutputCapture:
     def __init__(self, kind):
         self.kind = kind
@@ -1094,7 +988,7 @@ sys.stderr = OutputCapture('stderr')
         `);
 
         pyReady = true;
-        setPyStatus('ready', '✅ Python جاهز');
+        setPyStatus('ready', '✅ Python Ready');
         if (!serverConnected) {
           document.getElementById('py-badge').textContent = '🐍 Ready';
           document.getElementById('py-badge').style.background = '#1a3020';
@@ -1109,15 +1003,15 @@ sys.stderr = OutputCapture('stderr')
         }
         clearOutput();
         appendOutput('// Python ' + pyodide.runPython('import sys; sys.version') + '\n', 'sys');
-        appendOutput('// الحزم المتاحة: micropip, numpy, pandas, requests, json, math, re, datetime, ...\n', 'sys');
-        appendOutput('// اكتب كودك في المحرر أعلاه ثم اضغط ▶ تشغيل\n', 'sys');
+        appendOutput('// Available packages: micropip, numpy, pandas, requests, json, math, re, datetime...\n', 'sys');
+        appendOutput('// Write your code in the editor above then press ▶ Run\n', 'sys');
       } catch(e) {
-        setPyStatus('error', '❌ فشل التهيئة');
+        setPyStatus('error', '❌ Init failed');
         appendOutput('Error: ' + e.message, 'error');
       }
     };
     script.onerror = () => {
-      setPyStatus('error', '❌ فشل التحميل — تحقق من الإنترنت');
+      setPyStatus('error', '❌ Load failed — check internet');
     };
   } catch(e) {
     setPyStatus('error', '❌ ' + e.message);
@@ -1136,36 +1030,22 @@ function setPyStatus(cls, text) {
 
 async function runPython() {
   if (serverConnected) { await runWithServer(); return; }
-  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر اكتمال التحميل'); return; }
+  if (!pyReady) { showToast('error', '⏳', 'Python not ready', 'Wait for loading to complete'); return; }
   const code = document.getElementById('code-editor').value.trim();
-  if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
+  if (!code) { showToast('error', '⚠', 'Code is empty', 'Write Python code first'); return; }
 
   clearOutput();
-  appendOutput('// ▶ تشغيل الكود...\n', 'sys');
+  appendOutput('// ▶ Running code...\n', 'sys');
 
   try {
-    pyodide.runPython(`
-import sys
-class OutputCapture:
-    def __init__(self, kind):
-        self.kind = kind
-        self.buf = []
-    def write(self, text):
-        if text:
-            from js import appendPyOutput
-            appendPyOutput(text, self.kind)
-    def flush(self): pass
-sys.stdout = OutputCapture('stdout')
-sys.stderr = OutputCapture('stderr')
-    `);
     const result = await pyodide.runPythonAsync(code);
     if (result !== undefined && result !== null) {
       appendOutput(String(result) + '\n', 'stdout');
     }
-    appendOutput('\n// ✅ اكتمل التشغيل\n', 'success');
+    appendOutput('\n// ✅ Execution completed\n', 'success');
   } catch(e) {
     appendOutput(e.message + '\n', 'error');
-    appendOutput('// ❌ خطأ في الكود\n', 'sys');
+    appendOutput('// ❌ Code error\n', 'sys');
   }
 }
 
@@ -1173,33 +1053,30 @@ async function installPackage() {
   const pkg = document.getElementById('pip-input').value.trim().toLowerCase();
   if (!pkg) return;
   if (serverConnected) { await pipWithServer(pkg); return; }
-  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر التحميل'); return; }
+  if (!pyReady) { showToast('error', '⏳', 'Python not ready', 'Wait for loading'); return; }
 
   const btn = document.getElementById('btn-pip');
   btn.disabled = true;
   btn.textContent = '⏳...';
-  showToast('loading', null, 'pip install ' + pkg, 'جاري التثبيت...');
+  showToast('loading', null, 'pip install ' + pkg, 'Installing...');
 
   try {
     await pyodide.loadPackagesFromImports(`import ${pkg}`).catch(() => {});
-    await pyodide.runPythonAsync(`
-import micropip
-await micropip.install('${pkg}')
-    `);
+    await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
     if (!installedPkgs.includes(pkg)) {
       installedPkgs.push(pkg);
       localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
     }
     renderInstalledPkgs();
     document.getElementById('pip-input').value = '';
-    showToast('success', '✅', 'تم التثبيت', pkg + ' جاهز للاستخدام');
-    appendOutput('✅ تم تثبيت: ' + pkg + '\n', 'success');
+    showToast('success', '✅', 'Installed', pkg + ' is ready to use');
+    appendOutput('✅ Installed: ' + pkg + '\n', 'success');
   } catch(e) {
-    showToast('error', '❌', 'فشل التثبيت', e.message.split('\n')[0]);
-    appendOutput('❌ فشل تثبيت ' + pkg + ': ' + e.message + '\n', 'error');
+    showToast('error', '❌', 'Install failed', e.message.split('\n')[0]);
+    appendOutput('❌ Failed to install ' + pkg + ': ' + e.message + '\n', 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'تثبيت';
+    btn.textContent = 'Install';
   }
 }
 
@@ -1213,7 +1090,7 @@ function removePackage(pkg) {
   installedPkgs = installedPkgs.filter(p => p !== pkg);
   localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
   renderInstalledPkgs();
-  showToast('success', '🗑', 'تمت الإزالة', pkg);
+  showToast('success', '🗑', 'Removed', pkg);
 }
 
 function renderInstalledPkgs() {
@@ -1221,13 +1098,289 @@ function renderInstalledPkgs() {
   const empty = document.getElementById('pkg-empty');
   if (installedPkgs.length === 0) {
     empty.style.display = 'block';
-    const chips = container.querySelectorAll('.pkg-chip');
-    chips.forEach(c => c.remove());
+    container.querySelectorAll('.pkg-chip').forEach(c => c.remove());
     return;
   }
   empty.style.display = 'none';
-  const existing = container.querySelectorAll('.pkg-chip');
-  existing.forEach(c => c.remove());
+  container.querySelectorAll('.pkg-chip').forEach(c => c.remove());
+  installedPkgs.forEach(pkg => {
+    const chip = document.createElement('div');
+    chip.className = 'pkg-chip';
+    chip.innerHTML = `${pkg} <span class="pkg-chip-remove" onclick="removePackage('${pkg}')">×</span>`;
+    container.appendChild(chip);
+  });
+}
+
+function appendOutput(text, kind) {
+  const area = document.getElementById('output-area');
+  const span = document.createElement('span');
+  span.className = 'out-line-' + kind;
+  span.textContent = text;
+  area.appendChild(span);
+  area.scrollTop = area.scrollHeight;
+}
+
+function clearOutput() {
+  document.getElementById('output-area').innerHTML = '';
+}
+
+function clearEditor() {
+  document.getElementById('code-editor').value = '';
+}
+
+function handleTab(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
+    ta.selectionStart = ta.selectionEnd = start + 2;
+  }
+}
+</script>
+const res = await fetch(serverUrl + '/api/send-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proxyPayload)
+    });
+
+    const data = await res.json();
+    const status = res.status;
+    
+    if (res.ok && data.success) {
+      addLog(evName, `Railway: ${data.status_code}`, true);
+      showToast('success', '✅', `Sent successfully (${data.status_code})`, evName);
+    } else {
+      addLog(evName, `ERR: ${status}`, false);
+      showToast('error', '❌', `Proxy failed: ${data.error || status}`, evName);
+    }
+  } catch(e) {
+    addLog(evName, 'NET ERR', false);
+    showToast('error', '🔌', 'Server connection error', e.message || 'Check network and proxy');
+  }
+}
+
+function addLog(name, status, ok) {
+  const now = new Date();
+  const time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+  eventLog.unshift({name, status, ok, time});
+  document.getElementById('event-log').innerHTML = eventLog.map(e => `
+    <div class="log-entry">
+      <div class="log-dot ${e.ok ? 'success' : 'error'}"></div>
+      <div class="log-time">${e.time}</div>
+      <div class="log-text">${e.name}</div>
+      <div class="log-status">${e.status}</div>
+    </div>
+  `).join('');
+}
+
+/* ─── MODALS ─── */
+function openIdModal() {
+  document.getElementById('modal-gaid-input').value = curGaid;
+  document.getElementById('modal-afid-input').value = curAfid;
+  document.getElementById('id-modal').classList.add('open');
+}
+function closeIdModal() { document.getElementById('id-modal').classList.remove('open'); }
+function saveIds() {
+  const g = document.getElementById('modal-gaid-input').value.trim();
+  const a = document.getElementById('modal-afid-input').value.trim();
+  if (g) { curGaid = g; localStorage.setItem('pp_gaid', g); }
+  if (a) { curAfid = a; localStorage.setItem('pp_afid', a); }
+  updateIdDisplay();
+  closeIdModal();
+  showToast('success', '✅', 'Saved', 'IDs updated successfully');
+}
+document.getElementById('id-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeIdModal();
+});
+
+/* ─── TOAST ─── */
+function showToast(type, icon, title, detail) {
+  const toast = document.getElementById('toast');
+  toast.className = 'toast ' + type;
+  if (type === 'loading') {
+    document.getElementById('toast-icon').innerHTML = '<div class="spinner"></div>';
+  } else {
+    document.getElementById('toast-icon').textContent = icon;
+  }
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-detail').textContent = detail;
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  if (type !== 'loading') toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+/* ─── SETTINGS ─── */
+function loadSettingsValues() {
+  document.getElementById('settings-gaid').value = curGaid;
+  document.getElementById('settings-afid').value = curAfid;
+}
+function autoSaveId(type) {
+  const val = document.getElementById('settings-' + type).value.trim();
+  if (type === 'gaid') { curGaid = val; localStorage.setItem('pp_gaid', val); }
+  else { curAfid = val; localStorage.setItem('pp_afid', val); }
+  updateIdDisplay();
+}
+function toggleSetting(key, el) {
+  el.classList.toggle('on');
+  localStorage.setItem('pp_setting_' + key, el.classList.contains('on') ? '1' : '0');
+}
+function clearAllData() {
+  if (confirm('Are you sure? All saved data will be deleted.')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   🐍 PYTHON / PYODIDE ENGINE
+══════════════════════════════════════════════ */
+async function loadPyodideRuntime() {
+  setPyStatus('loading', '🐍 Loading Python...');
+  try {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    document.head.appendChild(script);
+    script.onload = async () => {
+      try {
+        setPyStatus('loading', '⚙️ Initializing environment...');
+        pyodide = await loadPyodide({
+          indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
+          stdout: (text) => appendOutput(text, 'stdout'),
+          stderr: (text) => appendOutput(text, 'stderr'),
+        });
+
+        pyodide.runPython(`
+import sys
+class OutputCapture:
+    def __init__(self, kind):
+        self.kind = kind
+    def write(self, text):
+        if text.strip():
+            from js import appendPyOutput
+            appendPyOutput(text, self.kind)
+    def flush(self): pass
+sys.stdout = OutputCapture('stdout')
+sys.stderr = OutputCapture('stderr')
+        `);
+
+        pyReady = true;
+        setPyStatus('ready', '✅ Python Ready');
+        if (!serverConnected) {
+          document.getElementById('py-badge').textContent = '🐍 Ready';
+          document.getElementById('py-badge').style.background = '#1a3020';
+          document.getElementById('py-badge').style.color = '#5de8a0';
+        }
+        document.getElementById('btn-run').disabled = false;
+        document.getElementById('btn-run2').disabled = false;
+        document.getElementById('btn-pip').disabled = false;
+
+        for (const pkg of installedPkgs) {
+          await silentInstall(pkg);
+        }
+        clearOutput();
+        appendOutput('// Python ' + pyodide.runPython('import sys; sys.version') + '\n', 'sys');
+        appendOutput('// Available packages: micropip, numpy, pandas, requests, json, math, re, datetime...\n', 'sys');
+        appendOutput('// Write your code in the editor above then press ▶ Run\n', 'sys');
+      } catch(e) {
+        setPyStatus('error', '❌ Init failed');
+        appendOutput('Error: ' + e.message, 'error');
+      }
+    };
+    script.onerror = () => {
+      setPyStatus('error', '❌ Load failed — check internet');
+    };
+  } catch(e) {
+    setPyStatus('error', '❌ ' + e.message);
+  }
+}
+
+window.appendPyOutput = function(text, kind) {
+  appendOutput(text, kind === 'stderr' ? 'stderr' : 'stdout');
+};
+
+function setPyStatus(cls, text) {
+  const el = document.getElementById('py-status');
+  el.className = 'py-status ' + cls;
+  el.textContent = text;
+}
+
+async function runPython() {
+  if (serverConnected) { await runWithServer(); return; }
+  if (!pyReady) { showToast('error', '⏳', 'Python not ready', 'Wait for loading to complete'); return; }
+  const code = document.getElementById('code-editor').value.trim();
+  if (!code) { showToast('error', '⚠', 'Code is empty', 'Write Python code first'); return; }
+
+  clearOutput();
+  appendOutput('// ▶ Running code...\n', 'sys');
+
+  try {
+    const result = await pyodide.runPythonAsync(code);
+    if (result !== undefined && result !== null) {
+      appendOutput(String(result) + '\n', 'stdout');
+    }
+    appendOutput('\n// ✅ Execution completed\n', 'success');
+  } catch(e) {
+    appendOutput(e.message + '\n', 'error');
+    appendOutput('// ❌ Code error\n', 'sys');
+  }
+}
+
+async function installPackage() {
+  const pkg = document.getElementById('pip-input').value.trim().toLowerCase();
+  if (!pkg) return;
+  if (serverConnected) { await pipWithServer(pkg); return; }
+  if (!pyReady) { showToast('error', '⏳', 'Python not ready', 'Wait for loading'); return; }
+
+  const btn = document.getElementById('btn-pip');
+  btn.disabled = true;
+  btn.textContent = '⏳...';
+  showToast('loading', null, 'pip install ' + pkg, 'Installing...');
+
+  try {
+    await pyodide.loadPackagesFromImports(`import ${pkg}`).catch(() => {});
+    await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
+    if (!installedPkgs.includes(pkg)) {
+      installedPkgs.push(pkg);
+      localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
+    }
+    renderInstalledPkgs();
+    document.getElementById('pip-input').value = '';
+    showToast('success', '✅', 'Installed', pkg + ' is ready to use');
+    appendOutput('✅ Installed: ' + pkg + '\n', 'success');
+  } catch(e) {
+    showToast('error', '❌', 'Install failed', e.message.split('\n')[0]);
+    appendOutput('❌ Failed to install ' + pkg + ': ' + e.message + '\n', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Install';
+  }
+}
+
+async function silentInstall(pkg) {
+  try {
+    await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
+  } catch(e) {}
+}
+
+function removePackage(pkg) {
+  installedPkgs = installedPkgs.filter(p => p !== pkg);
+  localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
+  renderInstalledPkgs();
+  showToast('success', '🗑', 'Removed', pkg);
+}
+
+function renderInstalledPkgs() {
+  const container = document.getElementById('pkg-chips');
+  const empty = document.getElementById('pkg-empty');
+  if (installedPkgs.length === 0) {
+    empty.style.display = 'block';
+    container.querySelectorAll('.pkg-chip').forEach(c => c.remove());
+    return;
+  }
+  empty.style.display = 'none';
+  container.querySelectorAll('.pkg-chip').forEach(c => c.remove());
   installedPkgs.forEach(pkg => {
     const chip = document.createElement('div');
     chip.className = 'pkg-chip';
@@ -1264,39 +1417,37 @@ function handleTab(e) {
   }
 }
 
-function updateLineNums() {}
-
 /* ─── SNIPPETS ─── */
 const SNIPPETS = [
   {
-    title: 'مرحبا بالعالم',
+    title: 'Hello World',
     tag: 'Python',
-    desc: 'أول كود Python — طباعة رسالة وتاريخ اليوم',
+    desc: 'First Python code — print message and current date',
     code: `from datetime import datetime
 
-print("مرحباً من online! 🐍")
-print(f"التاريخ الآن: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")`
+print("Hello from Online! 🐍")
+print(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")`
   },
   {
-    title: 'حساب إحصائي',
+    title: 'Statistical Calculation',
     tag: 'math',
-    desc: 'حسابات رياضية بدون مكتبات خارجية',
+    desc: 'Basic math calculations without external libraries',
     code: `import math
 import statistics
 
 nums = [10, 25, 33, 47, 52, 61, 78, 90]
 
-print(f"القيم: {nums}")
-print(f"المجموع: {sum(nums)}")
-print(f"المتوسط: {statistics.mean(nums):.2f}")
-print(f"الوسيط: {statistics.median(nums)}")
-print(f"الانحراف المعياري: {statistics.stdev(nums):.2f}")
-print(f"الجذر التربيعي لـ 144: {math.sqrt(144)}")`
+print(f"Values: {nums}")
+print(f"Sum: {sum(nums)}")
+print(f"Mean: {statistics.mean(nums):.2f}")
+print(f"Median: {statistics.median(nums)}")
+print(f"Std Dev: {statistics.stdev(nums):.2f}")
+print(f"Square root of 144: {math.sqrt(144)}")`
   },
   {
-    title: 'معالجة JSON',
+    title: 'JSON Handling',
     tag: 'json',
-    desc: 'تحليل وبناء بيانات JSON',
+    desc: 'Parse and build JSON data',
     code: `import json
 
 data = {
@@ -1308,18 +1459,18 @@ data = {
     ]
 }
 
-json_str = json.dumps(data, indent=2, ensure_ascii=False)
+json_str = json.dumps(data, indent=2)
 print("JSON:")
 print(json_str)
 
 parsed = json.loads(json_str)
-print(f"\\nعدد الأحداث: {len(parsed['events'])}")
-print(f"اللعبة: {parsed['game']}")`
+print(f"\nNumber of events: {len(parsed['events'])}")
+print(f"Game: {parsed['game']}")`
   },
   {
-    title: 'تحليل نصوص',
+    title: 'Regex Text Parsing',
     tag: 're',
-    desc: 'استخراج بيانات من نصوص باستخدام Regex',
+    desc: 'Extract data from text using regular expressions',
     code: `import re
 
 text = """
@@ -1330,18 +1481,18 @@ Status: 200 OK
 """
 
 gaid = re.search(r'GAID: ([0-9a-f-]{36})', text)
-print(f"GAID: {gaid.group(1) if gaid else 'لم يُوجد'}")
+print(f"GAID: {gaid.group(1) if gaid else 'Not found'}")
 
 pkg = re.search(r'Package: ([\w.]+)', text)
-print(f"Package: {pkg.group(1) if pkg else 'لم يُوجد'}")
+print(f"Package: {pkg.group(1) if pkg else 'Not found'}")
 
 status = re.search(r'Status: (\d+)', text)
-print(f"Status Code: {status.group(1) if status else 'لم يُوجد'}")`
+print(f"Status Code: {status.group(1) if status else 'Not found'}")`
   },
   {
-    title: 'توليد IDs عشوائية',
+    title: 'Generate Random IDs',
     tag: 'utils',
-    desc: 'توليد GAID و AppsFlyer IDs جديدة عشوائية',
+    desc: 'Generate new random GAID and AppsFlyer IDs',
     code: `import uuid
 import random
 import time
@@ -1354,57 +1505,18 @@ def gen_afid():
     rand = random.randint(1000000000000000000, 9999999999999999999)
     return f"{ts}-{rand}"
 
-print("IDs جديدة:")
+print("New IDs:")
 for i in range(3):
     gaid = gen_gaid()
     afid = gen_afid()
-    print(f"\\n--- مجموعة {i+1} ---")
+    print(f"\n--- Set {i+1} ---")
     print(f"GAID: {gaid}")
     print(f"AFID: {afid}")`
   },
   {
-    title: 'numpy - مصفوفات',
-    tag: 'numpy',
-    desc: 'عمليات على المصفوفات (يتطلب تثبيت numpy)',
-    code: `# قم بتثبيت numpy أولاً من حقل pip أعلاه
-import numpy as np
-
-arr = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-print(f"المصفوفة: {arr}")
-print(f"المتوسط: {np.mean(arr)}")
-print(f"الانحراف المعياري: {np.std(arr):.4f}")
-
-matrix = np.reshape(arr, (2, 5))
-print(f"\\nمصفوفة 2x5:")
-print(matrix)`
-  },
-  {
-    title: 'pandas - تحليل بيانات',
-    tag: 'pandas',
-    desc: 'تحليل بيانات مع pandas (يتطلب تثبيت pandas)',
-    code: `# قم بتثبيت pandas أولاً من حقل pip أعلاه
-import pandas as pd
-
-data = {
-    'Game': ['Coin Master', 'Gardenscapes', 'Match Factory', 'Toon Blast'],
-    'Events_Sent': [45, 32, 67, 28],
-    'Success_Rate': [0.95, 0.88, 0.97, 0.91],
-    'Category': ['other', 'other', 'puzzle', 'other']
-}
-
-df = pd.DataFrame(data)
-print("البيانات:")
-print(df.to_string(index=False))
-
-print(f"\\nمتوسط الأحداث المرسلة: {df['Events_Sent'].mean():.1f}")
-print(f"أعلى معدل نجاح: {df['Success_Rate'].max() * 100:.1f}%")
-print(f"\\nتوزيع الفئات:")
-print(df['Category'].value_counts())`
-  },
-  {
     title: 'AppsFlyer Event Builder',
     tag: 'AF',
-    desc: 'بناء وتحضير بيانات الأحداث بصيغة JSON جاهزة للإرسال',
+    desc: 'Build ready-to-send AppsFlyer event JSON',
     code: `import json
 from datetime import datetime, timezone
 
@@ -1433,8 +1545,8 @@ req = build_event(
     event_name="village_5_complete"
 )
 
-print("الطلب المُحضَّر:")
-print(json.dumps(req, indent=2, ensure_ascii=False))`
+print("Prepared Request:")
+print(json.dumps(req, indent=2))`
   }
 ];
 
@@ -1455,7 +1567,7 @@ function renderSnippets() {
 function loadSnippet(i) {
   document.getElementById('code-editor').value = SNIPPETS[i].code;
   switchPage('python');
-  showToast('success', '📋', 'تم التحميل', SNIPPETS[i].title + ' — اضغط ▶ للتشغيل');
+  showToast('success', '📋', 'Loaded', SNIPPETS[i].title + ' — Press ▶ to run');
 }
 
 if ('serviceWorker' in navigator) {
@@ -1464,4 +1576,4 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-EOF
+ 
