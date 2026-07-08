@@ -11,9 +11,9 @@ app = Flask(__name__)
 CORS(app)
 
 def run_code(code, timeout=30):
-    """تشغيل كود Python في بيئة معزولة"""
+    """Execute Python code in an isolated environment"""
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
-        # استبدال msvcrt بديل بسيط للمتصفح
+        # Replace msvcrt with simple alternative for browser compatibility
         code = code.replace('import msvcrt', '# msvcrt not available on Linux')
         code = code.replace('msvcrt.getch()', 'b" "')
         f.write(code)
@@ -35,7 +35,7 @@ def run_code(code, timeout=30):
     except subprocess.TimeoutExpired:
         return {
             'stdout': '',
-            'stderr': f'⏱ انتهت المهلة بعد {timeout} ثانية',
+            'stderr': f'Timeout after {timeout} seconds',
             'returncode': -1
         }
     except Exception as e:
@@ -47,9 +47,8 @@ def run_code(code, timeout=30):
     finally:
         os.unlink(tmpfile)
 
-
 def install_package(package):
-    """تثبيت مكتبة pip"""
+    """Install a pip package"""
     try:
         result = subprocess.run(
             [sys.executable, '-m', 'pip', 'install', package, '--quiet'],
@@ -58,19 +57,17 @@ def install_package(package):
             timeout=60
         )
         if result.returncode == 0:
-            return {'success': True, 'message': f'✅ تم تثبيت {package}'}
+            return {'success': True, 'message': f'Installed {package}'}
         else:
             return {'success': False, 'message': result.stderr}
     except subprocess.TimeoutExpired:
-        return {'success': False, 'message': '⏱ انتهت المهلة'}
+        return {'success': False, 'message': 'Timeout'}
     except Exception as e:
         return {'success': False, 'message': str(e)}
 
-
 @app.route('/')
 def index():
-    return jsonify({'status': 'ok', 'message': '🐍 Pharaoh Python Server is running!'})
-
+    return jsonify({'status': 'ok', 'message': 'Pharaoh Python Server is running!'})
 
 @app.route('/run', methods=['POST'])
 def run():
@@ -80,7 +77,6 @@ def run():
     result = run_code(data['code'], timeout=data.get('timeout', 30))
     return jsonify(result)
 
-
 @app.route('/pip', methods=['POST'])
 def pip_install():
     data = request.get_json()
@@ -88,7 +84,6 @@ def pip_install():
         return jsonify({'error': 'No package provided'}), 400
     result = install_package(data['package'])
     return jsonify(result)
-
 
 @app.route('/pip/list', methods=['GET'])
 def pip_list():
@@ -102,8 +97,7 @@ def pip_list():
     except:
         return jsonify({'packages': []})
 
-
-# ═══ مسار البروكسي الجديد لاستقبال أحداث الألعاب وتمريرها وتخطي الـ CORS ═══
+# Proxy endpoint for receiving game events and forwarding to AppsFlyer (CORS bypass)
 @app.route('/api/send-event', methods=['POST'])
 def proxy_send_event():
     data = request.get_json()
@@ -132,7 +126,6 @@ def proxy_send_event():
             'success': False,
             'error': str(e)
         }), 500
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
