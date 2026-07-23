@@ -2,676 +2,876 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0a14">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0E14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="online">
+<meta name="apple-mobile-web-app-title" content="Online">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Online — لوحة الإرسال</title>
 <style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   لوحة رصد: حبر أزرق عميق + نحاس دافئ + إشارة حيّة
+   القاعدة: واجهة بخط إنساني، بيانات بخط آلي. التباين مقصود.
+═══════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #0a0a14;
-  --surface: #11111e;
-  --card: #191928;
-  --border: #252540;
-  --accent: #e8b86d;
-  --accent2: #7c6af5;
-  --accent3: #5de8a0;
-  --red: #e85d5d;
-  --green: #5de8a0;
-  --blue: #5db8e8;
-  --text: #e8e8f0;
-  --muted: #6666aa;
-  --radius: 12px;
-  --py: #3572A5;
-  --py2: #FFD43B;
+  --ink:      #0B0E14;
+  --slate:    #131822;
+  --raised:   #1B2230;
+  --raised-2: #222B3C;
+  --line:     #273246;
+  --line-soft:#1E2635;
+
+  --brass:    #E5A64B;
+  --brass-dim:#8A6528;
+  --signal:   #3FD9A4;
+  --signal-dim:#1D5F48;
+  --alert:    #FF6B6B;
+  --alert-dim:#5E2626;
+  --violet:   #8B7CF6;
+
+  --text:     #E6EAF2;
+  --text-2:   #A8B2C4;
+  --muted:    #6B7789;
+
+  --r-sm: 8px;
+  --r:    12px;
+  --r-lg: 18px;
+
+  --sans: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --nav-h: 62px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-  background: var(--bg);
+  background: var(--ink);
   color: var(--text);
-  font-family: 'Courier New', monospace;
-  min-height: 100vh;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 100dvh;
   overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ═══ HEADER ═══ */
-.header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+/* radial ambience — ثابت، بلا حركة */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(900px 420px at 85% -8%, rgba(229,166,75,.07), transparent 62%),
+    radial-gradient(700px 380px at 8% 104%, rgba(139,124,246,.06), transparent 60%);
+  pointer-events: none;
+}
+
+button, input, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+input:focus-visible, button:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--brass); outline-offset: 2px;
+}
+.mono { font-family: var(--mono); font-variant-ligatures: none; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT SPLASH — يظهر لحظة واحدة أثناء التحقق الصامت
+═══════════════════════════════════════════════════════════════ */
+#boot {
+  position: fixed; inset: 0; z-index: 900;
+  background: var(--ink);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  transition: opacity .3s;
+}
+#boot.gone { opacity: 0; pointer-events: none; }
+.boot-mark {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .32em; color: var(--brass);
+}
+.boot-bar {
+  width: 120px; height: 2px; border-radius: 2px;
+  background: var(--line); overflow: hidden;
+}
+.boot-bar::after {
+  content: ''; display: block; width: 40%; height: 100%;
+  background: var(--brass); animation: slide 1s ease-in-out infinite;
+}
+@keyframes slide { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+
+/* شريط خطأ داخل التطبيق — بديل شاشة الدخول */
+.banner {
+  display: none;
+  margin: 12px 16px 0; padding: 11px 13px;
+  background: var(--alert-dim); border: 1px solid var(--alert);
+  border-radius: var(--r-sm); font-size: 12.5px; color: #FFC9C9;
+}
+.banner.show { display: block; }
+.banner button {
+  display: block; margin-top: 8px;
+  font-size: 12px; font-weight: 600; color: var(--alert);
+  text-decoration: underline;
+}
+
+.field { margin-bottom: 14px; }
+.field-label {
+  display: block; font-size: 11px; font-weight: 500;
+  color: var(--text-2); margin-bottom: 6px; letter-spacing: .02em;
+}
+.input {
+  width: 100%;
+  background: var(--slate);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
   padding: 12px 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .18s, background .18s;
+}
+.input::placeholder { color: var(--muted); }
+.input:focus { border-color: var(--brass); background: var(--raised); }
+.input.mono { font-size: 12.5px; direction: ltr; text-align: left; }
+
+.btn {
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: var(--r);
+  font-weight: 600; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .12s, filter .18s, opacity .18s;
+}
+.btn:active { transform: scale(.985); }
+.btn:disabled { opacity: .45; pointer-events: none; }
+.btn-primary { background: var(--brass); color: #1A1305; }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-ghost { background: var(--raised); border: 1px solid var(--line); color: var(--text-2); }
+.btn-danger { background: var(--alert-dim); border: 1px solid var(--alert); color: var(--alert); }
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER + STATUS RAIL (العنصر المميّز)
+   شريط لا يكذب: يعرض حالة الخادم والجلسة وآخر إرسال دائماً.
+═══════════════════════════════════════════════════════════════ */
+.header {
   position: sticky; top: 0; z-index: 200;
+  background: rgba(11,14,20,.86);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.header-top {
   display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px 9px;
 }
-.header-title { font-size: 14px; font-weight: bold; color: var(--accent); letter-spacing: 2px; }
-.header-right { display: flex; gap: 8px; align-items: center; }
-.header-badge {
-  background: var(--accent2); color: white;
-  font-size: 9px; padding: 3px 7px; border-radius: 20px; letter-spacing: 1px;
+.brand { display: flex; align-items: baseline; gap: 9px; }
+.brand-name {
+  font-size: 16px; font-weight: 600; letter-spacing: -.01em;
 }
-.py-badge {
-  background: var(--py); color: var(--py2);
-  font-size: 9px; padding: 3px 7px; border-radius: 20px; letter-spacing: 1px;
-  font-weight: bold;
+.brand-tag {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 500;
+  color: var(--brass); letter-spacing: .18em;
+}
+.user-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 11px 4px 5px;
+  font-size: 11.5px; color: var(--text-2);
+}
+.user-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--brass-dim); color: var(--brass);
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  display: grid; place-items: center;
 }
 
-/* ═══ NAV BAR (bottom) ═══ */
-.nav-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+/* الشريط */
+.rail {
+  display: flex; align-items: stretch;
+  border-top: 1px solid var(--line-soft);
+  background: rgba(19,24,34,.6);
+}
+.rail-seg {
+  flex: 1; min-width: 0;
+  padding: 7px 12px;
+  display: flex; align-items: center; gap: 7px;
+  border-left: 1px solid var(--line-soft);
+}
+.rail-seg:last-child { border-left: none; }
+.rail-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0;
+  transition: background .25s, box-shadow .25s;
+}
+.rail-dot.ok    { background: var(--signal); box-shadow: 0 0 0 3px rgba(63,217,164,.14); }
+.rail-dot.err   { background: var(--alert);  box-shadow: 0 0 0 3px rgba(255,107,107,.14); }
+.rail-dot.wait  { background: var(--brass);  animation: pulse 1.1s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.rail-body { min-width: 0; }
+.rail-key {
+  display: block; font-family: var(--mono);
+  font-size: 8.5px; letter-spacing: .14em; color: var(--muted);
+}
+.rail-val {
+  display: block; font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGES + NAV
+═══════════════════════════════════════════════════════════════ */
+.page { display: none; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 12px); }
+.page.active { display: block; }
+
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
   display: flex;
-  padding-bottom: env(safe-area-inset-bottom);
-  z-index: 200;
+  background: rgba(11,14,20,.92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line-soft);
+  padding-bottom: var(--safe-b);
 }
 .nav-item {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 10px 4px;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 9px;
-  letter-spacing: 0.5px;
-  transition: color 0.2s;
-  gap: 4px;
-  border-top: 2px solid transparent;
+  align-items: center; justify-content: center; gap: 3px;
+  padding: 9px 4px 8px;
+  color: var(--muted); font-size: 10px; font-weight: 500;
+  position: relative; transition: color .18s;
 }
-.nav-item.active { color: var(--accent); border-top-color: var(--accent); }
-.nav-item svg { width: 20px; height: 20px; }
-
-/* ═══ PAGES ═══ */
-.page { display: none; padding-bottom: 70px; }
-.page.active { display: block; }
-
-/* ═══ IDS BAR ═══ */
-.ids-bar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 8px 12px; display: flex; gap: 6px; align-items: center;
+.nav-item svg { width: 19px; height: 19px; }
+.nav-item.active { color: var(--brass); }
+.nav-item.active::before {
+  content: ''; position: absolute; top: 0; left: 26%; right: 26%;
+  height: 2px; background: var(--brass); border-radius: 0 0 3px 3px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SHARED BLOCKS
+═══════════════════════════════════════════════════════════════ */
+.section-label {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .2em; color: var(--muted);
+  padding: 18px 16px 8px;
+}
+.card {
+  background: var(--slate);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+}
+.stack { padding: 0 16px; display: flex; flex-direction: column; gap: 9px; }
+
+.row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 13px 14px;
+}
+.row-label { font-size: 13px; }
+.row-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.row .input { width: 152px; padding: 8px 10px; font-size: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   IDENTITY STRIP (GAID / AFID)
+═══════════════════════════════════════════════════════════════ */
+.ids { display: flex; gap: 8px; padding: 12px 16px 4px; }
 .id-chip {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 8px;
-  font-size: 9px; color: var(--muted);
-  cursor: pointer; flex: 1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  transition: border-color 0.2s;
+  flex: 1; min-width: 0; text-align: right;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm); padding: 8px 11px;
+  transition: border-color .18s;
 }
-.id-chip:active { border-color: var(--accent); }
-.id-label { color: var(--accent); font-size: 8px; display: block; margin-bottom: 1px; }
+.id-chip:active { border-color: var(--brass); }
+.id-chip-key {
+  display: block; font-family: var(--mono);
+  font-size: 8.5px; letter-spacing: .16em; color: var(--brass);
+  margin-bottom: 2px;
+}
+.id-chip-val {
+  display: block; font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); direction: ltr; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
-/* ═══ FILTER TABS ═══ */
-.tabs {
-  display: flex; background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 6px; overflow-x: auto;
-  scrollbar-width: none;
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH + FILTERS
+═══════════════════════════════════════════════════════════════ */
+.search-wrap { padding: 10px 16px 8px; }
+.search-box { position: relative; }
+.search-box svg {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 15px; height: 15px; color: var(--muted); pointer-events: none;
 }
-.tabs::-webkit-scrollbar { display: none; }
-.tab {
-  flex-shrink: 0; text-align: center;
-  padding: 10px 10px; font-size: 10px;
-  color: var(--muted); cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s; white-space: nowrap;
-}
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.search-box .input { padding-right: 36px; }
 
-/* ═══ SEARCH ═══ */
-.search-bar {
-  padding: 10px 12px; background: var(--bg);
-  position: sticky; top: 49px; z-index: 100;
+.chips {
+  display: flex; gap: 7px; padding: 2px 16px 10px;
+  overflow-x: auto; scrollbar-width: none;
 }
-.search-input {
-  width: 100%; background: var(--card);
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 9px 12px; color: var(--text);
-  font-size: 12px; font-family: inherit; outline: none;
-  transition: border-color 0.2s; direction: rtl;
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; padding: 6px 13px;
+  border-radius: 999px; font-size: 12px; font-weight: 500;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  color: var(--text-2); transition: all .18s;
 }
-.search-input:focus { border-color: var(--accent2); }
-.search-input::placeholder { color: var(--muted); }
+.chip.active {
+  background: var(--brass); border-color: var(--brass); color: #1A1305;
+}
 
-/* ═══ GAMES GRID ═══ */
-.games-grid {
-  padding: 0 10px 10px;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+/* ═══════════════════════════════════════════════════════════════
+   GAME LIST — قائمة لا شبكة: الحزمة نصّ آليّ يجب أن يُقرأ
+═══════════════════════════════════════════════════════════════ */
+.game-list { padding: 0 16px; display: flex; flex-direction: column; gap: 7px; }
+.game-item {
+  width: 100%; text-align: right;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  transition: border-color .16s, transform .12s, background .16s;
 }
-.game-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px 10px;
-  cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden;
+.game-item:active { transform: scale(.99); border-color: var(--brass); background: var(--raised); }
+.game-idx {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: var(--r-sm);
+  background: var(--raised); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  color: var(--brass);
 }
-.game-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--accent2); opacity: 0; transition: opacity 0.2s;
+.game-meta { flex: 1; min-width: 0; }
+.game-name {
+  font-size: 13.5px; font-weight: 500; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.game-card:active { transform: scale(0.97); border-color: var(--accent2); }
-.game-card:active::before { opacity: 1; }
-.game-num { font-size: 8px; color: var(--accent); margin-bottom: 3px; letter-spacing: 1px; }
-.game-name { font-size: 11px; color: var(--text); font-weight: bold; line-height: 1.3; margin-bottom: 4px; }
-.game-pkg { font-size: 8px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.no-results { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; display: none; }
+.game-pkg {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  direction: ltr; text-align: left; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.game-cat {
+  flex-shrink: 0; font-family: var(--mono); font-size: 8.5px;
+  letter-spacing: .1em; color: var(--muted);
+  border: 1px solid var(--line-soft); border-radius: 999px;
+  padding: 2px 7px;
+}
 
-/* ═══ GAME DETAiL ═══ */
+.empty {
+  text-align: center; padding: 48px 24px; color: var(--muted); font-size: 13px;
+}
+.empty b { display: block; color: var(--text-2); font-weight: 500; margin-bottom: 4px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DETAIL
+═══════════════════════════════════════════════════════════════ */
 .view { display: none; }
 .view.active { display: block; }
-.back-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 12px 14px; background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  cursor: pointer; color: var(--accent); font-size: 12px;
-}
-.detail-header { padding: 16px 14px; background: var(--card); border-bottom: 1px solid var(--border); }
-.detail-game-name { font-size: 16px; font-weight: bold; color: var(--accent); margin-bottom: 4px; }
-.detail-pkg { font-size: 10px; color: var(--muted); }
-.detail-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-.field-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; letter-spacing: 1px; }
-.template-display {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px 12px;
-  font-size: 12px; color: var(--accent2);
-  font-family: inherit;
-}
-.level-input {
-  width: 100%; background: var(--card);
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 10px 12px; color: var(--text);
-  font-size: 13px; font-family: inherit; outline: none;
-  transition: border-color 0.2s; text-align: center;
-}
-.level-input:focus { border-color: var(--accent); }
-.preview-text { font-size: 11px; color: var(--accent3); min-height: 18px; text-align: center; }
-.btn-row { display: flex; gap: 8px; }
-.btn {
-  flex: 1; padding: 13px; border: none; border-radius: 10px;
-  font-family: inherit; font-size: 12px; font-weight: bold;
-  cursor: pointer; letter-spacing: 1px; transition: all 0.15s;
-}
-.btn-primary { background: var(--accent2); color: white; }
-.btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--muted); }
-.btn:active { transform: scale(0.96); }
-.log-section-title { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; }
-.log-list { display: flex; flex-direction: column; gap: 6px; }
-.log-entry {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 8px 10px;
-  display: flex; align-items: center; gap: 8px;
-}
-.log-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.log-dot.success { background: var(--green); }
-.log-dot.error { background: var(--red); }
-.log-time { font-size: 9px; color: var(--muted); flex-shrink: 0; }
-.log-text { font-size: 10px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.log-status { font-size: 9px; color: var(--muted); flex-shrink: 0; }
-.log-empty { text-align: center; padding: 20px; color: var(--muted); font-size: 11px; }
 
-/* ═══ PYTHON TERMINAL ═══ */
-.py-page { padding: 0; padding-bottom: 70px; }
-.py-toolbar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 10px 12px; display: flex; gap: 8px; align-items: center;
-  flex-wrap: wrap;
+.back {
+  display: flex; align-items: center; gap: 7px;
+  padding: 12px 16px; color: var(--brass); font-size: 13px; font-weight: 500;
 }
-.py-status {
-  font-size: 10px; padding: 4px 10px;
-  border-radius: 20px; letter-spacing: 1px; font-weight: bold;
-}
-.py-status.loading { background: #3a3020; color: var(--py2); }
-.py-status.ready { background: #1a3020; color: var(--green); }
-.py-status.error { background: #3a1020; color: var(--red); }
-.py-btn {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px;
-  color: var(--text); font-size: 10px; font-family: inherit;
-  cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
-}
-.py-btn.primary { background: var(--accent2); border-color: var(--accent2); color: white; }
-.py-btn.green { background: #1a4a2a; border-color: var(--green); color: var(--green); }
-.py-btn:active { transform: scale(0.95); }
-.py-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.back svg { width: 15px; height: 15px; }
 
-/* server bar */
-.server-bar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 8px 12px; display: flex; gap: 8px; align-items: center;
-}
-.server-input {
-  flex: 1; background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 7px 10px; color: var(--text);
-  font-size: 10px; font-family: inherit; outline: none; direction: ltr;
-  transition: border-color 0.2s;
-}
-.server-input:focus { border-color: var(--accent); }
-.server-input::placeholder { color: var(--muted); }
-.server-connect-btn {
-  background: var(--accent); border: none; border-radius: 8px;
-  padding: 7px 12px; color: #000; font-size: 10px;
-  font-family: inherit; font-weight: bold; cursor: pointer;
-  white-space: nowrap; transition: all 0.15s;
-}
-.server-connect-btn:active { transform: scale(0.95); }
-.server-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--muted); flex-shrink: 0; transition: background 0.3s;
-}
-.server-dot.ok { background: var(--green); }
-.server-dot.err { background: var(--red); }
-
-/* pip installer */
-.pip-bar {
-  background: var(--card); border-bottom: 1px solid var(--border);
-  padding: 8px 12px; display: flex; gap: 8px; align-items: center;
-}
-.pip-input {
-  flex: 1; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; padding: 7px 10px;
-  color: var(--text); font-size: 11px; font-family: inherit; outline: none;
-  transition: border-color 0.2s;
-}
-.pip-input:focus { border-color: var(--py2); }
-.pip-input::placeholder { color: var(--muted); }
-.pip-btn {
-  background: var(--py); border: none; border-radius: 8px;
-  padding: 7px 14px; color: var(--py2);
-  font-size: 11px; font-family: inherit; font-weight: bold;
-  cursor: pointer; letter-spacing: 1px; transition: all 0.15s;
-  white-space: nowrap;
-}
-.pip-btn:active { transform: scale(0.95); }
-.pip-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-/* installed packages */
-.pkg-chips {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 6px 12px; display: flex; gap: 6px; flex-wrap: wrap; min-height: 36px;
-}
-.pkg-chip {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 20px; padding: 3px 8px;
-  font-size: 9px; color: var(--accent3);
-  display: flex; align-items: center; gap: 4px;
-}
-.pkg-chip-remove {
-  color: var(--muted); cursor: pointer; font-size: 11px; line-height: 1;
-}
-.pkg-empty { font-size: 9px; color: var(--muted); padding: 6px 0; }
-
-/* code editor */
-.editor-container {
-  position: relative;
-  background: var(--card);
-}
-.code-editor {
-  width: 100%; min-height: 200px;
-  background: #0d0d18; border: none;
-  border-bottom: 1px solid var(--border);
-  color: #e8e8f0; font-size: 12px;
-  font-family: 'Courier New', monospace;
-  padding: 12px; outline: none; resize: vertical;
-  direction: ltr; text-align: left; line-height: 1.5;
-  tab-size: 2;
-}
-.code-editor::placeholder { color: var(--muted); }
-.line-nums {
-  position: absolute; top: 0; right: 0;
-  padding: 12px 6px; font-size: 12px;
-  color: var(--muted); line-height: 1.5;
-  pointer-events: none; user-select: none;
-  font-family: 'Courier New', monospace;
-  text-align: right; min-width: 30px;
-  opacity: 0.4;
+.detail-head { padding: 4px 16px 16px; }
+.detail-name { font-size: 20px; font-weight: 600; letter-spacing: -.015em; }
+.detail-pkg {
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  direction: ltr; text-align: left; margin-top: 3px;
 }
 
-/* output */
-.output-area {
-  background: #050510; min-height: 160px;
-  padding: 10px 12px;
-  font-size: 11px; font-family: 'Courier New', monospace;
-  line-height: 1.6; direction: ltr; text-align: left;
-  overflow-y: auto; max-height: 300px;
-  white-space: pre-wrap; word-break: break-all;
+.payload {
+  margin: 0 16px 14px;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); overflow: hidden;
 }
-.out-line-stdout { color: #c8f0c8; }
-.out-line-stderr { color: #f0a0a0; }
-.out-line-info { color: #a0c0f0; }
-.out-line-success { color: var(--green); }
-.out-line-error { color: var(--red); }
-.out-line-sys { color: var(--muted); font-style: italic; }
+.payload-head {
+  padding: 9px 14px; border-bottom: 1px solid var(--line-soft);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; color: var(--muted);
+}
+.payload-body { padding: 13px 14px; }
+.payload-tmpl {
+  font-family: var(--mono); font-size: 13px; color: var(--violet);
+  direction: ltr; text-align: left; word-break: break-all;
+}
+.payload-out {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-family: var(--mono); font-size: 13px; color: var(--signal);
+  direction: ltr; text-align: left; word-break: break-all; min-height: 20px;
+}
+.payload-out:empty::before { content: '—'; color: var(--muted); }
 
-/* ═══ SNIPPETS PAGE ═══ */
-.snippet-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-.snippet-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer;
-  transition: border-color 0.2s;
+.stepper { display: flex; gap: 8px; align-items: stretch; margin: 0 16px 14px; }
+.stepper .input { flex: 1; text-align: center; font-family: var(--mono); font-size: 16px; }
+.step-btn {
+  width: 46px; border-radius: var(--r);
+  background: var(--raised); border: 1px solid var(--line);
+  color: var(--text-2); font-size: 18px; font-weight: 500;
+  transition: background .16s;
 }
-.snippet-card:active { border-color: var(--accent2); }
-.snippet-header {
-  padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
-}
-.snippet-title { font-size: 12px; color: var(--accent); font-weight: bold; }
-.snippet-tag {
-  font-size: 8px; padding: 2px 7px; border-radius: 20px;
-  background: var(--surface); color: var(--muted); letter-spacing: 0.5px;
-}
-.snippet-desc { padding: 0 12px 10px; font-size: 10px; color: var(--muted); line-height: 1.4; }
-.snippet-preview {
-  background: #050510; padding: 8px 12px;
-  font-size: 10px; color: var(--muted);
-  font-family: 'Courier New', monospace;
-  direction: ltr; text-align: left; line-height: 1.4;
-  overflow: hidden; max-height: 60px;
-  border-top: 1px solid var(--border);
-}
+.step-btn:active { background: var(--raised-2); }
 
-/* ═══ SETTINGS PAGE ═══ */
-.settings-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-.settings-section { font-size: 9px; color: var(--muted); letter-spacing: 2px; padding: 8px 0 4px; }
-.settings-item {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.settings-label { font-size: 12px; color: var(--text); }
-.settings-sublabel { font-size: 10px; color: var(--muted); margin-top: 2px; }
-.toggle {
-  width: 42px; height: 24px; border-radius: 12px;
-  background: var(--border); position: relative; cursor: pointer;
-  transition: background 0.3s; flex-shrink: 0; border: none;
-}
-.toggle.on { background: var(--accent2); }
-.toggle::after {
-  content: ''; position: absolute; width: 18px; height: 18px;
-  border-radius: 50%; background: white; top: 3px; left: 3px;
-  transition: left 0.3s;
-}
-.toggle.on::after { left: 21px; }
-.settings-input {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; padding: 5px 10px;
-  color: var(--text); font-size: 11px; font-family: inherit;
-  outline: none; width: 140px; text-align: center;
-}
+.actions { display: flex; gap: 9px; padding: 0 16px 6px; }
+.actions .btn { flex: 1; }
 
-/* ═══ MODAL ═══ */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px; width: calc(100% - 40px);
-  max-width: 380px; display: flex; flex-direction: column; gap: 12px;
-}
-.modal-title { font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
-.modal-input {
-  width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px 12px;
-  color: var(--text); font-size: 11px; font-family: inherit; outline: none;
-  direction: ltr; text-align: left;
-}
-.modal-input:focus { border-color: var(--accent); }
-.modal-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-
-/* ═══ TOAST ═══ */
-.toast {
-  position: fixed; bottom: 80px; left: 12px; right: 12px; z-index: 300;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px;
+/* ═══════════════════════════════════════════════════════════════
+   LOG
+═══════════════════════════════════════════════════════════════ */
+.log { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+.log-row {
   display: flex; align-items: center; gap: 10px;
-  transform: translateY(20px); opacity: 0;
-  transition: all 0.25s; pointer-events: none;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm); padding: 9px 12px;
+  border-right: 2px solid var(--line);
 }
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: var(--green); }
-.toast.error { border-color: var(--red); }
-.toast.loading { border-color: var(--accent2); }
-.toast-icon { font-size: 18px; flex-shrink: 0; }
+.log-row.ok  { border-right-color: var(--signal); }
+.log-row.bad { border-right-color: var(--alert); }
+.log-time { font-family: var(--mono); font-size: 10px; color: var(--muted); flex-shrink: 0; }
+.log-name {
+  flex: 1; min-width: 0; font-family: var(--mono); font-size: 11px;
+  direction: ltr; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.log-code {
+  flex-shrink: 0; font-family: var(--mono); font-size: 10px; font-weight: 600;
+}
+.log-row.ok  .log-code { color: var(--signal); }
+.log-row.bad .log-code { color: var(--alert); }
+
+/* ═══════════════════════════════════════════════════════════════
+   PYTHON
+═══════════════════════════════════════════════════════════════ */
+.toolbar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 12px 16px 10px; flex-wrap: wrap;
+}
+.tool-btn {
+  padding: 7px 13px; border-radius: var(--r-sm);
+  background: var(--raised); border: 1px solid var(--line);
+  color: var(--text-2); font-size: 12px; font-weight: 500;
+  transition: background .16s;
+}
+.tool-btn:active { background: var(--raised-2); }
+.tool-btn.accent { background: var(--brass); border-color: var(--brass); color: #1A1305; }
+.tool-btn:disabled { opacity: .4; pointer-events: none; }
+
+.runner-tag {
+  margin-right: auto;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  color: var(--muted); border: 1px solid var(--line-soft);
+  border-radius: 999px; padding: 3px 9px;
+}
+
+.pip { display: flex; gap: 8px; padding: 0 16px 12px; }
+.pip .input { flex: 1; direction: ltr; text-align: left; font-family: var(--mono); font-size: 12px; }
+.pip .tool-btn { flex-shrink: 0; }
+
+.pkgs { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 12px; }
+.pkg {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--signal);
+  background: rgba(63,217,164,.07); border: 1px solid var(--signal-dim);
+  border-radius: 999px; padding: 3px 9px;
+}
+.pkg button { color: var(--muted); font-size: 13px; line-height: 1; }
+
+.editor {
+  width: 100%; min-height: 210px;
+  background: #080B11;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.65;
+  padding: 14px; outline: none; resize: vertical;
+  direction: ltr; text-align: left; tab-size: 2;
+  transition: border-color .18s;
+}
+.editor:focus { border-color: var(--brass); }
+.editor::placeholder { color: var(--muted); }
+
+.console {
+  background: #080B11;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  padding: 13px 14px;
+  min-height: 150px; max-height: 320px; overflow-y: auto;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.7;
+  direction: ltr; text-align: left;
+  white-space: pre-wrap; word-break: break-word;
+}
+.c-out  { color: #CFE7D4; }
+.c-err  { color: #FFA8A8; }
+.c-note { color: var(--muted); font-style: italic; }
+.c-ok   { color: var(--signal); }
+.c-bad  { color: var(--alert); }
+
+/* ═══════════════════════════════════════════════════════════════
+   SNIPPETS
+═══════════════════════════════════════════════════════════════ */
+.snip {
+  width: 100%; text-align: right;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); overflow: hidden;
+  transition: border-color .16s;
+}
+.snip:active { border-color: var(--violet); }
+.snip-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding: 12px 14px 5px;
+}
+.snip-title { font-size: 13.5px; font-weight: 500; }
+.snip-tag {
+  flex-shrink: 0; font-family: var(--mono); font-size: 9px;
+  letter-spacing: .1em; color: var(--violet);
+  border: 1px solid rgba(139,124,246,.3); border-radius: 999px; padding: 2px 8px;
+}
+.snip-desc { padding: 0 14px 11px; font-size: 12px; color: var(--muted); }
+.snip-code {
+  background: #080B11; border-top: 1px solid var(--line-soft);
+  padding: 10px 14px;
+  font-family: var(--mono); font-size: 10px; line-height: 1.6;
+  color: var(--muted); direction: ltr; text-align: left;
+  max-height: 62px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+          mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS
+═══════════════════════════════════════════════════════════════ */
+.diag {
+  margin: 0 16px; padding: 12px 14px;
+  background: #080B11; border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.75;
+  color: var(--text-2); direction: ltr; text-align: left;
+  max-height: 210px; overflow-y: auto;
+  white-space: pre-wrap; word-break: break-word;
+}
+.diag-line-err { color: var(--alert); }
+.diag-line-ok  { color: var(--signal); }
+.diag-line-dim { color: var(--muted); }
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(6,8,12,.72); backdrop-filter: blur(6px);
+  display: none; align-items: flex-end; justify-content: center;
+}
+.overlay.open { display: flex; }
+.sheet {
+  width: 100%; max-width: 460px;
+  background: var(--slate);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 18px calc(20px + var(--safe-b));
+  animation: rise .22s cubic-bezier(.22,.9,.3,1);
+}
+@keyframes rise { from { transform: translateY(18px); opacity: 0; } }
+.sheet-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.sheet-actions { display: flex; gap: 9px; margin-top: 18px; }
+.sheet-actions .btn { flex: 1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed; z-index: 400;
+  bottom: calc(var(--nav-h) + var(--safe-b) + 12px);
+  left: 14px; right: 14px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-right: 3px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 11px;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .22s, transform .22s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.ok   { border-right-color: var(--signal); }
+.toast.bad  { border-right-color: var(--alert); }
+.toast.wait { border-right-color: var(--brass); }
 .toast-body { flex: 1; min-width: 0; }
-.toast-title { font-size: 12px; font-weight: bold; color: var(--text); }
-.toast-detail { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spinner {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2px solid var(--border); border-top-color: var(--accent2);
-  animation: spin 0.6s linear infinite;
+.toast-title { font-size: 13px; font-weight: 500; }
+.toast-detail {
+  font-size: 11.5px; color: var(--muted); margin-top: 1px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.spin {
+  width: 16px; height: 16px; flex-shrink: 0; border-radius: 50%;
+  border: 2px solid var(--line); border-top-color: var(--brass);
+  animation: spin .65s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ═══ PAGE TITLE BAR ═══ */
-.page-titlebar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 10px 14px; font-size: 11px; color: var(--muted); letter-spacing: 2px;
-}
-
-/* scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.toast-glyph { font-size: 16px; flex-shrink: 0; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-title">⚡ Online</div>
-  <div class="header-right">
-    <span class="py-badge" id="py-badge">🐍 Loading...</span>
-    <span class="header-badge">v17.0</span>
+<!-- ═══════════ BOOT ═══════════ -->
+<div id="boot">
+  <div class="boot-mark">ONLINE / DISPATCH</div>
+  <div class="boot-bar"></div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+
+  <header class="header">
+    <div class="header-top">
+      <div class="brand">
+        <span class="brand-name">Online</span>
+        <span class="brand-tag">DISPATCH</span>
+      </div>
+      <div class="user-pill">
+        <span class="user-dot" id="ui-initial">—</span>
+        <span id="ui-user">—</span>
+      </div>
+    </div>
+
+    <!-- الشريط: الحالة الحقيقية، دائماً -->
+    <div class="rail">
+      <div class="rail-seg">
+        <span class="rail-dot" id="rail-srv-dot"></span>
+        <span class="rail-body">
+          <span class="rail-key">SERVER</span>
+          <span class="rail-val" id="rail-srv-val">—</span>
+        </span>
+      </div>
+      <div class="rail-seg">
+        <span class="rail-dot" id="rail-auth-dot"></span>
+        <span class="rail-body">
+          <span class="rail-key">SESSION</span>
+          <span class="rail-val" id="rail-auth-val">—</span>
+        </span>
+      </div>
+      <div class="rail-seg">
+        <span class="rail-dot" id="rail-last-dot"></span>
+        <span class="rail-body">
+          <span class="rail-key">LAST</span>
+          <span class="rail-val" id="rail-last-val">—</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <!-- ───── GAMES ───── -->
+  <section class="page active" id="page-games">
+    <div id="view-list" class="view active">
+      <div class="ids">
+        <button class="id-chip" onclick="openIds()">
+          <span class="id-chip-key">GAID</span>
+          <span class="id-chip-val" id="ui-gaid">—</span>
+        </button>
+        <button class="id-chip" onclick="openIds()">
+          <span class="id-chip-key">AF ID</span>
+          <span class="id-chip-val" id="ui-afid">—</span>
+        </button>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input class="input" id="in-search" placeholder="ابحث بالاسم أو الحزمة" oninput="applyFilters()">
+        </div>
+      </div>
+
+      <div class="chips" id="chips"></div>
+      <div class="game-list" id="game-list"></div>
+      <div class="empty" id="no-results" style="display:none">
+        <b>لا نتائج</b>
+        جرّب كلمة أقصر أو أزل التصنيف.
+      </div>
+    </div>
+
+    <div id="view-detail" class="view">
+      <button class="back" onclick="showView('view-list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        كل الألعاب
+      </button>
+
+      <div class="detail-head">
+        <div class="detail-name" id="d-name"></div>
+        <div class="detail-pkg" id="d-pkg"></div>
+      </div>
+
+      <div class="payload">
+        <div class="payload-head">EVENT TEMPLATE</div>
+        <div class="payload-body">
+          <div class="payload-tmpl" id="d-tmpl"></div>
+          <div class="payload-out" id="d-preview"></div>
+        </div>
+      </div>
+
+      <div class="stepper" id="d-stepper">
+        <button class="step-btn" onclick="bumpLevel(-1)">−</button>
+        <input class="input" id="in-level" type="number" min="1" inputmode="numeric" placeholder="رقم المستوى" oninput="renderPreview()">
+        <button class="step-btn" onclick="bumpLevel(1)">+</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="dispatchLevel()">إرسال الحدث</button>
+        <button class="btn btn-ghost" onclick="dispatchPurchase()">إرسال شراء</button>
+      </div>
+
+      <div class="section-label">سجل الإرسال</div>
+      <div class="log" id="log">
+        <div class="empty"><b>لا إرسال بعد</b>أول حدث سيظهر هنا مع رمز الاستجابة.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───── PYTHON ───── -->
+  <section class="page" id="page-python">
+    <div class="toolbar">
+      <button class="tool-btn accent" id="btn-run" onclick="runCode()">تشغيل</button>
+      <button class="tool-btn" onclick="document.getElementById('editor').value=''">مسح الكود</button>
+      <button class="tool-btn" onclick="clearConsole()">مسح المخرجات</button>
+      <span class="runner-tag" id="runner-tag">RUNNER: —</span>
+    </div>
+
+    <div class="pip">
+      <input class="input" id="in-pip" placeholder="numpy, pandas, requests…" dir="ltr" spellcheck="false">
+      <button class="tool-btn" id="btn-pip" onclick="installPkg()">تثبيت</button>
+    </div>
+
+    <div class="pkgs" id="pkgs"></div>
+
+    <div class="stack">
+      <textarea class="editor" id="editor" spellcheck="false" placeholder="print('مرحباً')" onkeydown="handleTab(event)"></textarea>
+    </div>
+
+    <div class="section-label">المخرجات</div>
+    <div class="stack">
+      <div class="console" id="console"><span class="c-note">// جاهز</span></div>
+    </div>
+  </section>
+
+  <!-- ───── SNIPPETS ───── -->
+  <section class="page" id="page-snippets">
+    <div class="section-label">أمثلة جاهزة</div>
+    <div class="stack" id="snips"></div>
+  </section>
+
+  <!-- ───── SETTINGS ───── -->
+  <section class="page" id="page-settings">
+    <div class="section-label">الخادم</div>
+    <div class="stack">
+      <div class="card row">
+        <div>
+          <div class="row-label">العنوان</div>
+          <div class="row-sub">خادم Railway</div>
+        </div>
+        <input class="input mono" id="set-server" dir="ltr" spellcheck="false">
+      </div>
+      <button class="btn btn-ghost" onclick="checkServer(true)">فحص الاتصال الآن</button>
+    </div>
+
+    <div class="section-label">معرّفات الجهاز</div>
+    <div class="stack">
+      <div class="card row">
+        <div>
+          <div class="row-label">GAID</div>
+          <div class="row-sub">Google Advertising ID</div>
+        </div>
+        <input class="input mono" id="set-gaid" dir="ltr" spellcheck="false" oninput="saveId('gaid')">
+      </div>
+      <div class="card row">
+        <div>
+          <div class="row-label">AppsFlyer ID</div>
+          <div class="row-sub">AppsFlyer Identifier</div>
+        </div>
+        <input class="input mono" id="set-afid" dir="ltr" spellcheck="false" oninput="saveId('afid')">
+      </div>
+    </div>
+
+    <div class="section-label">سجل التشخيص</div>
+    <div class="diag" id="diag"></div>
+    <div class="stack" style="margin-top:9px">
+      <button class="btn btn-ghost" onclick="copyDiag()">نسخ السجل</button>
+    </div>
+
+    <div class="section-label">الحساب</div>
+    <div class="stack">
+      <div class="card row">
+        <div>
+          <div class="row-label" id="ui-role">—</div>
+          <div class="row-sub" id="ui-quota">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="retry()">إعادة الاتصال والدخول</button>
+      <button class="btn btn-danger" onclick="wipe()">مسح البيانات المحلية</button>
+    </div>
+
+    <div class="section-label">حول</div>
+    <div class="stack">
+      <div class="card row">
+        <div class="row-label">الإصدار</div>
+        <div class="row-sub mono">v18.0</div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="nav">
+    <button class="nav-item active" id="nav-games" onclick="switchPage('games')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg>
+      ألعاب
+    </button>
+    <button class="nav-item" id="nav-python" onclick="switchPage('python')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+      Python
+    </button>
+    <button class="nav-item" id="nav-snippets" onclick="switchPage('snippets')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      أمثلة
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="switchPage('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      إعدادات
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════════ ID SHEET ═══════════ -->
+<div class="overlay" id="ids-sheet">
+  <div class="sheet">
+    <div class="sheet-title">معرّفات الجهاز</div>
+    <div class="field">
+      <label class="field-label" for="m-gaid">GAID</label>
+      <input class="input mono" id="m-gaid" dir="ltr" spellcheck="false" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+    </div>
+    <div class="field">
+      <label class="field-label" for="m-afid">AppsFlyer ID</label>
+      <input class="input mono" id="m-afid" dir="ltr" spellcheck="false" placeholder="0000000000000-0000000000000000000">
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" onclick="saveIdsSheet()">حفظ</button>
+      <button class="btn btn-ghost" onclick="closeIds()">إلغاء</button>
+    </div>
   </div>
 </div>
 
-<div class="page active" id="page-games">
-
-  <div class="ids-bar">
-    <div class="id-chip" onclick="openIdModal()">
-      <span class="id-label">GAID</span>
-      <span id="display-gaid">...</span>
-    </div>
-    <div class="id-chip" onclick="openIdModal()">
-      <span class="id-label">AF ID</span>
-      <span id="display-afid">...</span>
-    </div>
-  </div>
-
-  <div id="view-main" class="view active">
-    <div class="tabs">
-      <div class="tab active" onclick="filterGames('all',this)">الكل</div>
-      <div class="tab" onclick="filterGames('puzzle',this)">Puzzle</div>
-      <div class="tab" onclick="filterGames('farm',this)">Farm</div>
-      <div class="tab" onclick="filterGames('merge',this)">Merge</div>
-      <div class="tab" onclick="filterGames('other',this)">Other</div>
-    </div>
-    <div class="search-bar">
-      <input class="search-input" placeholder="ابحث باسم اللعبة أو Package..." oninput="searchGames(this.value)" dir="rtl">
-    </div>
-    <div class="games-grid" id="games-grid"></div>
-    <div class="no-results" id="no-results">لا توجد نتائج</div>
-  </div>
-
-  <div id="view-detail" class="view">
-    <div class="back-btn" onclick="goBack()">← رجوع</div>
-    <div class="detail-header">
-      <div class="detail-game-name" id="detail-game-name"></div>
-      <div class="detail-pkg" id="detail-pkg"></div>
-    </div>
-    <div class="detail-body">
-      <div>
-        <div class="field-label">EVENT TEMPLATE</div>
-        <div class="template-display" id="event-template-display"></div>
-      </div>
-      <div id="level-input-wrap">
-        <div class="field-label">LEVEL NUMBER</div>
-        <input class="level-input" id="level-input" type="number" min="1" placeholder="أدخل رقم المستوى..." oninput="updateEventPreview()">
-        <div class="preview-text" id="event-preview"></div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="sendLevelEvent()">📤 send event</button>
-        <button class="btn btn-secondary" onclick="sendPurchase()">💰 sendPurchase</button>
-      </div>
-      <div>
-        <div class="log-section-title">EVENT LOG</div>
-        <div class="log-list" id="event-log"><div class="log-empty">لا توجد أحداث بعد</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="page py-page" id="page-python">
-  <div class="page-titlebar">🐍 PYTHON TERMINAL — Pyodide</div>
-
-  <div class="py-toolbar">
-    <span class="py-status loading" id="py-status">جاري تحميل Python...</span>
-    <button class="py-btn primary" id="btn-run" onclick="runPython()" disabled>▶ تشغيل</button>
-    <button class="py-btn" onclick="clearEditor()">مسح الكود</button>
-    <button class="py-btn" onclick="clearOutput()">مسح النتائج</button>
-  </div>
-
-  <div class="server-bar">
-    <span style="font-size:10px;color:var(--accent);white-space:nowrap">🌐</span>
-    <input class="server-input" id="server-url" placeholder="https://onlineworki-production.up.railway.app/">
-    <button class="server-connect-btn" onclick="connectServer()">connect</button>
-    <div class="server-dot" id="server-dot" title="حالة الخادم"></div>
-  </div>
-
-  <div class="pip-bar">
-    <span style="font-size:10px;color:var(--py2);white-space:nowrap">pip install</span>
-    <input class="pip-input" id="pip-input" placeholder="اسم المكتبة (مثال: numpy, pandas, requests...)" dir="ltr">
-    <button class="pip-btn" id="btn-pip" onclick="installPackage()" disabled>تثبيت</button>
-  </div>
-
-  <div class="pkg-chips" id="pkg-chips">
-    <span class="pkg-empty" id="pkg-empty">لا توجد مكتبات مثبتة بعد</span>
-  </div>
-
-  <div class="editor-container">
-    <textarea class="code-editor" id="code-editor" placeholder="# اكتب كود Python هنا...
-print('مرحباً من online!')
-" spellcheck="false" oninput="updateLineNums()" onkeydown="handleTab(event)"></textarea>
-  </div>
-
-  <div class="py-toolbar" style="padding:8px 12px;">
-    <span style="font-size:10px;color:var(--muted)">OUTPUT</span>
-    <button class="py-btn green" onclick="runPython()" id="btn-run2" disabled>▶ play code</button>
-  </div>
-
-  <div class="output-area" id="output-area"><span class="out-line-sys">// waiting code...</span></div>
-</div>
-
-<div class="page" id="page-snippets">
-  <div class="page-titlebar">📦 SNIPPETS — أمثلة جاهزة</div>
-  <div class="snippet-list" id="snippet-list"></div>
-</div>
-
-<div class="page" id="page-settings">
-  <div class="page-titlebar">⚙️ SETTINGS</div>
-  <div class="settings-list">
-    <div class="settings-section">SERVER</div>
-    <div class="settings-item">
-      <div>
-        <div class="settings-label">رابط Railway</div>
-        <div class="settings-sublabel">خادم الباك أند والوسيط للـ CORS</div>
-      </div>
-      <input class="settings-input" id="settings-server" dir="ltr" placeholder="https://..." oninput="document.getElementById('server-url').value=this.value">
-    </div>
-
-    <div class="settings-section">DEVICE IDs</div>
-    <div class="settings-item">
-      <div>
-        <div class="settings-label">GAID</div>
-        <div class="settings-sublabel">Google Advertising ID</div>
-      </div>
-      <input class="settings-input" id="settings-gaid" dir="ltr" oninput="autoSaveId('gaid')">
-    </div>
-    <div class="settings-item">
-      <div>
-        <div class="settings-label">AppsFlyer ID</div>
-        <div class="settings-sublabel">AppsFlyer Identifier</div>
-      </div>
-      <input class="settings-input" id="settings-afid" dir="ltr" oninput="autoSaveId('afid')">
-    </div>
-
-    <div class="settings-section">PYTHON</div>
-    <div class="settings-item">
-      <div>
-        <div class="settings-label">تحميل Python تلقائياً</div>
-        <div class="settings-sublabel">عند فتح التطبيق</div>
-      </div>
-      <button class="toggle on" id="toggle-autoload" onclick="toggleSetting('autoload',this)"></button>
-    </div>
-
-    <div class="settings-section">INFO</div>
-    <div class="settings-item">
-      <div class="settings-label">الإصدار</div>
-      <div style="font-size:11px;color:var(--muted)">v17.0 — online</div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-label">محرك Python</div>
-      <div style="font-size:11px;color:var(--muted)">Pyodide 0.26 (WASM)</div>
-    </div>
-    <div class="settings-item" style="cursor:pointer" onclick="clearAllData()">
-      <div>
-        <div class="settings-label" style="color:var(--red)">مسح جميع البيانات</div>
-        <div class="settings-sublabel">إعادة ضبط التطبيق</div>
-      </div>
-      <span style="color:var(--red)">🗑</span>
-    </div>
-  </div>
-</div>
-
-<nav class="nav-bar">
-  <div class="nav-item active" id="nav-games" onclick="switchPage('games')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
-    </svg>
-    ألعاب
-  </div>
-  <div class="nav-item" id="nav-python" onclick="switchPage('python')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-    </svg>
-    Python
-  </div>
-  <div class="nav-item" id="nav-snippets" onclick="switchPage('snippets')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-    </svg>
-    Snippets
-  </div>
-  <div class="nav-item" id="nav-settings" onclick="switchPage('settings')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-    إعدادات
-  </div>
-</nav>
-
-<div class="modal-overlay" id="id-modal">
-  <div class="modal">
-    <div class="modal-title">✏️ تعديل Device IDs</div>
-    <div>
-      <div class="modal-label">GAID (Google Advertising ID)</div>
-      <input class="modal-input" id="modal-gaid-input" dir="ltr" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-    </div>
-    <div>
-      <div class="modal-label">AppsFlyer ID</div>
-      <input class="modal-input" id="modal-afid-input" dir="ltr" placeholder="xxxxxxxxxx-xxxxxxxxxxxxxxxxxx">
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="saveIds()">💾 حفظ</button>
-      <button class="btn btn-secondary" onclick="closeIdModal()">إلغاء</button>
-    </div>
-  </div>
-</div>
-
+<!-- ═══════════ TOAST ═══════════ -->
 <div class="toast" id="toast">
-  <div class="toast-icon" id="toast-icon"></div>
+  <div class="toast-glyph" id="toast-glyph"></div>
   <div class="toast-body">
     <div class="toast-title" id="toast-title"></div>
     <div class="toast-detail" id="toast-detail"></div>
@@ -679,789 +879,663 @@ print('مرحباً من online!')
 </div>
 
 <script>
-/* ─── GAMES DATA ─── */
-const GAMES_DATA = [
-  {name:"Color Sort Woody Puzzle",package:"games.burny.color.sort.woody.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",level_events:[{display:"Level completed",template:"level_completed"}],cat:"puzzle"},
-  {name:"Wooden Word Puzzle",package:"games.burny.wooden.word.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",level_events:[{display:"Level completed",template:"level_completed_{}"}],cat:"puzzle"},
-  {name:"Associations Word Puzzle",package:"games.burny.associations.word.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",level_events:[{display:"Level completed",template:"level_completed_{}"}],cat:"puzzle"},
-  {name:"Coin Master",package:"com.moonactive.coinmaster",dev_key:"H3KjoCRVTiVgA5mWSAHtCe",level_events:[{display:"Village complete",template:"village_{}_complete"}],cat:"other"},
-  {name:"Domino Dreams",package:"com.screenshake.dominodreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",level_events:[{display:"Area completed",template:"af_area_{}_completed"}],cat:"other"},
-  {name:"Solitaire Grand Harvest",package:"net.supertreat.solitaire",dev_key:"X8aGgdWELNb5L96fCy44oL",level_events:[{display:"Level up",template:"level_up_{}"}],cat:"other"},
-  {name:"Cuisine Master",package:"com.FortuneMine.CuisineMaster",dev_key:"im6mgZbZJsHKGVowkkxkGm",level_events:[{display:"Level completed",template:"level{}_completed"}],cat:"other"},
-  {name:"Match Factory",package:"net.peakgames.match",dev_key:"F9M4SkdtH8WHcAt86ESrF3",level_events:[{display:"Level completed",template:"level_{}_completed"}],cat:"puzzle"},
-  {name:"Toon Blast",package:"net.peakgames.toonblast",dev_key:"F9M4SkdtH8WHcAt86ESrF3",level_events:[{display:"Level completed",template:"level_{}_completed"}],cat:"other"},
-  {name:"Toy Blast",package:"net.peakgames.amy",dev_key:"F9M4SkdtH8WHcAt86ESrF3",level_events:[{display:"Level completed",template:"level_{}_completed"}],cat:"other"},
-  {name:"Box Jam",package:"com.playoneer.boxjam",dev_key:"cSJjCEwX2cCtJrNH92xM7n",level_events:[{display:"Level completed",template:"level_completed"}],cat:"puzzle"},
-  {name:"Gardenscapes",package:"com.playrix.gardenscapes",dev_key:"ixMH7WQi4SqLAmPWuyAtkH",level_events:[{display:"Level achieved",template:"AchievedLevel{}"}],cat:"other"},
-  {name:"Dice Dreams",package:"com.superplaystudios.dicedreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",level_events:[{display:"Kingdom restored",template:"af_kingdom_{}_restored"}],cat:"other"},
-  {name:"Taylor's Secret",package:"com.mergegames.taylorsecret",dev_key:"qbKVyawAiwNX3b4D3Frijm",level_events:[{display:"Level achieved",template:"level_{}"}],cat:"merge"},
-  {name:"Big Farm Homestead",package:"com.newmoonproduction.bigfarmhomestead",dev_key:"FtaT5WH9rMJjJkMd4LfBCT",level_events:[{display:"Level achieved",template:"af_level{}_achieved"}],cat:"farm"},
-  {name:"Sunshine Island",package:"com.newmoonproduction.sunshineisland",dev_key:"FtaT5WH9rMJjJkMd4LfBCT",level_events:[{display:"Level achieved",template:"af_level{}_achieved"}],cat:"farm"},
-  {name:"Idle Bank Tycoon",package:"com.luckyskeletonstudios.idlebanktycoon",dev_key:"DwzgMQDkEVMy3ntcgz7utV",level_events:[{display:"Bank started",template:"af_bank{}_started"}],cat:"other"},
-  {name:"FarmVille 3",package:"com.zynga.farmville3",dev_key:"KVJuxDJVXQRPoqUVdyWJtj",level_events:[{display:"Player level",template:"Player_Level{}"}],cat:"farm"},
-  {name:"Township",package:"com.playrix.township",dev_key:"ixMH7WQi4SqLAmPWuyAtkH",level_events:[{display:"Achieved level",template:"achievedlevel{}"}],cat:"farm"},
-  {name:"Merge Match",package:"com.futureplay.mergematch",dev_key:"nr8SibwpFjcKGBQNpDdttd",level_events:[{display:"Incent Level Up",template:"Incent_Player_Level_Up_{}"}],cat:"merge"},
-  {name:"FarmVille 2",package:"com.zynga.FarmVille2CountryEscape",dev_key:"438VCPmX2ZLYvsDPfGLZXb",level_events:[{display:"Level complete",template:"Level{}Complete"}],cat:"farm"},
-  {name:"Merge Studio",package:"com.paxiegames.mergestudio",dev_key:"mFaiXvTWy8votzp3UpsSfS",level_events:[{display:"Level completed",template:"level_completed_{}"}],cat:"merge"},
-  {name:"Goods Master 3D",package:"com.goods.master3d.triple.puzzle",dev_key:"oUYXWsx5SVDbJwtSCCymUD",level_events:[{display:"Level achieved",template:"af_Level_{}"}],cat:"puzzle"},
-  {name:"Tiles Mosaic",package:"com.tripledot.tiles.mosaic",dev_key:"j7J8eEwxvuQbDDFo3agC9X",level_events:[{display:"Game complete",template:"GameComplete_{}"}],cat:"puzzle"},
-  {name:"Travel Town",package:"io.randomco.travel",dev_key:"wizhvjciCuaDbAaR8KpZLn",level_events:[{display:"Level achieved",template:"reachedLevel{}"}],cat:"other"},
-  {name:"Disney Solitaire Dreams",package:"com.superplaystudios.disneysolitairedreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",level_events:[{display:"Area completed",template:"af_area_{}_completed"}],cat:"other"},
-  {name:"Match Masters",package:"com.funtomic.matchmasters",dev_key:"EJcrH2pxmBbsWKHJHdrs3c",level_events:[{display:"Trophies reached",template:"trophies_{}"}],cat:"other"},
-  {name:"Coin Master Board",package:"com.moonactive.cmboard",dev_key:"H3KjoCRVTiVgA5mWSAHtCe",level_events:[{display:"Village complete",template:"village_{}_complete"}],cat:"other"},
-  {name:"Empires & Puzzles",package:"com.smallgiantgames.empires",dev_key:"wStj8eCCuE84shUTkh7ZGc",level_events:[{display:"XP Level reached",template:"xp_level_{}"}],cat:"other"},
-  {name:"Merge Dragons",package:"com.gramgames.mergedragons",dev_key:"fyKVEgAYzuD6jBZocaq3yh",level_events:[{display:"Dragon Power reached",template:"event_{}_dragon_power"}],cat:"merge"},
-  {name:"Yarn Loop",package:"com.combo.yarnflow",dev_key:"TGm97uKTJF7qFCvREggWtf",level_events:[{display:"Level completed",template:"level_complete_{}"}],cat:"other"}
-];
+'use strict';
 
-/* ─── SERVER STATE ─── */
-let serverUrl = localStorage.getItem('pp_server') || '';
-let serverConnected = false;
+/* ═══════════════════════════════════════════════════════════════
+   الإصلاح الجذري ١ — عنوان الخادم لم يعد يعتمد على التخزين المحلي.
+   القيمة الافتراضية مكتوبة في الكود، فمسح المتصفح لا يترك التطبيق
+   بلا عنوان يوهم المستخدم بوجوده عبر placeholder رمادي.
+═══════════════════════════════════════════════════════════════ */
+const DEFAULT_SERVER = 'https://onlineworki-production.up.railway.app';
+const REQ_TIMEOUT = 25000;   // الإقلاع البارد على Railway يتجاوز ٨ ثوانٍ بسهولة
 
-if (serverUrl) {
-  document.getElementById('server-url').value = serverUrl;
-  document.getElementById('settings-server').value = serverUrl;
-  connectServer();
+/* ───────────────────────────────────────────────────────────────
+   بيانات الدخول — المكان الوحيد الذي تعدّله.
+   الخادم يفرض المصادقة، لكن التطبيق يتولّاها وحده: لا شاشة دخول.
+   ⚠ هذه القيم مقروءة لأي شخص يفتح مصدر الصفحة. لا تجعلها كلمة
+     مرور تستعملها في مكان آخر، وأبقِ المستودع خاصاً.
+─────────────────────────────────────────────────────────────── */
+const CREDS = { username: 'admin', password: '123456' };
+
+const K = {
+  server: 'ol_server', token: 'ol_token', user: 'ol_user',
+  gaid: 'ol_gaid', afid: 'ol_afid', pkgs: 'ol_pkgs'
+};
+
+let SERVER = localStorage.getItem(K.server) || DEFAULT_SERVER;
+let TOKEN  = localStorage.getItem(K.token) || '';
+let ME     = null;
+let serverUp = false;
+
+let gaid = localStorage.getItem(K.gaid) || '70ebe327-e224-4b1e-adb0-b09a27f78a0f';
+let afid = localStorage.getItem(K.afid) || '1779417828531-7129893952045055065';
+let pkgs = JSON.parse(localStorage.getItem(K.pkgs) || '[]');
+
+let activeGame = null, activeCat = 'all', eventLog = [];
+let pyodide = null, pyReady = false;
+let toastTimer = null;
+
+/* ═══════════════ DIAGNOSTICS ═══════════════
+   الإصلاح الجذري ٢ — لا خطأ يُبتلع. كل طلب يُسجَّل بنصّه هنا،
+   ويظهر داخل التطبيق (الإعدادات) لأن الهاتف لا يملك Console.
+═════════════════════════════════════════════ */
+const diagLines = [];
+function diag(msg, kind) {
+  const t = new Date().toTimeString().slice(0, 8);
+  diagLines.push({ t, msg, kind: kind || '' });
+  if (diagLines.length > 120) diagLines.shift();
+  renderDiag();
+}
+function renderDiag() {
+  const el = document.getElementById('diag');
+  if (!el) return;
+  el.innerHTML = diagLines.map(l =>
+    `<div class="diag-line-${l.kind || 'dim'}">${l.t}  ${escapeHtml(l.msg)}</div>`
+  ).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function copyDiag() {
+  const txt = diagLines.map(l => `${l.t}  ${l.msg}`).join('\n');
+  navigator.clipboard?.writeText(txt)
+    .then(() => toast('ok', '✓', 'نُسخ السجل', diagLines.length + ' سطر'))
+    .catch(() => toast('bad', '!', 'تعذّر النسخ', 'انسخه يدوياً'));
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-async function connectServer() {
-  let url = document.getElementById('server-url').value.trim();
-  if (!url) {
-    serverConnected = false;
-    setServerDot('');
+/* ═══════════════ HTTP ═══════════════
+   الإصلاح الجذري ٣ — طبقة واحدة لكل الطلبات: تُرفق الرمز،
+   تفرض مهلة، تفكّ الخطأ الحقيقي، وتُميّز 401 عن انقطاع الشبكة.
+═════════════════════════════════════════ */
+async function api(path, opts) {
+  opts = opts || {};
+  const url = SERVER.replace(/\/+$/, '') + path;
+  const headers = { 'Content-Type': 'application/json' };
+  if (TOKEN) headers['X-Token'] = TOKEN;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), opts.timeout || REQ_TIMEOUT);
+
+  try {
+    const res = await fetch(url, {
+      method: opts.method || 'GET',
+      headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+      signal: ctrl.signal
+    });
+
+    let data = null;
+    const text = await res.text();
+    try { data = text ? JSON.parse(text) : null; } catch (_) { data = { raw: text }; }
+
+    if (!res.ok) {
+      const detail = (data && (data.error || data.message)) || ('HTTP ' + res.status);
+      diag(`${opts.method || 'GET'} ${path} → ${res.status} ${detail}`, 'err');
+      const err = new Error(detail);
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
+
+    diag(`${opts.method || 'GET'} ${path} → ${res.status}`, 'ok');
+    return data;
+
+  } catch (e) {
+    if (e.status) throw e;
+    // تمييز سبب الفشل بدل "Failed to fetch" المبهم
+    let reason;
+    if (e.name === 'AbortError') reason = `انتهت المهلة بعد ${(opts.timeout || REQ_TIMEOUT) / 1000} ثانية`;
+    else if (e instanceof TypeError) reason = 'تعذّر الوصول للخادم (شبكة أو CORS)';
+    else reason = e.message || 'خطأ غير معروف';
+    diag(`${opts.method || 'GET'} ${path} ✗ ${reason}`, 'err');
+    const err = new Error(reason);
+    err.network = true;
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/* ═══════════════ STATUS RAIL ═══════════════ */
+function rail(seg, state, val) {
+  const dot = document.getElementById('rail-' + seg + '-dot');
+  const box = document.getElementById('rail-' + seg + '-val');
+  if (dot) dot.className = 'rail-dot' + (state ? ' ' + state : '');
+  if (box && val !== undefined) box.textContent = val;
+}
+
+/* ═══════════════ SERVER CHECK ═══════════════ */
+async function checkServer(loud) {
+  rail('srv', 'wait', 'يفحص…');
+  try {
+    const r = await api('/health', { timeout: 20000 });
+    serverUp = true;
+    const ok = r && r.ok !== false;
+    rail('srv', ok ? 'ok' : 'err', ok ? 'متصل' : 'DB معطّلة');
+    if (loud) toast(ok ? 'ok' : 'bad', ok ? '✓' : '!', ok ? 'الخادم يعمل' : 'الخادم يعمل — قاعدة البيانات لا',
+                    (r && r.detail) || '');
+    return ok;
+  } catch (e) {
+    // /health قد لا يكون منشوراً بعد — نجرّب الجذر
+    try {
+      await api('/', { timeout: 20000 });
+      serverUp = true;
+      rail('srv', 'ok', 'متصل');
+      if (loud) toast('ok', '✓', 'الخادم يعمل', 'مسار /health غير متاح');
+      return true;
+    } catch (e2) {
+      serverUp = false;
+      rail('srv', 'err', 'غير متاح');
+      if (loud) toast('bad', '✗', 'تعذّر الوصول للخادم', e2.message);
+      return false;
+    }
+  }
+}
+
+/* ═══════════════ AUTH — صامتة تماماً ═══════════════
+   الخادم يفرض المصادقة على /api/send-event و /run و /pip،
+   فلا يمكن إلغاؤها من هنا. لكنها لا تحتاج شاشة: البيانات
+   مكتوبة أعلاه، والتطبيق يدخل وحده عند الفتح ويجدّد الرمز
+   تلقائياً إن انتهت الجلسة. لا حقول، ولا أزرار، ولا انتظار.
+═══════════════════════════════════════════════════════ */
+async function signIn() {
+  const r = await api('/auth/login', {
+    method: 'POST',
+    body: { username: CREDS.username, password: CREDS.password }
+  });
+  TOKEN = r.token;
+  ME = r;
+  localStorage.setItem(K.token, TOKEN);
+  return r;
+}
+
+async function resume() {
+  hideBanner();
+  const up = await checkServer(false);
+  if (!up) {
+    showApp();
+    banner('الخادم لا يستجيب. افتح الإعدادات وتحقّق من العنوان، أو انتظر إقلاعه.', 'إعادة المحاولة');
     return;
   }
-  if (!url.startsWith('http')) url = 'https://' + url;
-  url = url.replace(/\/$/, '');
-  setServerDot('');
-  showToast('loading', null, 'connecting...', url);
-  try {
-    const res = await fetch(url + '/', { signal: AbortSignal.timeout(8000) });
-    if (res.ok) {
-      serverUrl = url;
-      localStorage.setItem('pp_server', url);
-      serverConnected = true;
-      setServerDot('ok');
-      document.getElementById('py-badge').textContent = '🌐 Server';
-      document.getElementById('py-badge').style.background = '#1a3020';
-      document.getElementById('py-badge').style.color = '#5de8a0';
-      document.getElementById('btn-run').disabled = false;
-      document.getElementById('btn-run2').disabled = false;
-      document.getElementById('btn-pip').disabled = false;
-      showToast('success', '✅', 'متصل بالخادم!', 'كل الحركات ستمر عبر ريلواي الآن لتفادي CORS');
-    }
-  } catch(e) {
-    setServerDot('err');
-    showToast('error', '❌', 'فشل الاتصال', 'تحقق من الرابط');
-  }
-}
 
-function setServerDot(cls) {
-  const d = document.getElementById('server-dot');
-  d.className = 'server-dot' + (cls ? ' ' + cls : '');
-}
-
-async function runWithServer() {
-  const code = document.getElementById('code-editor').value.trim();
-  if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
-  clearOutput();
-  appendOutput('// ▶ جاري التشغيل على الخادم...\n', 'sys');
-  document.getElementById('btn-run').disabled = true;
-  document.getElementById('btn-run2').disabled = true;
-  const start = Date.now();
   try {
-    const res = await fetch(serverUrl + '/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-      signal: AbortSignal.timeout(35000)
-    });
-    const data = await res.json();
-    const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-    if (data.stdout) appendOutput(data.stdout, 'stdout');
-    if (data.stderr) appendOutput(data.stderr, 'stderr');
-    if (data.returncode === 0) {
-      appendOutput('\n// ✅ اكتمل في ' + elapsed + 'ث\n', 'success');
+    // رمز محفوظ؟ تحقّق منه. وإلا سجّل الدخول مباشرة.
+    if (TOKEN) {
+      try { ME = await api('/auth/me'); }
+      catch (e) { if (e.status === 401) { TOKEN = ''; localStorage.removeItem(K.token); ME = await signIn(); } else throw e; }
     } else {
-      appendOutput('\n// ❌ خطأ في الكود\n', 'error');
+      ME = await signIn();
     }
-  } catch(e) {
-    appendOutput('❌ خطأ: ' + e.message + '\n', 'error');
-  } finally {
-    document.getElementById('btn-run').disabled = false;
-    document.getElementById('btn-run2').disabled = false;
+    ready();
+  } catch (e) {
+    showApp();
+    rail('auth', 'err', 'فشلت');
+    banner(e.status === 401
+      ? 'بيانات الدخول المكتوبة في الملف غير صحيحة. عدّل CREDS في أعلى الكود.'
+      : 'تعذّر تسجيل الدخول: ' + e.message, 'إعادة المحاولة');
   }
 }
 
-async function pipWithServer(pkg) {
-  const btn = document.getElementById('btn-pip');
-  btn.disabled = true; btn.textContent = '⏳';
-  showToast('loading', null, 'pip install ' + pkg, 'جاري التثبيت...');
+function showApp() {
+  const b = document.getElementById('boot');
+  b.classList.add('gone');
+  setTimeout(() => { b.style.display = 'none'; }, 320);
+}
+
+function ready() {
+  showApp();
+  hideBanner();
+  document.getElementById('ui-user').textContent = ME.username || '—';
+  document.getElementById('ui-initial').textContent = (ME.username || '?')[0].toUpperCase();
+  document.getElementById('ui-role').textContent = ME.role === 'admin' ? 'مدير' : 'مستخدم';
+  document.getElementById('ui-quota').textContent =
+    ME.role === 'admin' ? 'رصيد غير محدود' : `الرصيد المتبقي: ${ME.uses_left} من ${ME.max_uses}`;
+  rail('auth', 'ok', ME.username || 'نشط');
+  document.getElementById('set-server').value = SERVER;
+  diag('الجلسة جاهزة: ' + ME.username, 'ok');
+  boot();
+}
+
+function banner(msg, actionLabel) {
+  const el = document.getElementById('banner');
+  el.innerHTML = escapeHtml(msg) +
+    (actionLabel ? `<button onclick="retry()">${escapeHtml(actionLabel)}</button>` : '');
+  el.classList.add('show');
+}
+function hideBanner() { document.getElementById('banner').classList.remove('show'); }
+
+function retry() {
+  hideBanner();
+  document.getElementById('boot').style.display = 'flex';
+  document.getElementById('boot').classList.remove('gone');
+  resume();
+}
+
+/* انتهاء الجلسة أثناء الاستخدام: يُجدَّد الرمز صامتاً ويُعاد الطلب مرة واحدة */
+async function guard401(e) {
+  if (e.status !== 401) return false;
+  diag('انتهت الجلسة — يجدّد الرمز', 'dim');
   try {
-    const res = await fetch(serverUrl + '/pip', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ package: pkg }),
-      signal: AbortSignal.timeout(65000)
-    });
-    const data = await res.json();
-    if (data.success) {
-      showToast('success', '✅', 'تم التثبيت', pkg + ' جاهز!');
-      appendOutput('✅ تم تثبيت: ' + pkg + '\n', 'success');
-      document.getElementById('pip-input').value = '';
-    } else {
-      showToast('error', '❌', 'فشل التثبيت', data.message || '');
-      appendOutput('❌ فشل: ' + (data.message || '') + '\n', 'error');
-    }
-  } catch(e) {
-    showToast('error', '❌', 'خطأ', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'تثبيت';
+    await signIn();
+    rail('auth', 'ok', ME.username);
+    toast('ok', '✓', 'جُدّدت الجلسة', 'أعد المحاولة');
+  } catch (_) {
+    rail('auth', 'err', 'فشلت');
+    banner('تعذّر تجديد الجلسة. تحقّق من CREDS في أعلى الكود.', 'إعادة المحاولة');
   }
+  return true;
 }
 
-/* ─── STATE ─── */
-let curGaid = localStorage.getItem('pp_gaid') || '70ebe327-e224-4b1e-adb0-b09a27f78a0f';
-let curAfid = localStorage.getItem('pp_afid') || '1779417828531-7129893952045055065';
-let activeGame = null;
-let eventLog = [];
-let activeFilter = 'all';
-let toastTimer = null;
-let pyodide = null;
-let pyReady = false;
-let installedPkgs = JSON.parse(localStorage.getItem('pp_pkgs') || '[]');
-
-/* ─── INIT ─── */
-updateIdDisplay();
-renderGames(GAMES_DATA);
-loadSettingsValues();
-renderSnippets();
-renderInstalledPkgs();
-
-// Load Pyodide
-loadPyodideRuntime();
-
-/* ─── NAVIGATION ─── */
+/* ═══════════════ NAV ═══════════════ */
 function switchPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
-  if (name === 'games') {
-    const mainView = document.getElementById('view-main');
-    const detailView = document.getElementById('view-detail');
-    if (!mainView.classList.contains('active') && !detailView.classList.contains('active')) {
-      showView('view-main');
-    }
-  }
+  window.scrollTo(0, 0);
 }
-
-/* ─── GAMES ─── */
-function updateIdDisplay() {
-  document.getElementById('display-gaid').textContent = curGaid.substring(0, 18) + '...';
-  document.getElementById('display-afid').textContent = curAfid.substring(0, 18) + '...';
-  document.getElementById('settings-gaid').value = curGaid;
-  document.getElementById('settings-afid').value = curAfid;
-}
-
-function renderGames(list) {
-  const grid = document.getElementById('games-grid');
-  const noResults = document.getElementById('no-results');
-  if (!list.length) { grid.innerHTML = ''; noResults.style.display = 'block'; return; }
-  noResults.style.display = 'none';
-  grid.innerHTML = list.map((g) => {
-    const i = GAMES_DATA.indexOf(g);
-    return `<div class="game-card" onclick="openGame(${i})">
-      <div class="game-num">#${String(i+1).padStart(2,'0')}</div>
-      <div class="game-name">${g.name}</div>
-      <div class="game-pkg">${g.package}</div>
-    </div>`;
-  }).join('');
-}
-
-function filterGames(cat, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  activeFilter = cat;
-  applyFilters();
-}
-
-function searchGames(q) { applyFilters(q); }
-
-function applyFilters(q) {
-  q = q !== undefined ? q : document.querySelector('.search-input').value;
-  let list = GAMES_DATA;
-  if (activeFilter !== 'all') list = list.filter(g => g.cat === activeFilter);
-  if (q) list = list.filter(g => g.name.toLowerCase().includes(q.toLowerCase()) || g.package.toLowerCase().includes(q.toLowerCase()));
-  renderGames(list);
-}
-
-function openGame(idx) {
-  activeGame = GAMES_DATA[idx];
-  const hasNumber = activeGame.level_events[0].template.includes('{}');
-  document.getElementById('detail-game-name').textContent = activeGame.name;
-  document.getElementById('detail-pkg').textContent = activeGame.package;
-  document.getElementById('event-template-display').textContent = activeGame.level_events[0].template;
-  const lvlInput = document.getElementById('level-input');
-  lvlInput.style.display = hasNumber ? 'block' : 'none';
-  lvlInput.value = '';
-  document.getElementById('event-preview').textContent = hasNumber ? '' : activeGame.level_events[0].template;
-  document.getElementById('event-log').innerHTML = '<div class="log-empty">لا توجد أحداث بعد</div>';
-  eventLog = [];
-  showView('view-detail');
-}
-
-function goBack() { showView('view-main'); }
-
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
 
-function updateEventPreview() {
-  const tmpl = activeGame.level_events[0].template;
-  const val = document.getElementById('level-input').value;
-  if (tmpl.includes('{}') && val) {
-    document.getElementById('event-preview').textContent = '→ ' + tmpl.replace('{}', val);
-  } else {
-    document.getElementById('event-preview').textContent = '';
-  }
+/* ═══════════════ GAMES ═══════════════ */
+const GAMES = [
+  {name:"Color Sort Woody Puzzle",package:"games.burny.color.sort.woody.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",tmpl:"level_completed",cat:"puzzle"},
+  {name:"Wooden Word Puzzle",package:"games.burny.wooden.word.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",tmpl:"level_completed_{}",cat:"puzzle"},
+  {name:"Associations Word Puzzle",package:"games.burny.associations.word.puzzle",dev_key:"CkyYk6ThNSr9MPEvmCNZRN",tmpl:"level_completed_{}",cat:"puzzle"},
+  {name:"Coin Master",package:"com.moonactive.coinmaster",dev_key:"H3KjoCRVTiVgA5mWSAHtCe",tmpl:"village_{}_complete",cat:"other"},
+  {name:"Domino Dreams",package:"com.screenshake.dominodreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",tmpl:"af_area_{}_completed",cat:"other"},
+  {name:"Solitaire Grand Harvest",package:"net.supertreat.solitaire",dev_key:"X8aGgdWELNb5L96fCy44oL",tmpl:"level_up_{}",cat:"other"},
+  {name:"Cuisine Master",package:"com.FortuneMine.CuisineMaster",dev_key:"im6mgZbZJsHKGVowkkxkGm",tmpl:"level{}_completed",cat:"other"},
+  {name:"Match Factory",package:"net.peakgames.match",dev_key:"F9M4SkdtH8WHcAt86ESrF3",tmpl:"level_{}_completed",cat:"puzzle"},
+  {name:"Toon Blast",package:"net.peakgames.toonblast",dev_key:"F9M4SkdtH8WHcAt86ESrF3",tmpl:"level_{}_completed",cat:"other"},
+  {name:"Toy Blast",package:"net.peakgames.amy",dev_key:"F9M4SkdtH8WHcAt86ESrF3",tmpl:"level_{}_completed",cat:"other"},
+  {name:"Box Jam",package:"com.playoneer.boxjam",dev_key:"cSJjCEwX2cCtJrNH92xM7n",tmpl:"level_completed",cat:"puzzle"},
+  {name:"Gardenscapes",package:"com.playrix.gardenscapes",dev_key:"ixMH7WQi4SqLAmPWuyAtkH",tmpl:"AchievedLevel{}",cat:"other"},
+  {name:"Dice Dreams",package:"com.superplaystudios.dicedreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",tmpl:"af_kingdom_{}_restored",cat:"other"},
+  {name:"Taylor's Secret",package:"com.mergegames.taylorsecret",dev_key:"qbKVyawAiwNX3b4D3Frijm",tmpl:"level_{}",cat:"merge"},
+  {name:"Big Farm Homestead",package:"com.newmoonproduction.bigfarmhomestead",dev_key:"FtaT5WH9rMJjJkMd4LfBCT",tmpl:"af_level{}_achieved",cat:"farm"},
+  {name:"Sunshine Island",package:"com.newmoonproduction.sunshineisland",dev_key:"FtaT5WH9rMJjJkMd4LfBCT",tmpl:"af_level{}_achieved",cat:"farm"},
+  {name:"Idle Bank Tycoon",package:"com.luckyskeletonstudios.idlebanktycoon",dev_key:"DwzgMQDkEVMy3ntcgz7utV",tmpl:"af_bank{}_started",cat:"other"},
+  {name:"FarmVille 3",package:"com.zynga.farmville3",dev_key:"KVJuxDJVXQRPoqUVdyWJtj",tmpl:"Player_Level{}",cat:"farm"},
+  {name:"Township",package:"com.playrix.township",dev_key:"ixMH7WQi4SqLAmPWuyAtkH",tmpl:"achievedlevel{}",cat:"farm"},
+  {name:"Merge Match",package:"com.futureplay.mergematch",dev_key:"nr8SibwpFjcKGBQNpDdttd",tmpl:"Incent_Player_Level_Up_{}",cat:"merge"},
+  {name:"FarmVille 2",package:"com.zynga.FarmVille2CountryEscape",dev_key:"438VCPmX2ZLYvsDPfGLZXb",tmpl:"Level{}Complete",cat:"farm"},
+  {name:"Merge Studio",package:"com.paxiegames.mergestudio",dev_key:"mFaiXvTWy8votzp3UpsSfS",tmpl:"level_completed_{}",cat:"merge"},
+  {name:"Goods Master 3D",package:"com.goods.master3d.triple.puzzle",dev_key:"oUYXWsx5SVDbJwtSCCymUD",tmpl:"af_Level_{}",cat:"puzzle"},
+  {name:"Tiles Mosaic",package:"com.tripledot.tiles.mosaic",dev_key:"j7J8eEwxvuQbDDFo3agC9X",tmpl:"GameComplete_{}",cat:"puzzle"},
+  {name:"Travel Town",package:"io.randomco.travel",dev_key:"wizhvjciCuaDbAaR8KpZLn",tmpl:"reachedLevel{}",cat:"other"},
+  {name:"Disney Solitaire Dreams",package:"com.superplaystudios.disneysolitairedreams",dev_key:"Hn5qYjVAaRNJYDcwF4LaWF",tmpl:"af_area_{}_completed",cat:"other"},
+  {name:"Match Masters",package:"com.funtomic.matchmasters",dev_key:"EJcrH2pxmBbsWKHJHdrs3c",tmpl:"trophies_{}",cat:"other"},
+  {name:"Coin Master Board",package:"com.moonactive.cmboard",dev_key:"H3KjoCRVTiVgA5mWSAHtCe",tmpl:"village_{}_complete",cat:"other"},
+  {name:"Empires & Puzzles",package:"com.smallgiantgames.empires",dev_key:"wStj8eCCuE84shUTkh7ZGc",tmpl:"xp_level_{}",cat:"other"},
+  {name:"Merge Dragons",package:"com.gramgames.mergedragons",dev_key:"fyKVEgAYzuD6jBZocaq3yh",tmpl:"event_{}_dragon_power",cat:"merge"},
+  {name:"Yarn Loop",package:"com.combo.yarnflow",dev_key:"TGm97uKTJF7qFCvREggWtf",tmpl:"level_complete_{}",cat:"other"}
+];
+
+const CATS = [
+  { id: 'all', label: 'الكل' },
+  { id: 'puzzle', label: 'Puzzle' },
+  { id: 'farm', label: 'Farm' },
+  { id: 'merge', label: 'Merge' },
+  { id: 'other', label: 'Other' }
+];
+
+function renderChips() {
+  document.getElementById('chips').innerHTML = CATS.map(c => {
+    const n = c.id === 'all' ? GAMES.length : GAMES.filter(g => g.cat === c.id).length;
+    return `<button class="chip${c.id === activeCat ? ' active' : ''}" onclick="setCat('${c.id}')">${c.label} ${n}</button>`;
+  }).join('');
+}
+function setCat(id) { activeCat = id; renderChips(); applyFilters(); }
+
+function applyFilters() {
+  const q = document.getElementById('in-search').value.trim().toLowerCase();
+  let list = GAMES;
+  if (activeCat !== 'all') list = list.filter(g => g.cat === activeCat);
+  if (q) list = list.filter(g => g.name.toLowerCase().includes(q) || g.package.toLowerCase().includes(q));
+
+  document.getElementById('no-results').style.display = list.length ? 'none' : 'block';
+  document.getElementById('game-list').innerHTML = list.map(g => {
+    const i = GAMES.indexOf(g);
+    return `<button class="game-item" onclick="openGame(${i})">
+      <span class="game-idx">${String(i + 1).padStart(2, '0')}</span>
+      <span class="game-meta">
+        <span class="game-name">${escapeHtml(g.name)}</span>
+        <span class="game-pkg">${escapeHtml(g.package)}</span>
+      </span>
+      <span class="game-cat">${g.cat.toUpperCase()}</span>
+    </button>`;
+  }).join('');
 }
 
-async function sendLevelEvent() {
-  const tmpl = activeGame.level_events[0].template;
-  const hasNum = tmpl.includes('{}');
-  const val = document.getElementById('level-input').value;
-  if (hasNum && !val) { showToast('error', '⚠', 'خطأ', 'أدخل رقم المستوى أولاً'); return; }
-  const evName = hasNum ? tmpl.replace('{}', val) : tmpl;
-  await sendEvent('level', evName);
+function openGame(i) {
+  activeGame = GAMES[i];
+  const hasNum = activeGame.tmpl.includes('{}');
+  document.getElementById('d-name').textContent = activeGame.name;
+  document.getElementById('d-pkg').textContent = activeGame.package;
+  document.getElementById('d-tmpl').textContent = activeGame.tmpl;
+  document.getElementById('d-stepper').style.display = hasNum ? 'flex' : 'none';
+  document.getElementById('in-level').value = hasNum ? '1' : '';
+  eventLog = [];
+  renderLog();
+  renderPreview();
+  showView('view-detail');
 }
 
-async function sendPurchase() { await sendEvent('purchase', 'af_purchase'); }
+function bumpLevel(d) {
+  const el = document.getElementById('in-level');
+  el.value = Math.max(1, (parseInt(el.value, 10) || 0) + d);
+  renderPreview();
+}
 
-/* ═══ الدالة المعدلة حتمياً للمرور عبر ريلواي لتخطي الـ CORS ═══ */
-async function sendEvent(type, evName) {
+function renderPreview() {
   if (!activeGame) return;
-  
-  if (!serverConnected || !serverUrl) {
-    showToast('error', '🌐', 'خطأ في السيرفر', 'يرجى ربط سيرفر Railway أولاً لتخطي الـ CORS المباشر');
-    addLog(evName, 'CORS ERR', false);
-    return;
-  }
+  const t = activeGame.tmpl, v = document.getElementById('in-level').value;
+  document.getElementById('d-preview').textContent =
+    t.includes('{}') ? (v ? t.replace('{}', v) : '') : t;
+}
 
-  showToast('loading', null, 'جاري التمرير عبر Railway Proxy...', evName);
-  
-  const appsFlyerBody = {
-    appsflyer_id: curAfid,
-    advertising_id: curGaid,
+/* ═══════════════ DISPATCH ═══════════════ */
+async function dispatchLevel() {
+  const t = activeGame.tmpl, v = document.getElementById('in-level').value;
+  if (t.includes('{}') && !v) return toast('bad', '!', 'أدخل رقم المستوى', 'الحقل مطلوب لهذا القالب');
+  await dispatch('level', t.includes('{}') ? t.replace('{}', v) : t);
+}
+async function dispatchPurchase() { await dispatch('purchase', 'af_purchase'); }
+
+async function dispatch(kind, evName) {
+  if (!activeGame) return;
+  rail('last', 'wait', 'يرسل…');
+  toast('wait', null, 'يرسل الحدث', evName);
+
+  const body = {
+    appsflyer_id: afid,
+    advertising_id: gaid,
     eventName: evName,
     eventTime: new Date().toISOString(),
-    eventValue: type === 'purchase' ? JSON.stringify({af_revenue:"4.99",af_currency:"USD"}) : "{}"
-  };
-
-  const proxyPayload = {
-    package: activeGame.package,
-    dev_key: activeGame.dev_key,
-    body: appsFlyerBody
+    eventValue: kind === 'purchase'
+      ? JSON.stringify({ af_revenue: '4.99', af_currency: 'USD' })
+      : '{}'
   };
 
   try {
-    const res = await fetch(serverUrl + '/api/send-event', {
+    const r = await api('/api/send-event', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(proxyPayload)
+      body: { package: activeGame.package, dev_key: activeGame.dev_key, body }
     });
-
-    const data = await res.json();
-    const status = res.status;
-    
-    if (res.ok && data.success) {
-      addLog(evName, `Railway: ${data.status_code}`, true);
-      showToast('success', '✅', `تم الإرسال بنجاح (${data.status_code})`, evName);
-    } else {
-      addLog(evName, `ERR: ${status}`, false);
-      showToast('error', '❌', `فشل التمرير: ${data.error || status}`, evName);
-    }
-  } catch(e) {
-    addLog(evName, 'NET ERR', false);
-    showToast('error', '🔌', 'خطأ في الاتصال بالسيرفر', e.message || 'تحقق من الشبكة والبروكسي');
+    const code = r.status_code;
+    const ok = code >= 200 && code < 300;
+    addLog(evName, String(code), ok);
+    rail('last', ok ? 'ok' : 'err', evName.slice(0, 18));
+    toast(ok ? 'ok' : 'bad', ok ? '✓' : '✗',
+          ok ? 'وصل الحدث' : 'رفضته AppsFlyer', `${evName} · ${code}`);
+  } catch (e) {
+    if (await guard401(e)) return;
+    addLog(evName, e.status ? String(e.status) : 'NET', false);
+    rail('last', 'err', 'فشل');
+    toast('bad', '✗', 'لم يُرسل الحدث', e.message);
   }
 }
 
-function addLog(name, status, ok) {
-  const now = new Date();
-  const time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
-  eventLog.unshift({name, status, ok, time});
-  document.getElementById('event-log').innerHTML = eventLog.map(e => `
-    <div class="log-entry">
-      <div class="log-dot ${e.ok ? 'success' : 'error'}"></div>
-      <div class="log-time">${e.time}</div>
-      <div class="log-text">${e.name}</div>
-      <div class="log-status">${e.status}</div>
-    </div>
-  `).join('');
+function addLog(name, code, ok) {
+  const d = new Date();
+  const t = [d.getHours(), d.getMinutes(), d.getSeconds()]
+    .map(n => String(n).padStart(2, '0')).join(':');
+  eventLog.unshift({ name, code, ok, t });
+  renderLog();
 }
 
-/* ─── MODALS ─── */
-function openIdModal() {
-  document.getElementById('modal-gaid-input').value = curGaid;
-  document.getElementById('modal-afid-input').value = curAfid;
-  document.getElementById('id-modal').classList.add('open');
-}
-function closeIdModal() { document.getElementById('id-modal').classList.remove('open'); }
-function saveIds() {
-  const g = document.getElementById('modal-gaid-input').value.trim();
-  const a = document.getElementById('modal-afid-input').value.trim();
-  if (g) { curGaid = g; localStorage.setItem('pp_gaid', g); }
-  if (a) { curAfid = a; localStorage.setItem('pp_afid', a); }
-  updateIdDisplay();
-  closeIdModal();
-  showToast('success', '✅', 'تم الحفظ', 'تم تحديث IDs بنجاح');
-}
-document.getElementById('id-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeIdModal();
-});
-
-/* ─── TOAST ─── */
-function showToast(type, icon, title, detail) {
-  const toast = document.getElementById('toast');
-  toast.className = 'toast ' + type;
-  if (type === 'loading') {
-    document.getElementById('toast-icon').innerHTML = '<div class="spinner"></div>';
-  } else {
-    document.getElementById('toast-icon').textContent = icon;
-  }
-  document.getElementById('toast-title').textContent = title;
-  document.getElementById('toast-detail').textContent = detail;
-  toast.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  if (type !== 'loading') toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-/* ─── SETTINGS ─── */
-function loadSettingsValues() {
-  document.getElementById('settings-gaid').value = curGaid;
-  document.getElementById('settings-afid').value = curAfid;
-}
-function autoSaveId(type) {
-  const val = document.getElementById('settings-' + type).value.trim();
-  if (type === 'gaid') { curGaid = val; localStorage.setItem('pp_gaid', val); }
-  else { curAfid = val; localStorage.setItem('pp_afid', val); }
-  updateIdDisplay();
-}
-function toggleSetting(key, el) {
-  el.classList.toggle('on');
-  localStorage.setItem('pp_setting_' + key, el.classList.contains('on') ? '1' : '0');
-}
-function clearAllData() {
-  if (confirm('هل أنت متأكد؟ سيتم حذف جميع البيانات المحفوظة.')) {
-    localStorage.clear();
-    location.reload();
-  }
-}
-
-/* ══════════════════════════════════════════════
-   🐍 PYTHON / PYODIDE ENGINE
-══════════════════════════════════════════════ */
-async function loadPyodideRuntime() {
-  setPyStatus('loading', '🐍 تحميل Python...');
-  try {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
-    document.head.appendChild(script);
-    script.onload = async () => {
-      try {
-        setPyStatus('loading', '⚙️ تهيئة البيئة...');
-        pyodide = await loadPyodide({
-          indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
-          stdout: (text) => appendOutput(text, 'stdout'),
-          stderr: (text) => appendOutput(text, 'stderr'),
-        });
-
-        pyodide.runPython(`
-import sys, io
-class OutputCapture:
-    def __init__(self, kind):
-        self.kind = kind
-    def write(self, text):
-        if text.strip():
-            from js import appendPyOutput
-            appendPyOutput(text, self.kind)
-    def flush(self): pass
-sys.stdout = OutputCapture('stdout')
-sys.stderr = OutputCapture('stderr')
-        `);
-
-        pyReady = true;
-        setPyStatus('ready', '✅ Python جاهز');
-        if (!serverConnected) {
-          document.getElementById('py-badge').textContent = '🐍 Ready';
-          document.getElementById('py-badge').style.background = '#1a3020';
-          document.getElementById('py-badge').style.color = '#5de8a0';
-        }
-        document.getElementById('btn-run').disabled = false;
-        document.getElementById('btn-run2').disabled = false;
-        document.getElementById('btn-pip').disabled = false;
-
-        for (const pkg of installedPkgs) {
-          await silentInstall(pkg);
-        }
-        clearOutput();
-        appendOutput('// Python ' + pyodide.runPython('import sys; sys.version') + '\n', 'sys');
-        appendOutput('// الحزم المتاحة: micropip, numpy, pandas, requests, json, math, re, datetime, ...\n', 'sys');
-        appendOutput('// اكتب كودك في المحرر أعلاه ثم اضغط ▶ تشغيل\n', 'sys');
-      } catch(e) {
-        setPyStatus('error', '❌ فشل التهيئة');
-        appendOutput('Error: ' + e.message, 'error');
-      }
-    };
-    script.onerror = () => {
-      setPyStatus('error', '❌ فشل التحميل — تحقق من الإنترنت');
-    };
-  } catch(e) {
-    setPyStatus('error', '❌ ' + e.message);
-  }
-}
-
-window.appendPyOutput = function(text, kind) {
-  appendOutput(text, kind === 'stderr' ? 'stderr' : 'stdout');
-};
-
-function setPyStatus(cls, text) {
-  const el = document.getElementById('py-status');
-  el.className = 'py-status ' + cls;
-  el.textContent = text;
-}
-
-async function runPython() {
-  if (serverConnected) { await runWithServer(); return; }
-  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر اكتمال التحميل'); return; }
-  const code = document.getElementById('code-editor').value.trim();
-  if (!code) { showToast('error', '⚠', 'الكود فارغ', 'اكتب كود Python أولاً'); return; }
-
-  clearOutput();
-  appendOutput('// ▶ تشغيل الكود...\n', 'sys');
-
-  try {
-    pyodide.runPython(`
-import sys
-class OutputCapture:
-    def __init__(self, kind):
-        self.kind = kind
-        self.buf = []
-    def write(self, text):
-        if text:
-            from js import appendPyOutput
-            appendPyOutput(text, self.kind)
-    def flush(self): pass
-sys.stdout = OutputCapture('stdout')
-sys.stderr = OutputCapture('stderr')
-    `);
-    const result = await pyodide.runPythonAsync(code);
-    if (result !== undefined && result !== null) {
-      appendOutput(String(result) + '\n', 'stdout');
-    }
-    appendOutput('\n// ✅ اكتمل التشغيل\n', 'success');
-  } catch(e) {
-    appendOutput(e.message + '\n', 'error');
-    appendOutput('// ❌ خطأ في الكود\n', 'sys');
-  }
-}
-
-async function installPackage() {
-  const pkg = document.getElementById('pip-input').value.trim().toLowerCase();
-  if (!pkg) return;
-  if (serverConnected) { await pipWithServer(pkg); return; }
-  if (!pyReady) { showToast('error', '⏳', 'Python ليس جاهزاً', 'انتظر التحميل'); return; }
-
-  const btn = document.getElementById('btn-pip');
-  btn.disabled = true;
-  btn.textContent = '⏳...';
-  showToast('loading', null, 'pip install ' + pkg, 'جاري التثبيت...');
-
-  try {
-    await pyodide.loadPackagesFromImports(`import ${pkg}`).catch(() => {});
-    await pyodide.runPythonAsync(`
-import micropip
-await micropip.install('${pkg}')
-    `);
-    if (!installedPkgs.includes(pkg)) {
-      installedPkgs.push(pkg);
-      localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
-    }
-    renderInstalledPkgs();
-    document.getElementById('pip-input').value = '';
-    showToast('success', '✅', 'تم التثبيت', pkg + ' جاهز للاستخدام');
-    appendOutput('✅ تم تثبيت: ' + pkg + '\n', 'success');
-  } catch(e) {
-    showToast('error', '❌', 'فشل التثبيت', e.message.split('\n')[0]);
-    appendOutput('❌ فشل تثبيت ' + pkg + ': ' + e.message + '\n', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'تثبيت';
-  }
-}
-
-async function silentInstall(pkg) {
-  try {
-    await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
-  } catch(e) {}
-}
-
-function removePackage(pkg) {
-  installedPkgs = installedPkgs.filter(p => p !== pkg);
-  localStorage.setItem('pp_pkgs', JSON.stringify(installedPkgs));
-  renderInstalledPkgs();
-  showToast('success', '🗑', 'تمت الإزالة', pkg);
-}
-
-function renderInstalledPkgs() {
-  const container = document.getElementById('pkg-chips');
-  const empty = document.getElementById('pkg-empty');
-  if (installedPkgs.length === 0) {
-    empty.style.display = 'block';
-    const chips = container.querySelectorAll('.pkg-chip');
-    chips.forEach(c => c.remove());
+function renderLog() {
+  const el = document.getElementById('log');
+  if (!eventLog.length) {
+    el.innerHTML = '<div class="empty"><b>لا إرسال بعد</b>أول حدث سيظهر هنا مع رمز الاستجابة.</div>';
     return;
   }
-  empty.style.display = 'none';
-  const existing = container.querySelectorAll('.pkg-chip');
-  existing.forEach(c => c.remove());
-  installedPkgs.forEach(pkg => {
-    const chip = document.createElement('div');
-    chip.className = 'pkg-chip';
-    chip.innerHTML = `${pkg} <span class="pkg-chip-remove" onclick="removePackage('${pkg}')">×</span>`;
-    container.appendChild(chip);
-  });
+  el.innerHTML = eventLog.map(e => `
+    <div class="log-row ${e.ok ? 'ok' : 'bad'}">
+      <span class="log-time">${e.t}</span>
+      <span class="log-name">${escapeHtml(e.name)}</span>
+      <span class="log-code">${escapeHtml(e.code)}</span>
+    </div>`).join('');
 }
 
-function appendOutput(text, kind) {
-  const area = document.getElementById('output-area');
-  const span = document.createElement('span');
-  span.className = 'out-line-' + kind;
-  span.textContent = text;
-  area.appendChild(span);
-  area.scrollTop = area.scrollHeight;
+/* ═══════════════ IDS ═══════════════ */
+function renderIds() {
+  document.getElementById('ui-gaid').textContent = gaid.slice(0, 20) + (gaid.length > 20 ? '…' : '');
+  document.getElementById('ui-afid').textContent = afid.slice(0, 20) + (afid.length > 20 ? '…' : '');
+  document.getElementById('set-gaid').value = gaid;
+  document.getElementById('set-afid').value = afid;
+}
+function openIds() {
+  document.getElementById('m-gaid').value = gaid;
+  document.getElementById('m-afid').value = afid;
+  document.getElementById('ids-sheet').classList.add('open');
+}
+function closeIds() { document.getElementById('ids-sheet').classList.remove('open'); }
+function saveIdsSheet() {
+  const g = document.getElementById('m-gaid').value.trim();
+  const a = document.getElementById('m-afid').value.trim();
+  if (g) { gaid = g; localStorage.setItem(K.gaid, g); }
+  if (a) { afid = a; localStorage.setItem(K.afid, a); }
+  renderIds(); closeIds();
+  toast('ok', '✓', 'حُفظت المعرّفات', '');
+}
+function saveId(which) {
+  const v = document.getElementById('set-' + which).value.trim();
+  if (which === 'gaid') { gaid = v; localStorage.setItem(K.gaid, v); }
+  else { afid = v; localStorage.setItem(K.afid, v); }
+  renderIds();
+}
+document.getElementById('ids-sheet').addEventListener('click', function (e) {
+  if (e.target === this) closeIds();
+});
+
+/* ═══════════════ PYTHON ═══════════════ */
+function cwrite(text, cls) {
+  const el = document.getElementById('console');
+  const s = document.createElement('span');
+  s.className = 'c-' + (cls || 'out');
+  s.textContent = text;
+  el.appendChild(s);
+  el.scrollTop = el.scrollHeight;
+}
+function clearConsole() { document.getElementById('console').innerHTML = ''; }
+
+function setRunner(label) {
+  document.getElementById('runner-tag').textContent = 'RUNNER: ' + label;
 }
 
-function clearOutput() {
-  document.getElementById('output-area').innerHTML = '';
+async function runCode() {
+  const code = document.getElementById('editor').value.trim();
+  if (!code) return toast('bad', '!', 'المحرّر فارغ', 'اكتب كوداً أولاً');
+  clearConsole();
+
+  if (serverUp && TOKEN) {
+    cwrite('// يشغّل على الخادم…\n', 'note');
+    const btn = document.getElementById('btn-run');
+    btn.disabled = true;
+    const t0 = Date.now();
+    try {
+      const r = await api('/run', { method: 'POST', body: { code }, timeout: 40000 });
+      if (r.stdout) cwrite(r.stdout, 'out');
+      if (r.stderr) cwrite(r.stderr, 'err');
+      const s = ((Date.now() - t0) / 1000).toFixed(2);
+      cwrite(r.returncode === 0 ? `\n// انتهى في ${s}s\n` : '\n// انتهى بخطأ\n',
+             r.returncode === 0 ? 'ok' : 'bad');
+    } catch (e) {
+      if (await guard401(e)) return;
+      cwrite('// ' + e.message + '\n', 'bad');
+    } finally { btn.disabled = false; }
+    return;
+  }
+
+  if (!pyReady) return toast('bad', '⏳', 'Python غير جاهز', 'المحرّك ما زال يُحمَّل');
+  cwrite('// يشغّل محلياً…\n', 'note');
+  try {
+    const out = await pyodide.runPythonAsync(code);
+    if (out !== undefined && out !== null) cwrite(String(out) + '\n', 'out');
+    cwrite('\n// انتهى\n', 'ok');
+  } catch (e) {
+    cwrite(e.message + '\n', 'err');
+  }
 }
 
-function clearEditor() {
-  document.getElementById('code-editor').value = '';
+async function installPkg() {
+  const pkg = document.getElementById('in-pip').value.trim().toLowerCase();
+  if (!pkg) return;
+  const btn = document.getElementById('btn-pip');
+  btn.disabled = true;
+  toast('wait', null, 'pip install ' + pkg, 'قد يستغرق دقيقة');
+
+  try {
+    if (serverUp && TOKEN) {
+      const r = await api('/pip', { method: 'POST', body: { package: pkg }, timeout: 70000 });
+      if (!r.success) throw new Error(r.message || 'فشل التثبيت');
+    } else {
+      if (!pyReady) throw new Error('Python غير جاهز');
+      await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
+    }
+    if (!pkgs.includes(pkg)) { pkgs.push(pkg); localStorage.setItem(K.pkgs, JSON.stringify(pkgs)); }
+    renderPkgs();
+    document.getElementById('in-pip').value = '';
+    toast('ok', '✓', 'ثُبّتت المكتبة', pkg);
+    cwrite('// installed: ' + pkg + '\n', 'ok');
+  } catch (e) {
+    if (await guard401(e)) return;
+    toast('bad', '✗', 'فشل التثبيت', e.message);
+    cwrite('// ' + e.message + '\n', 'bad');
+  } finally { btn.disabled = false; }
+}
+
+function renderPkgs() {
+  const el = document.getElementById('pkgs');
+  el.innerHTML = pkgs.length
+    ? pkgs.map(p => `<span class="pkg">${escapeHtml(p)}<button onclick="dropPkg('${escapeHtml(p)}')" aria-label="إزالة">×</button></span>`).join('')
+    : '<span style="font-size:11.5px;color:var(--muted)">لا مكتبات مضافة</span>';
+}
+function dropPkg(p) {
+  pkgs = pkgs.filter(x => x !== p);
+  localStorage.setItem(K.pkgs, JSON.stringify(pkgs));
+  renderPkgs();
 }
 
 function handleTab(e) {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const ta = e.target;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
-    ta.selectionStart = ta.selectionEnd = start + 2;
+  if (e.key !== 'Tab') return;
+  e.preventDefault();
+  const ta = e.target, s = ta.selectionStart, en = ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+  ta.selectionStart = ta.selectionEnd = s + 2;
+}
+
+async function loadPyodide_() {
+  setRunner('يحمّل…');
+  try {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+      s.onload = res; s.onerror = () => rej(new Error('تعذّر تحميل Pyodide'));
+      document.head.appendChild(s);
+    });
+    pyodide = await loadPyodide({
+      indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
+      stdout: t => cwrite(t + '\n', 'out'),
+      stderr: t => cwrite(t + '\n', 'err')
+    });
+    pyReady = true;
+    setRunner(serverUp && TOKEN ? 'الخادم' : 'محلي (WASM)');
+    diag('Pyodide جاهز', 'ok');
+  } catch (e) {
+    setRunner(serverUp && TOKEN ? 'الخادم' : 'غير متاح');
+    diag('Pyodide: ' + e.message, 'err');
   }
 }
 
-function updateLineNums() {}
-
-/* ─── SNIPPETS ─── */
+/* ═══════════════ SNIPPETS ═══════════════ */
 const SNIPPETS = [
-  {
-    title: 'مرحبا بالعالم',
-    tag: 'Python',
-    desc: 'أول كود Python — طباعة رسالة وتاريخ اليوم',
-    code: `from datetime import datetime
-
-print("مرحباً من online! 🐍")
-print(f"التاريخ الآن: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")`
-  },
-  {
-    title: 'حساب إحصائي',
-    tag: 'math',
-    desc: 'حسابات رياضية بدون مكتبات خارجية',
-    code: `import math
-import statistics
-
-nums = [10, 25, 33, 47, 52, 61, 78, 90]
-
-print(f"القيم: {nums}")
-print(f"المجموع: {sum(nums)}")
-print(f"المتوسط: {statistics.mean(nums):.2f}")
-print(f"الوسيط: {statistics.median(nums)}")
-print(f"الانحراف المعياري: {statistics.stdev(nums):.2f}")
-print(f"الجذر التربيعي لـ 144: {math.sqrt(144)}")`
-  },
-  {
-    title: 'معالجة JSON',
-    tag: 'json',
-    desc: 'تحليل وبناء بيانات JSON',
-    code: `import json
-
-data = {
-    "game": "Coin Master",
-    "package": "com.moonactive.coinmaster",
-    "events": [
-        {"name": "village_5_complete", "status": 200},
-        {"name": "af_purchase", "status": 200}
-    ]
-}
-
-json_str = json.dumps(data, indent=2, ensure_ascii=False)
-print("JSON:")
-print(json_str)
-
-parsed = json.loads(json_str)
-print(f"\\nعدد الأحداث: {len(parsed['events'])}")
-print(f"اللعبة: {parsed['game']}")`
-  },
-  {
-    title: 'تحليل نصوص',
-    tag: 're',
-    desc: 'استخراج بيانات من نصوص باستخدام Regex',
-    code: `import re
-
-text = """
-GAID: 70ebe327-e224-4b1e-adb0-b09a27f78a0f
-AF-ID: 1779417828531-7129893952045055065
-Package: com.moonactive.coinmaster
-Status: 200 OK
-"""
-
-gaid = re.search(r'GAID: ([0-9a-f-]{36})', text)
-print(f"GAID: {gaid.group(1) if gaid else 'لم يُوجد'}")
-
-pkg = re.search(r'Package: ([\w.]+)', text)
-print(f"Package: {pkg.group(1) if pkg else 'لم يُوجد'}")
-
-status = re.search(r'Status: (\d+)', text)
-print(f"Status Code: {status.group(1) if status else 'لم يُوجد'}")`
-  },
-  {
-    title: 'توليد IDs عشوائية',
-    tag: 'utils',
-    desc: 'توليد GAID و AppsFlyer IDs جديدة عشوائية',
-    code: `import uuid
-import random
-import time
-
-def gen_gaid():
-    return str(uuid.uuid4())
-
-def gen_afid():
-    ts = int(time.time() * 1000)
-    rand = random.randint(1000000000000000000, 9999999999999999999)
-    return f"{ts}-{rand}"
-
-print("IDs جديدة:")
-for i in range(3):
-    gaid = gen_gaid()
-    afid = gen_afid()
-    print(f"\\n--- مجموعة {i+1} ---")
-    print(f"GAID: {gaid}")
-    print(f"AFID: {afid}")`
-  },
-  {
-    title: 'numpy - مصفوفات',
-    tag: 'numpy',
-    desc: 'عمليات على المصفوفات (يتطلب تثبيت numpy)',
-    code: `# قم بتثبيت numpy أولاً من حقل pip أعلاه
-import numpy as np
-
-arr = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-print(f"المصفوفة: {arr}")
-print(f"المتوسط: {np.mean(arr)}")
-print(f"الانحراف المعياري: {np.std(arr):.4f}")
-
-matrix = np.reshape(arr, (2, 5))
-print(f"\\nمصفوفة 2x5:")
-print(matrix)`
-  },
-  {
-    title: 'pandas - تحليل بيانات',
-    tag: 'pandas',
-    desc: 'تحليل بيانات مع pandas (يتطلب تثبيت pandas)',
-    code: `# قم بتثبيت pandas أولاً من حقل pip أعلاه
-import pandas as pd
-
-data = {
-    'Game': ['Coin Master', 'Gardenscapes', 'Match Factory', 'Toon Blast'],
-    'Events_Sent': [45, 32, 67, 28],
-    'Success_Rate': [0.95, 0.88, 0.97, 0.91],
-    'Category': ['other', 'other', 'puzzle', 'other']
-}
-
-df = pd.DataFrame(data)
-print("البيانات:")
-print(df.to_string(index=False))
-
-print(f"\\nمتوسط الأحداث المرسلة: {df['Events_Sent'].mean():.1f}")
-print(f"أعلى معدل نجاح: {df['Success_Rate'].max() * 100:.1f}%")
-print(f"\\nتوزيع الفئات:")
-print(df['Category'].value_counts())`
-  },
-  {
-    title: 'AppsFlyer Event Builder',
-    tag: 'AF',
-    desc: 'بناء وتحضير بيانات الأحداث بصيغة JSON جاهزة للإرسال',
-    code: `import json
-from datetime import datetime, timezone
-
-def build_event(package, dev_key, afid, gaid, event_name, revenue=None):
-    body = {
-        "appsflyer_id": afid,
-        "advertising_id": gaid,
-        "eventName": event_name,
-        "eventTime": datetime.now(timezone.utc).isoformat(),
-        "eventValue": json.dumps({"af_revenue": str(revenue), "af_currency": "USD"}) if revenue else "{}"
-    }
-    return {
-        "url": f"https://api2.appsflyer.com/inappevent/{package}",
-        "headers": {
-            "Content-Type": "application/json",
-            "authentication": dev_key
-        },
-        "body": body
-    }
-
-req = build_event(
-    package="com.moonactive.coinmaster",
-    dev_key="H3KjoCRVTiVgA5mWSAHtCe",
-    afid="1779417828531-7129893952045055065",
-    gaid="70ebe327-e224-4b1e-adb0-b09a27f78a0f",
-    event_name="village_5_complete"
-)
-
-print("الطلب المُحضَّر:")
-print(json.dumps(req, indent=2, ensure_ascii=False))`
-  }
+  { title: 'طباعة والتاريخ', tag: 'basics', desc: 'أول كود — رسالة وتاريخ اليوم.',
+    code: `from datetime import datetime\n\nprint("مرحباً من Online")\nprint(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))` },
+  { title: 'إحصاءات سريعة', tag: 'math', desc: 'متوسط ووسيط وانحراف معياري بلا مكتبات خارجية.',
+    code: `import statistics\n\nnums = [10, 25, 33, 47, 52, 61, 78, 90]\nprint("المجموع:", sum(nums))\nprint("المتوسط:", round(statistics.mean(nums), 2))\nprint("الوسيط:", statistics.median(nums))\nprint("الانحراف:", round(statistics.stdev(nums), 2))` },
+  { title: 'بناء وقراءة JSON', tag: 'json', desc: 'تحويل بين القواميس ونصّ JSON بالعربية.',
+    code: `import json\n\ndata = {\n    "game": "Coin Master",\n    "package": "com.moonactive.coinmaster",\n    "events": [\n        {"name": "village_5_complete", "status": 200}\n    ]\n}\n\ntxt = json.dumps(data, indent=2, ensure_ascii=False)\nprint(txt)\nprint("عدد الأحداث:", len(json.loads(txt)["events"]))` },
+  { title: 'استخراج بـ Regex', tag: 're', desc: 'التقاط المعرّفات والحزم من نصّ سجل.',
+    code: `import re\n\ntext = """\nGAID: 70ebe327-e224-4b1e-adb0-b09a27f78a0f\nPackage: com.moonactive.coinmaster\nStatus: 200 OK\n"""\n\nfor label, pat in [("GAID", r"GAID: ([0-9a-f-]{36})"),\n                   ("Package", r"Package: ([\\w.]+)"),\n                   ("Status", r"Status: (\\d+)")]:\n    m = re.search(pat, text)\n    print(label, "=", m.group(1) if m else "غير موجود")` },
+  { title: 'توليد معرّفات', tag: 'utils', desc: 'GAID و AppsFlyer ID جديدين بالصيغة الصحيحة.',
+    code: `import uuid, random, time\n\ndef gen_gaid():\n    return str(uuid.uuid4())\n\ndef gen_afid():\n    return f"{int(time.time() * 1000)}-{random.randint(10**18, 10**19 - 1)}"\n\nfor i in range(3):\n    print(f"--- {i+1} ---")\n    print("GAID:", gen_gaid())\n    print("AFID:", gen_afid())` },
+  { title: 'مصفوفات numpy', tag: 'numpy', desc: 'يتطلب تثبيت numpy من حقل pip.',
+    code: `import numpy as np\n\narr = np.arange(1, 11)\nprint("المصفوفة:", arr)\nprint("المتوسط:", np.mean(arr))\nprint("الانحراف:", round(float(np.std(arr)), 4))\nprint(np.reshape(arr, (2, 5)))` },
+  { title: 'جدول pandas', tag: 'pandas', desc: 'يتطلب تثبيت pandas من حقل pip.',
+    code: `import pandas as pd\n\ndf = pd.DataFrame({\n    "Game": ["Coin Master", "Gardenscapes", "Match Factory"],\n    "Sent": [45, 32, 67],\n    "Rate": [0.95, 0.88, 0.97]\n})\n\nprint(df.to_string(index=False))\nprint("متوسط المرسل:", round(df["Sent"].mean(), 1))` },
+  { title: 'بناء حدث AppsFlyer', tag: 'AF', desc: 'تحضير الجسم الكامل جاهزاً للإرسال.',
+    code: `import json\nfrom datetime import datetime, timezone\n\ndef build(package, dev_key, afid, gaid, event, revenue=None):\n    return {\n        "url": f"https://api2.appsflyer.com/inappevent/{package}",\n        "headers": {"Content-Type": "application/json", "authentication": dev_key},\n        "body": {\n            "appsflyer_id": afid,\n            "advertising_id": gaid,\n            "eventName": event,\n            "eventTime": datetime.now(timezone.utc).isoformat(),\n            "eventValue": json.dumps({"af_revenue": str(revenue), "af_currency": "USD"}) if revenue else "{}"\n        }\n    }\n\nreq = build("com.moonactive.coinmaster", "H3KjoCRVTiVgA5mWSAHtCe",\n            "1779417828531-7129893952045055065",\n            "70ebe327-e224-4b1e-adb0-b09a27f78a0f",\n            "village_5_complete")\nprint(json.dumps(req, indent=2, ensure_ascii=False))` }
 ];
 
-function renderSnippets() {
-  const list = document.getElementById('snippet-list');
-  list.innerHTML = SNIPPETS.map((s, i) => `
-    <div class="snippet-card" onclick="loadSnippet(${i})">
-      <div class="snippet-header">
-        <div class="snippet-title">${s.title}</div>
-        <span class="snippet-tag">${s.tag}</span>
-      </div>
-      <div class="snippet-desc">${s.desc}</div>
-      <div class="snippet-preview">${s.code.substring(0, 120).replace(/</g,'&lt;').replace(/>/g,'&gt;')}...</div>
-    </div>
-  `).join('');
+function renderSnips() {
+  document.getElementById('snips').innerHTML = SNIPPETS.map((s, i) => `
+    <button class="snip" onclick="loadSnip(${i})">
+      <span class="snip-head">
+        <span class="snip-title">${escapeHtml(s.title)}</span>
+        <span class="snip-tag">${escapeHtml(s.tag)}</span>
+      </span>
+      <span class="snip-desc" style="display:block">${escapeHtml(s.desc)}</span>
+      <span class="snip-code" style="display:block">${escapeHtml(s.code.slice(0, 140))}</span>
+    </button>`).join('');
+}
+function loadSnip(i) {
+  document.getElementById('editor').value = SNIPPETS[i].code;
+  switchPage('python');
+  toast('ok', '✓', 'حُمّل المثال', SNIPPETS[i].title);
 }
 
-function loadSnippet(i) {
-  document.getElementById('code-editor').value = SNIPPETS[i].code;
-  switchPage('python');
-  showToast('success', '📋', 'تم التحميل', SNIPPETS[i].title + ' — اضغط ▶ للتشغيل');
+/* ═══════════════ TOAST ═══════════════ */
+function toast(kind, glyph, title, detail) {
+  const el = document.getElementById('toast');
+  el.className = 'toast ' + kind;
+  document.getElementById('toast-glyph').innerHTML =
+    kind === 'wait' ? '<div class="spin"></div>' : (glyph || '');
+  document.getElementById('toast-title').textContent = title || '';
+  document.getElementById('toast-detail').textContent = detail || '';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  if (kind !== 'wait') toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
+
+/* ═══════════════ MISC ═══════════════ */
+function wipe() {
+  if (!confirm('سيُمسح كل ما هو محفوظ على هذا الجهاز: الجلسة والمعرّفات والإعدادات. متابعة؟')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+/* ═══════════════ BOOT ═══════════════ */
+function boot() {
+  renderChips();
+  applyFilters();
+  renderIds();
+  renderPkgs();
+  renderSnips();
+  renderDiag();
+  loadPyodide_();
+  // فحص دوري: يُبقي الشريط صادقاً ويُنبّه فور سقوط الخادم
+  setInterval(() => { if (TOKEN) checkServer(false); }, 120000);
+}
+
+document.getElementById('set-server').addEventListener('change', function () {
+  SERVER = this.value.trim().replace(/\/+$/, '');
+  localStorage.setItem(K.server, SERVER);
+  checkServer(true);
+});
+
+diag('البدء — الخادم: ' + SERVER);
+resume();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
 </body>
 </html>
-EOF
