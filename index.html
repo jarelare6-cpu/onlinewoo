@@ -21,20 +21,27 @@
    القاعدة: واجهة بخط إنساني، بيانات بخط آلي. التباين مقصود.
 ═══════════════════════════════════════════════════════════════ */
 :root {
-  --ink:      #0B0E14;
-  --slate:    #131822;
-  --raised:   #1B2230;
-  --raised-2: #222B3C;
-  --line:     #273246;
-  --line-soft:#1E2635;
+  --ink:      #090C12;
+  --slate:    #121722;
+  --raised:   #1A2130;
+  --raised-2: #232C3E;
+  --line:     #2A3549;
+  --line-soft:#1D2534;
 
-  --brass:    #E5A64B;
-  --brass-dim:#8A6528;
-  --signal:   #3FD9A4;
-  --signal-dim:#1D5F48;
-  --alert:    #FF6B6B;
-  --alert-dim:#5E2626;
-  --violet:   #8B7CF6;
+  --brass:    #F0B45C;
+  --brass-2:  #D98F3A;
+  --brass-dim:#7C5A24;
+  --signal:   #45E0AA;
+  --signal-dim:#1B6049;
+  --alert:    #FF7A7A;
+  --alert-dim:#5C2727;
+  --violet:   #9B8CFF;
+  --azure:    #5FBDF2;
+
+  --grad-brass: linear-gradient(135deg, #F5BE68 0%, #DB9339 100%);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.28);
+  --shadow-2: 0 6px 20px -6px rgba(0,0,0,.5);
 
   --text:     #E6EAF2;
   --text-2:   #A8B2C4;
@@ -142,10 +149,13 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   padding: 12px 14px;
   color: var(--text);
   outline: none;
-  transition: border-color .18s, background .18s;
+  transition: border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
 }
 .input::placeholder { color: var(--muted); }
-.input:focus { border-color: var(--brass); background: var(--raised); }
+.input:focus {
+  border-color: var(--brass); background: var(--raised);
+  box-shadow: 0 0 0 3px rgba(240,180,92,.1);
+}
 .input.mono { font-size: 12.5px; direction: ltr; text-align: left; }
 
 .btn {
@@ -154,12 +164,15 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   border-radius: var(--r);
   font-weight: 600; font-size: 14px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: transform .12s, filter .18s, opacity .18s;
+  transition: transform .16s var(--ease), filter .2s var(--ease), opacity .2s var(--ease), box-shadow .2s var(--ease);
 }
-.btn:active { transform: scale(.985); }
-.btn:disabled { opacity: .45; pointer-events: none; }
-.btn-primary { background: var(--brass); color: #1A1305; }
-.btn-primary:hover { filter: brightness(1.06); }
+.btn:active { transform: scale(.978); }
+.btn:disabled { opacity: .42; pointer-events: none; }
+.btn-primary {
+  background: var(--grad-brass); color: #171104;
+  box-shadow: var(--shadow-1);
+}
+.btn-primary:hover { filter: brightness(1.05); box-shadow: var(--shadow-2); }
 .btn-ghost { background: var(--raised); border: 1px solid var(--line); color: var(--text-2); }
 .btn-danger { background: var(--alert-dim); border: 1px solid var(--alert); color: var(--alert); }
 
@@ -208,9 +221,9 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   flex: 1; min-width: 0;
   padding: 7px 12px;
   display: flex; align-items: center; gap: 7px;
-  border-left: 1px solid var(--line-soft);
+  border-inline-start: 1px solid var(--line-soft);
 }
-.rail-seg:last-child { border-left: none; }
+.rail-seg:first-child { border-inline-start: none; }
 .rail-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--muted); flex-shrink: 0;
@@ -255,8 +268,8 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 .nav-item svg { width: 19px; height: 19px; }
 .nav-item.active { color: var(--brass); }
 .nav-item.active::before {
-  content: ''; position: absolute; top: 0; left: 26%; right: 26%;
-  height: 2px; background: var(--brass); border-radius: 0 0 3px 3px;
+  content: ''; position: absolute; top: 0; left: 24%; right: 24%;
+  height: 2px; background: var(--grad-brass); border-radius: 0 0 3px 3px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -283,37 +296,42 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 .row .input { width: 152px; padding: 8px 10px; font-size: 12px; }
 
 /* ═══════════════════════════════════════════════════════════════
-   IDENTITY STRIP (GAID / AFID)
+   DEVICE IDs — داخل شاشة اللعبة، حيث تُستعمل فعلاً
 ═══════════════════════════════════════════════════════════════ */
-.ids { display: flex; gap: 8px; padding: 12px 16px 4px; }
-.id-chip {
-  flex: 1; min-width: 0; text-align: right;
+.idbox {
+  margin: 0 16px 12px;
   background: var(--slate); border: 1px solid var(--line-soft);
-  border-radius: var(--r-sm); padding: 8px 11px;
-  transition: border-color .18s;
+  border-radius: var(--r); overflow: hidden;
 }
-.id-chip:active { border-color: var(--brass); }
-.id-chip-key {
-  display: block; font-family: var(--mono);
-  font-size: 8.5px; letter-spacing: .16em; color: var(--brass);
-  margin-bottom: 2px;
+.idbox-head {
+  padding: 9px 14px; border-bottom: 1px solid var(--line-soft);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; color: var(--muted);
 }
-.id-chip-val {
-  display: block; font-family: var(--mono); font-size: 10.5px;
-  color: var(--text-2); direction: ltr; text-align: left;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.idbox-body { padding: 12px 14px 4px; }
+.idbox-field { margin-bottom: 10px; }
+.idbox-field .input { padding: 9px 11px; font-size: 11.5px; }
 
-/* ═══════════════════════════════════════════════════════════════
+/* زر اللغة */
+.header-right { display: flex; align-items: center; gap: 8px; }
+.lang-btn {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .06em; color: var(--brass);
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 11px;
+  transition: background .16s;
+}
+.lang-btn:active { background: var(--raised-2); }
+
+/*/* ═══════════════════════════════════════════════════════════════
    SEARCH + FILTERS
 ═══════════════════════════════════════════════════════════════ */
 .search-wrap { padding: 10px 16px 8px; }
 .search-box { position: relative; }
 .search-box svg {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%);
   width: 15px; height: 15px; color: var(--muted); pointer-events: none;
 }
-.search-box .input { padding-right: 36px; }
+.search-box .input { padding-inline-end: 36px; }
 
 .chips {
   display: flex; gap: 7px; padding: 2px 16px 10px;
@@ -324,10 +342,11 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   flex-shrink: 0; padding: 6px 13px;
   border-radius: 999px; font-size: 12px; font-weight: 500;
   background: var(--slate); border: 1px solid var(--line-soft);
-  color: var(--text-2); transition: all .18s;
+  color: var(--text-2); transition: all .2s var(--ease);
 }
 .chip.active {
-  background: var(--brass); border-color: var(--brass); color: #1A1305;
+  background: var(--grad-brass); border-color: transparent; color: #171104;
+  box-shadow: var(--shadow-1);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -335,14 +354,14 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 ═══════════════════════════════════════════════════════════════ */
 .game-list { padding: 0 16px; display: flex; flex-direction: column; gap: 7px; }
 .game-item {
-  width: 100%; text-align: right;
+  width: 100%; text-align: start;
   background: var(--slate); border: 1px solid var(--line-soft);
   border-radius: var(--r);
   padding: 12px 14px;
   display: flex; align-items: center; gap: 12px;
-  transition: border-color .16s, transform .12s, background .16s;
+  transition: border-color .2s var(--ease), transform .16s var(--ease), background .2s var(--ease);
 }
-.game-item:active { transform: scale(.99); border-color: var(--brass); background: var(--raised); }
+.game-item:active { transform: scale(.988); border-color: var(--brass); background: var(--raised); }
 .game-idx {
   flex-shrink: 0; width: 30px; height: 30px; border-radius: var(--r-sm);
   background: var(--raised); border: 1px solid var(--line);
@@ -367,6 +386,15 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   padding: 2px 7px;
 }
 
+.star {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: var(--r-sm);
+  font-size: 15px; line-height: 1; color: var(--muted);
+  display: grid; place-items: center;
+  transition: color .16s, background .16s;
+}
+.star.on { color: var(--brass); }
+.star:active { background: var(--raised-2); }
+
 .empty {
   text-align: center; padding: 48px 24px; color: var(--muted); font-size: 13px;
 }
@@ -383,6 +411,7 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   padding: 12px 16px; color: var(--brass); font-size: 13px; font-weight: 500;
 }
 .back svg { width: 15px; height: 15px; }
+html[dir="ltr"] .back svg { transform: scaleX(-1); }
 
 .detail-head { padding: 4px 16px 16px; }
 .detail-name { font-size: 20px; font-weight: 600; letter-spacing: -.015em; }
@@ -434,10 +463,10 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   display: flex; align-items: center; gap: 10px;
   background: var(--slate); border: 1px solid var(--line-soft);
   border-radius: var(--r-sm); padding: 9px 12px;
-  border-right: 2px solid var(--line);
+  border-inline-end: 2px solid var(--line);
 }
-.log-row.ok  { border-right-color: var(--signal); }
-.log-row.bad { border-right-color: var(--alert); }
+.log-row.ok  { border-inline-end-color: var(--signal); }
+.log-row.bad { border-inline-end-color: var(--alert); }
 .log-time { font-family: var(--mono); font-size: 10px; color: var(--muted); flex-shrink: 0; }
 .log-name {
   flex: 1; min-width: 0; font-family: var(--mono); font-size: 11px;
@@ -468,7 +497,7 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 .tool-btn:disabled { opacity: .4; pointer-events: none; }
 
 .runner-tag {
-  margin-right: auto;
+  margin-inline-start: auto;
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
   color: var(--muted); border: 1px solid var(--line-soft);
   border-radius: 999px; padding: 3px 9px;
@@ -521,7 +550,7 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
    SNIPPETS
 ═══════════════════════════════════════════════════════════════ */
 .snip {
-  width: 100%; text-align: right;
+  width: 100%; text-align: start;
   background: var(--slate); border: 1px solid var(--line-soft);
   border-radius: var(--r); overflow: hidden;
   transition: border-color .16s;
@@ -567,6 +596,218 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 /* ═══════════════════════════════════════════════════════════════
    MODAL
 ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   SEGMENTS — مباشر / مجدول
+═══════════════════════════════════════════════════════════════ */
+.segs {
+  display: flex; gap: 4px; margin: 0 16px 14px;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); padding: 4px;
+}
+.seg {
+  flex: 1; padding: 9px 8px; border-radius: var(--r-sm);
+  font-size: 12.5px; font-weight: 500; color: var(--text-2);
+  transition: all .2s var(--ease);
+}
+.seg.active { background: var(--raised-2); color: var(--brass); box-shadow: var(--shadow-1); }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCHEDULE BUILDER
+═══════════════════════════════════════════════════════════════ */
+.sched-rows { display: flex; flex-direction: column; gap: 7px; }
+.srow {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); padding: 9px 10px;
+  transition: border-color .2s var(--ease), background .2s var(--ease);
+}
+.srow.now { border-color: var(--signal-dim); background: rgba(69,224,170,.04); }
+.srow-sel {
+  flex-shrink: 0; background: var(--ink);
+  border: 1px solid var(--line-soft); border-radius: var(--r-sm);
+  padding: 7px 8px; color: var(--text-2);
+  font-size: 11.5px; outline: none;
+  appearance: none; -webkit-appearance: none;
+  transition: border-color .2s var(--ease);
+}
+.srow-sel:focus { border-color: var(--brass); }
+.srow-sel.grow { flex: 1; min-width: 0; }
+.srow-now {
+  flex-shrink: 0; font-size: 10.5px; font-weight: 600;
+  color: var(--muted); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 10px;
+  transition: all .2s var(--ease);
+}
+.srow-now.on { color: var(--signal); border-color: var(--signal-dim); background: rgba(69,224,170,.08); }
+.srow-move {
+  flex-shrink: 0; width: 22px; height: 26px; border-radius: 6px;
+  color: var(--muted); font-size: 11px; line-height: 1;
+  display: grid; place-items: center;
+  transition: all .2s var(--ease);
+}
+.srow-move:active { background: var(--raised-2); color: var(--brass); }
+.srow-break { flex-basis: 100%; height: 0; }
+.srow:focus-within { border-color: var(--brass); }
+.srow-n {
+  flex-shrink: 0; min-width: 30px; height: 26px; border-radius: 7px; padding: 0 5px;
+  background: var(--raised); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--muted);
+}
+.srow-in {
+  flex: 1; min-width: 54px; background: var(--ink);
+  border: 1px solid var(--line-soft); border-radius: var(--r-sm);
+  padding: 7px 9px; color: var(--text);
+  font-family: var(--mono); font-size: 12px; text-align: center;
+  outline: none; transition: border-color .2s var(--ease);
+}
+.srow-in:focus { border-color: var(--brass); }
+.srow-unit {
+  flex-shrink: 0; font-family: var(--mono);
+  font-size: 9px; letter-spacing: .1em; color: var(--muted);
+}
+.srow-unit.lvl {
+  color: var(--brass); border: 1px solid var(--brass-dim);
+  border-radius: 5px; padding: 3px 5px; font-size: 8.5px;
+}
+.srow-in.hero {
+  border-color: var(--brass-dim); color: var(--brass);
+  font-weight: 600; font-size: 13px;
+}
+.srow-in.hero:focus { border-color: var(--brass); }
+.srow-x {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
+  color: var(--muted); font-size: 15px; line-height: 1;
+  display: grid; place-items: center; transition: all .2s var(--ease);
+}
+.srow-x:active { background: var(--alert-dim); color: var(--alert); }
+.srow-when {
+  flex-basis: 100%; order: 9;
+  font-family: var(--mono); font-size: 10px; color: var(--signal);
+  direction: ltr; text-align: start;
+  padding-inline-start: 33px; padding-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.srow-when .dim { color: var(--muted); }
+.srow-when.bad { color: var(--alert); }
+
+.quickfill { display: flex; gap: 7px; align-items: center; }
+.quickfill-key {
+  flex-shrink: 0; font-family: var(--mono); font-size: 9px;
+  letter-spacing: .1em; color: var(--brass);
+  border: 1px solid var(--brass-dim); border-radius: 5px; padding: 5px 7px;
+}
+.quickfill .input { flex: 1; min-width: 0; padding: 9px 11px; font-size: 12px; }
+.quickfill .tool-btn { flex-shrink: 0; }
+.quickfill-hint { font-size: 11px; color: var(--muted); padding: 0 2px; }
+
+.presets { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px 0; }
+.preset {
+  font-family: var(--mono); font-size: 10.5px;
+  background: var(--slate); border: 1px dashed var(--line);
+  border-radius: 999px; padding: 5px 11px; color: var(--text-2);
+  transition: all .2s var(--ease);
+}
+.preset:active { border-style: solid; border-color: var(--brass); color: var(--brass); }
+
+.anchor-note {
+  margin: 0 16px 12px; padding: 11px 13px;
+  background: rgba(95,189,242,.06); border: 1px solid rgba(95,189,242,.24);
+  border-radius: var(--r-sm); font-size: 12px; color: var(--text-2);
+}
+.anchor-note b { color: var(--azure); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════════
+   JOB CARDS — الجدول المحفوظ على الخادم
+═══════════════════════════════════════════════════════════════ */
+.sched-group {
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); overflow: hidden; margin-bottom: 10px;
+}
+.sched-group-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 13px; border-bottom: 1px solid var(--line-soft);
+  background: rgba(26,33,48,.5);
+}
+.sched-group-title { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; }
+.sched-group-sub {
+  font-family: var(--mono); font-size: 9.5px; color: var(--muted);
+  margin-top: 1px; direction: ltr; text-align: start;
+}
+.sched-group-x {
+  flex-shrink: 0; font-size: 11px; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px;
+  transition: all .2s var(--ease);
+}
+.sched-group-x:active { border-color: var(--alert); color: var(--alert); }
+
+.job {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px; border-top: 1px solid var(--line-soft);
+}
+.job:first-child { border-top: none; }
+.job-state {
+  flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted);
+}
+.job-state.pending { background: var(--brass); box-shadow: 0 0 0 3px rgba(240,180,92,.13); }
+.job-state.done    { background: var(--signal); box-shadow: 0 0 0 3px rgba(69,224,170,.13); }
+.job-state.failed  { background: var(--alert);  box-shadow: 0 0 0 3px rgba(255,122,122,.13); }
+.job-state.off     { background: var(--muted); }
+.job-body { flex: 1; min-width: 0; }
+.job-name {
+  font-family: var(--mono); font-size: 11px; direction: ltr; text-align: start;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.job-when { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.job-when .cd { color: var(--brass); font-family: var(--mono); }
+.job-acts { flex-shrink: 0; display: flex; gap: 5px; }
+.job-btn {
+  font-size: 10px; color: var(--text-2);
+  border: 1px solid var(--line); border-radius: 7px; padding: 4px 8px;
+  transition: all .2s var(--ease);
+}
+.job-btn:active { border-color: var(--brass); color: var(--brass); }
+.job-btn.danger:active { border-color: var(--alert); color: var(--alert); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — إدارة المستخدمين
+═══════════════════════════════════════════════════════════════ */
+.user-card {
+  background: var(--slate); border: 1px solid var(--line-soft);
+  border-radius: var(--r); padding: 11px 13px;
+  display: flex; align-items: center; gap: 11px;
+}
+.user-av {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 9px;
+  background: var(--raised); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--brass);
+}
+.user-body { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 500; }
+.user-sub { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.user-badge {
+  flex-shrink: 0; font-family: var(--mono); font-size: 8.5px;
+  letter-spacing: .1em; border-radius: 999px; padding: 2px 8px;
+  border: 1px solid var(--line-soft); color: var(--muted);
+}
+.user-badge.admin { color: var(--brass); border-color: var(--brass-dim); }
+.user-badge.off { color: var(--alert); border-color: var(--alert-dim); }
+
+.sheet-scroll { max-height: 74vh; overflow-y: auto; }
+.split { display: flex; gap: 9px; }
+.split > * { flex: 1; min-width: 0; }
+select.input {
+  appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-inline-end: 32px;
+}
+
 .overlay {
   position: fixed; inset: 0; z-index: 500;
   background: rgba(6,8,12,.72); backdrop-filter: blur(6px);
@@ -595,7 +836,7 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   left: 14px; right: 14px;
   background: var(--raised);
   border: 1px solid var(--line);
-  border-right: 3px solid var(--line);
+  border-inline-end: 3px solid var(--line);
   border-radius: var(--r);
   padding: 12px 14px;
   display: flex; align-items: center; gap: 11px;
@@ -604,9 +845,9 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateY(0); }
-.toast.ok   { border-right-color: var(--signal); }
-.toast.bad  { border-right-color: var(--alert); }
-.toast.wait { border-right-color: var(--brass); }
+.toast.ok   { border-inline-end-color: var(--signal); }
+.toast.bad  { border-inline-end-color: var(--alert); }
+.toast.wait { border-inline-end-color: var(--brass); }
 .toast-body { flex: 1; min-width: 0; }
 .toast-title { font-size: 13px; font-weight: 500; }
 .toast-detail {
@@ -639,9 +880,12 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
         <span class="brand-name">Online</span>
         <span class="brand-tag">DISPATCH</span>
       </div>
-      <div class="user-pill">
-        <span class="user-dot" id="ui-initial">—</span>
-        <span id="ui-user">—</span>
+      <div class="header-right">
+        <button class="lang-btn" id="lang-btn" onclick="toggleLang()" aria-label="Language">EN</button>
+        <div class="user-pill">
+          <span class="user-dot" id="ui-initial">—</span>
+          <span id="ui-user">—</span>
+        </div>
       </div>
     </div>
 
@@ -676,41 +920,46 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   <!-- ───── GAMES ───── -->
   <section class="page active" id="page-games">
     <div id="view-list" class="view active">
-      <div class="ids">
-        <button class="id-chip" onclick="openIds()">
-          <span class="id-chip-key">GAID</span>
-          <span class="id-chip-val" id="ui-gaid">—</span>
-        </button>
-        <button class="id-chip" onclick="openIds()">
-          <span class="id-chip-key">AF ID</span>
-          <span class="id-chip-val" id="ui-afid">—</span>
-        </button>
-      </div>
-
       <div class="search-wrap">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input class="input" id="in-search" placeholder="ابحث بالاسم أو الحزمة" oninput="applyFilters()">
+          <input class="input" id="in-search" data-i18n-ph="searchPh" oninput="applyFilters()">
         </div>
       </div>
 
       <div class="chips" id="chips"></div>
       <div class="game-list" id="game-list"></div>
       <div class="empty" id="no-results" style="display:none">
-        <b>لا نتائج</b>
-        جرّب كلمة أقصر أو أزل التصنيف.
+        <b data-i18n="noResT"></b>
+        <span data-i18n="noResS"></span>
       </div>
     </div>
 
     <div id="view-detail" class="view">
       <button class="back" onclick="showView('view-list')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-        كل الألعاب
+        <span data-i18n="backAll"></span>
       </button>
 
       <div class="detail-head">
         <div class="detail-name" id="d-name"></div>
         <div class="detail-pkg" id="d-pkg"></div>
+      </div>
+
+      <div class="idbox">
+        <div class="idbox-head" data-i18n="deviceIds"></div>
+        <div class="idbox-body">
+          <div class="idbox-field">
+            <label class="field-label" for="g-gaid">GAID</label>
+            <input class="input mono" id="g-gaid" dir="ltr" spellcheck="false"
+                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" oninput="saveId('gaid','g-gaid')">
+          </div>
+          <div class="idbox-field">
+            <label class="field-label" for="g-afid">AppsFlyer ID</label>
+            <input class="input mono" id="g-afid" dir="ltr" spellcheck="false"
+                   placeholder="0000000000000-0000000000000000000" oninput="saveId('afid','g-afid')">
+          </div>
+        </div>
       </div>
 
       <div class="payload">
@@ -723,93 +972,161 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
 
       <div class="stepper" id="d-stepper">
         <button class="step-btn" onclick="bumpLevel(-1)">−</button>
-        <input class="input" id="in-level" type="number" min="1" inputmode="numeric" placeholder="رقم المستوى" oninput="renderPreview()">
+        <input class="input" id="in-level" type="number" min="1" inputmode="numeric" data-i18n-ph="levelPh" oninput="renderPreview()">
         <button class="step-btn" onclick="bumpLevel(1)">+</button>
       </div>
 
       <div class="actions">
-        <button class="btn btn-primary" onclick="dispatchLevel()">إرسال الحدث</button>
-        <button class="btn btn-ghost" onclick="dispatchPurchase()">إرسال شراء</button>
+        <button class="btn btn-primary" onclick="dispatchLevel()" data-i18n="sendEvent"></button>
+        <button class="btn btn-ghost" onclick="dispatchPurchase()" data-i18n="sendPurchase"></button>
       </div>
 
-      <div class="section-label">سجل الإرسال</div>
-      <div class="log" id="log">
-        <div class="empty"><b>لا إرسال بعد</b>أول حدث سيظهر هنا مع رمز الاستجابة.</div>
+      <div class="stack" style="margin-top:9px">
+        <button class="btn btn-ghost" onclick="openBuilder()" data-i18n="scheduleThis"></button>
       </div>
+
+      <div class="section-label" data-i18n="dispatchLog"></div>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <!-- ───── SCHEDULE ───── -->
+  <section class="page" id="page-schedule">
+    <div class="segs">
+      <button class="seg active" id="seg-build" onclick="setSchedTab('build')" data-i18n="tabBuild"></button>
+      <button class="seg" id="seg-active" onclick="setSchedTab('active')" data-i18n="tabActive"></button>
+    </div>
+
+    <!-- بناء جدول جديد -->
+    <div id="sched-build">
+      <div class="anchor-note">
+        <b data-i18n="anchorTitle"></b>
+        <span data-i18n="anchorBody"></span>
+      </div>
+
+      <div class="stack">
+        <div>
+          <label class="field-label" for="sc-game" data-i18n="pickGame"></label>
+          <select class="input" id="sc-game" onchange="onSchedGameChange()"></select>
+        </div>
+        <div>
+          <label class="field-label" for="sc-name" data-i18n="schedName"></label>
+          <input class="input" id="sc-name" data-i18n-ph="schedNamePh">
+        </div>
+      </div>
+
+      <div class="section-label" data-i18n="schedRows"></div>
+
+      <div class="stack" style="margin-bottom:10px">
+        <div class="quickfill">
+          <span class="quickfill-key" data-i18n="lvlTag"></span>
+          <input class="input mono" id="sc-levels" dir="ltr" spellcheck="false"
+                 data-i18n-ph="levelsPh" onkeydown="if(event.key==='Enter')applyLevels()">
+          <button class="tool-btn" onclick="applyLevels()" data-i18n="apply"></button>
+        </div>
+        <div class="quickfill-hint" data-i18n="levelsHint"></div>
+      </div>
+
+      <div class="stack">
+        <div class="sched-rows" id="sc-rows"></div>
+      </div>
+
+      <div class="presets">
+        <button class="preset" onclick="addRow()">+ <span data-i18n="addRow"></span></button>
+        <button class="preset" onclick="addRow({delay:0})">⚡ <span data-i18n="addNow"></span></button>
+        <button class="preset" onclick="sortRows()" data-i18n="sortRows"></button>
+        <button class="preset" onclick="fillPreset([0,1,2,20,50,100])">0 · 1 · 2 · 20 · 50 · 100</button>
+        <button class="preset" onclick="fillPreset([1,3,6,12,24])">1 · 3 · 6 · 12 · 24</button>
+        <button class="preset" onclick="fillPreset([2,8,24,72,168])">2 · 8 · 24 · 72 · 168</button>
+        <button class="preset" onclick="clearRows()" data-i18n="clearRows"></button>
+      </div>
+
+      <div class="stack" style="margin-top:16px">
+        <button class="btn btn-primary" id="btn-create-sched" onclick="createSchedule()" data-i18n="createSched"></button>
+      </div>
+    </div>
+
+    <!-- الجداول القائمة -->
+    <div id="sched-active" style="display:none">
+      <div class="toolbar">
+        <button class="tool-btn" onclick="loadJobs(true)" data-i18n="refresh"></button>
+        <span class="runner-tag" id="jobs-count">—</span>
+      </div>
+      <div class="stack" id="jobs-list"></div>
     </div>
   </section>
 
   <!-- ───── PYTHON ───── -->
   <section class="page" id="page-python">
     <div class="toolbar">
-      <button class="tool-btn accent" id="btn-run" onclick="runCode()">تشغيل</button>
-      <button class="tool-btn" onclick="document.getElementById('editor').value=''">مسح الكود</button>
-      <button class="tool-btn" onclick="clearConsole()">مسح المخرجات</button>
+      <button class="tool-btn accent" id="btn-run" onclick="runCode()" data-i18n="run"></button>
+      <button class="tool-btn" onclick="document.getElementById('editor').value=''" data-i18n="clearCode"></button>
+      <button class="tool-btn" onclick="clearConsole()" data-i18n="clearOut"></button>
       <span class="runner-tag" id="runner-tag">RUNNER: —</span>
     </div>
 
     <div class="pip">
       <input class="input" id="in-pip" placeholder="numpy, pandas, requests…" dir="ltr" spellcheck="false">
-      <button class="tool-btn" id="btn-pip" onclick="installPkg()">تثبيت</button>
+      <button class="tool-btn" id="btn-pip" onclick="installPkg()" data-i18n="install"></button>
     </div>
 
     <div class="pkgs" id="pkgs"></div>
 
     <div class="stack">
-      <textarea class="editor" id="editor" spellcheck="false" placeholder="print('مرحباً')" onkeydown="handleTab(event)"></textarea>
+      <textarea class="editor" id="editor" spellcheck="false" data-i18n-ph="editorPh" onkeydown="handleTab(event)"></textarea>
     </div>
 
-    <div class="section-label">المخرجات</div>
+    <div class="section-label" data-i18n="output"></div>
     <div class="stack">
-      <div class="console" id="console"><span class="c-note">// جاهز</span></div>
+      <div class="console" id="console"></div>
     </div>
   </section>
 
   <!-- ───── SNIPPETS ───── -->
   <section class="page" id="page-snippets">
-    <div class="section-label">أمثلة جاهزة</div>
+    <div class="section-label" data-i18n="snippets"></div>
     <div class="stack" id="snips"></div>
   </section>
 
   <!-- ───── SETTINGS ───── -->
   <section class="page" id="page-settings">
-    <div class="section-label">الخادم</div>
+    <div class="section-label" data-i18n="serverSec"></div>
     <div class="stack">
       <div class="card row">
         <div>
-          <div class="row-label">العنوان</div>
-          <div class="row-sub">خادم Railway</div>
+          <div class="row-label" data-i18n="address"></div>
+          <div class="row-sub" data-i18n="railwayHost"></div>
         </div>
         <input class="input mono" id="set-server" dir="ltr" spellcheck="false">
       </div>
-      <button class="btn btn-ghost" onclick="checkServer(true)">فحص الاتصال الآن</button>
+      <button class="btn btn-ghost" onclick="checkServer(true)" data-i18n="checkNow"></button>
     </div>
 
-    <div class="section-label">معرّفات الجهاز</div>
+    <div class="section-label" data-i18n="deviceIds"></div>
     <div class="stack">
       <div class="card row">
         <div>
           <div class="row-label">GAID</div>
           <div class="row-sub">Google Advertising ID</div>
         </div>
-        <input class="input mono" id="set-gaid" dir="ltr" spellcheck="false" oninput="saveId('gaid')">
+        <input class="input mono" id="set-gaid" dir="ltr" spellcheck="false" oninput="saveId('gaid','set-gaid')">
       </div>
       <div class="card row">
         <div>
           <div class="row-label">AppsFlyer ID</div>
           <div class="row-sub">AppsFlyer Identifier</div>
         </div>
-        <input class="input mono" id="set-afid" dir="ltr" spellcheck="false" oninput="saveId('afid')">
+        <input class="input mono" id="set-afid" dir="ltr" spellcheck="false" oninput="saveId('afid','set-afid')">
       </div>
     </div>
 
-    <div class="section-label">سجل التشخيص</div>
+    <div class="section-label" data-i18n="diagSec"></div>
     <div class="diag" id="diag"></div>
     <div class="stack" style="margin-top:9px">
-      <button class="btn btn-ghost" onclick="copyDiag()">نسخ السجل</button>
+      <button class="btn btn-ghost" onclick="copyDiag()" data-i18n="copyLog"></button>
     </div>
 
-    <div class="section-label">الحساب</div>
+    <div class="section-label" data-i18n="accountSec"></div>
     <div class="stack">
       <div class="card row">
         <div>
@@ -817,15 +1134,34 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
           <div class="row-sub" id="ui-quota">—</div>
         </div>
       </div>
-      <button class="btn btn-ghost" onclick="retry()">إعادة الاتصال والدخول</button>
-      <button class="btn btn-danger" onclick="wipe()">مسح البيانات المحلية</button>
+      <button class="btn btn-ghost" onclick="retry()" data-i18n="reconnect"></button>
+      <button class="btn btn-danger" onclick="wipe()" data-i18n="wipeLocal"></button>
     </div>
 
-    <div class="section-label">حول</div>
+    <div id="admin-block" style="display:none">
+      <div class="section-label" data-i18n="adminSec"></div>
+      <div class="stack">
+        <button class="btn btn-primary" onclick="openUserSheet()" data-i18n="addUser"></button>
+        <div id="users-list" style="display:flex;flex-direction:column;gap:9px"></div>
+      </div>
+    </div>
+
+    <div class="section-label" data-i18n="langSec"></div>
     <div class="stack">
       <div class="card row">
-        <div class="row-label">الإصدار</div>
-        <div class="row-sub mono">v18.0</div>
+        <div>
+          <div class="row-label" data-i18n="langLabel"></div>
+          <div class="row-sub" data-i18n="langSub"></div>
+        </div>
+        <button class="btn btn-ghost" style="width:auto;padding:8px 16px" onclick="toggleLang()" id="lang-btn-2">EN</button>
+      </div>
+    </div>
+
+    <div class="section-label" data-i18n="aboutSec"></div>
+    <div class="stack">
+      <div class="card row">
+        <div class="row-label" data-i18n="version"></div>
+        <div class="row-sub mono">v19.0</div>
       </div>
     </div>
   </section>
@@ -833,7 +1169,11 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
   <nav class="nav">
     <button class="nav-item active" id="nav-games" onclick="switchPage('games')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg>
-      ألعاب
+      <span data-i18n="navGames"></span>
+    </button>
+    <button class="nav-item" id="nav-schedule" onclick="switchPage('schedule')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <span data-i18n="navSchedule"></span>
     </button>
     <button class="nav-item" id="nav-python" onclick="switchPage('python')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
@@ -841,30 +1181,90 @@ input:focus-visible, button:focus-visible, textarea:focus-visible {
     </button>
     <button class="nav-item" id="nav-snippets" onclick="switchPage('snippets')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-      أمثلة
+      <span data-i18n="navSnippets"></span>
     </button>
     <button class="nav-item" id="nav-settings" onclick="switchPage('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      إعدادات
+      <span data-i18n="navSettings"></span>
     </button>
   </nav>
 </div>
 
-<!-- ═══════════ ID SHEET ═══════════ -->
-<div class="overlay" id="ids-sheet">
+
+
+<div class="overlay" id="job-sheet">
   <div class="sheet">
-    <div class="sheet-title">معرّفات الجهاز</div>
-    <div class="field">
-      <label class="field-label" for="m-gaid">GAID</label>
-      <input class="input mono" id="m-gaid" dir="ltr" spellcheck="false" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+    <div class="sheet-title" id="js-title"></div>
+    <div class="anchor-note" style="margin:0 0 14px">
+      <span data-i18n="jsCurrent"></span> <b id="js-when"></b>
+    </div>
+    <div class="split">
+      <div class="field">
+        <label class="field-label" for="js-delay" data-i18n="jsDelay"></label>
+        <input class="input mono" id="js-delay" type="number" min="0" dir="ltr" oninput="previewJobTime()">
+      </div>
+      <div class="field">
+        <label class="field-label" for="js-unit" data-i18n="jsUnit"></label>
+        <select class="input" id="js-unit" onchange="previewJobTime()">
+          <option value="m"></option><option value="h"></option><option value="d"></option>
+        </select>
+      </div>
     </div>
     <div class="field">
-      <label class="field-label" for="m-afid">AppsFlyer ID</label>
-      <input class="input mono" id="m-afid" dir="ltr" spellcheck="false" placeholder="0000000000000-0000000000000000000">
+      <label class="field-label" for="js-enabled" data-i18n="fActive"></label>
+      <select class="input" id="js-enabled">
+        <option value="1"></option><option value="0"></option>
+      </select>
+    </div>
+    <div class="anchor-note" style="margin:0">
+      <span data-i18n="jsNew"></span> <b id="js-preview"></b>
     </div>
     <div class="sheet-actions">
-      <button class="btn btn-primary" onclick="saveIdsSheet()">حفظ</button>
-      <button class="btn btn-ghost" onclick="closeIds()">إلغاء</button>
+      <button class="btn btn-primary" id="js-save" onclick="saveJob()" data-i18n="save"></button>
+      <button class="btn btn-ghost" onclick="closeJobSheet()" data-i18n="cancel"></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="user-sheet">
+  <div class="sheet">
+    <div class="sheet-scroll">
+      <div class="sheet-title" id="us-title"></div>
+      <div class="field">
+        <label class="field-label" for="us-name" data-i18n="fUsername"></label>
+        <input class="input mono" id="us-name" dir="ltr" spellcheck="false" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="us-pass" data-i18n="fPassword"></label>
+        <input class="input mono" id="us-pass" dir="ltr" spellcheck="false" autocomplete="new-password">
+      </div>
+      <div class="split">
+        <div class="field">
+          <label class="field-label" for="us-role" data-i18n="fRole"></label>
+          <select class="input" id="us-role">
+            <option value="user"></option>
+            <option value="admin"></option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="us-quota" data-i18n="fQuota"></label>
+          <input class="input mono" id="us-quota" type="number" min="0" dir="ltr" value="100">
+        </div>
+      </div>
+      <div class="field" id="us-active-wrap" style="display:none">
+        <label class="field-label" for="us-active" data-i18n="fActive"></label>
+        <select class="input" id="us-active">
+          <option value="1"></option>
+          <option value="0"></option>
+        </select>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn btn-primary" id="us-save" onclick="saveUser()"></button>
+        <button class="btn btn-ghost" onclick="closeUserSheet()" data-i18n="cancel"></button>
+      </div>
+      <div class="stack" style="padding:0;margin-top:9px">
+        <button class="btn btn-danger" id="us-del" style="display:none" data-i18n="deleteUser"></button>
+      </div>
     </div>
   </div>
 </div>
@@ -896,6 +1296,281 @@ const REQ_TIMEOUT = 25000;   // الإقلاع البارد على Railway يت�
      مرور تستعملها في مكان آخر، وأبقِ المستودع خاصاً.
 ─────────────────────────────────────────────────────────────── */
 const CREDS = { username: 'admin', password: '123456' };
+
+/* ═══════════════════════════════════════════════════════════════
+   I18N — عربي / English
+   كل نصّ ظاهر يمرّ من هنا. لا نصّ مكتوب داخل المنطق.
+═══════════════════════════════════════════════════════════════ */
+const I18N = {
+  ar: {
+    _dir: 'rtl', _other: 'EN',
+    navGames: 'ألعاب', navSnippets: 'أمثلة', navSettings: 'إعدادات',
+    searchPh: 'ابحث بالاسم أو الحزمة',
+    catAll: 'الكل', catFav: 'المفضّلة',
+    noResT: 'لا نتائج', noResS: 'جرّب كلمة أقصر أو أزل التصنيف.',
+    noFavT: 'لا مفضّلة بعد', noFavS: 'اضغط النجمة بجانب أي لعبة لتثبيتها هنا.',
+    backAll: 'كل الألعاب',
+    deviceIds: 'معرّفات الجهاز',
+    levelPh: 'رقم المستوى',
+    sendEvent: 'إرسال الحدث', sendPurchase: 'إرسال شراء',
+    dispatchLog: 'سجل الإرسال',
+    noLogT: 'لا إرسال بعد', noLogS: 'أول حدث سيظهر هنا مع رمز الاستجابة.',
+    run: 'تشغيل', clearCode: 'مسح الكود', clearOut: 'مسح المخرجات',
+    install: 'تثبيت', output: 'المخرجات', editorPh: "print('مرحباً')",
+    consoleReady: '// جاهز', noPkgs: 'لا مكتبات مضافة',
+    snippets: 'أمثلة جاهزة',
+    serverSec: 'الخادم', address: 'العنوان', railwayHost: 'خادم Railway',
+    checkNow: 'فحص الاتصال الآن',
+    diagSec: 'سجل التشخيص', copyLog: 'نسخ السجل',
+    accountSec: 'الحساب', reconnect: 'إعادة الاتصال والدخول', wipeLocal: 'مسح البيانات المحلية',
+    langSec: 'اللغة', langLabel: 'لغة الواجهة', langSub: 'عربي / English',
+    aboutSec: 'حول', version: 'الإصدار',
+    roleAdmin: 'مدير', roleUser: 'مستخدم',
+    quotaUnlimited: 'رصيد غير محدود',
+    quotaFmt: (a, b) => `الرصيد المتبقي: ${a} من ${b}`,
+    railChecking: 'يفحص…', railConnected: 'متصل', railDbDown: 'DB معطّلة',
+    railUnavailable: 'غير متاح', railSending: 'يرسل…', railFailed: 'فشل',
+    railExpired: 'منتهية', railAuthFail: 'فشلت',
+    srvOkT: 'الخادم يعمل', srvDbT: 'الخادم يعمل — قاعدة البيانات لا',
+    srvNoHealth: 'مسار /health غير متاح', srvDownT: 'تعذّر الوصول للخادم',
+    errTimeout: n => `انتهت المهلة بعد ${n} ثانية`,
+    errNet: 'تعذّر الوصول للخادم (شبكة أو CORS)', errUnknown: 'خطأ غير معروف',
+    bnrServerDown: 'الخادم لا يستجيب. افتح الإعدادات وتحقّق من العنوان، أو انتظر إقلاعه.',
+    bnrBadCreds: 'بيانات الدخول المكتوبة في الملف غير صحيحة. عدّل CREDS في أعلى الكود.',
+    bnrLoginFail: 'تعذّر تسجيل الدخول: ', bnrRenewFail: 'تعذّر تجديد الجلسة. تحقّق من CREDS في أعلى الكود.',
+    actRetry: 'إعادة المحاولة',
+    sessionReady: 'الجلسة جاهزة: ', sessionRenew: 'انتهت الجلسة — يجدّد الرمز',
+    sessionRenewedT: 'جُدّدت الجلسة', sessionRenewedS: 'أعد المحاولة',
+    copiedT: 'نُسخ السجل', copiedS: n => `${n} سطر`,
+    copyFailT: 'تعذّر النسخ', copyFailS: 'انسخه يدوياً',
+    needLevelT: 'أدخل رقم المستوى', needLevelS: 'الحقل مطلوب لهذا القالب',
+    sendingT: 'يرسل الحدث', sentT: 'وصل الحدث', rejectedT: 'رفضته AppsFlyer',
+    notSentT: 'لم يُرسل الحدث',
+    emptyEditorT: 'المحرّر فارغ', emptyEditorS: 'اكتب كوداً أولاً',
+    runRemote: '// يشغّل على الخادم…', runLocal: '// يشغّل محلياً…',
+    runDoneFmt: s => `\n// انتهى في ${s}s\n`, runFailed: '\n// انتهى بخطأ\n', runDone: '\n// انتهى\n',
+    pyNotReadyT: 'Python غير جاهز', pyNotReadyS: 'المحرّك ما زال يُحمَّل',
+    pipWaitS: 'قد يستغرق دقيقة', pipOkT: 'ثُبّتت المكتبة', pipFailT: 'فشل التثبيت',
+    runnerLoading: 'يحمّل…', runnerServer: 'الخادم', runnerLocal: 'محلي (WASM)', runnerNone: 'غير متاح',
+    snipLoadedT: 'حُمّل المثال',
+    wipeConfirm: 'سيُمسح كل ما هو محفوظ على هذا الجهاز: الجلسة والمعرّفات والإعدادات. متابعة؟',
+    bootDiag: 'البدء — الخادم: ', pyodideOk: 'Pyodide جاهز', pyodideFail: 'تعذّر تحميل Pyodide',
+
+    navSchedule: 'الجدولة',
+    tabBuild: 'جدول جديد', tabActive: 'الجداول القائمة',
+    anchorTitle: 'العدّ يبدأ الآن. ',
+    anchorBody: 'المهلة تُحسب من لحظة إنشاء الجدول. اضبطها على «الآن» ليُرسل الحدث فوراً. الخادم يتولّى الباقي — لا حاجة لإبقاء الصفحة مفتوحة.',
+    pickGame: 'اللعبة', schedName: 'اسم الجدول', schedNamePh: 'مثال: حملة الأسبوع',
+    schedRows: 'الأحداث', addRow: 'صف جديد', clearRows: 'تفريغ',
+    createSched: 'إنشاء الجدول',
+    scheduleThis: 'جدولة أحداث لهذه اللعبة',
+    colLevel: 'المستوى', colHours: 'ساعة',
+    refresh: 'تحديث',
+    jobsCount: n => `${n} حدث مجدول`,
+    noJobsT: 'لا جداول بعد', noJobsS: 'أنشئ جدولاً من التبويب الأول، أو من داخل أي لعبة.',
+    stPending: 'ينتظر', stDone: 'أُرسل', stFailed: 'فشل', stOff: 'موقوف',
+    inFmt: (d, h, m) => d > 0 ? `بعد ${d}ي ${h}س` : (h > 0 ? `بعد ${h}س ${m}د` : `بعد ${m}د`),
+    duePast: 'حان موعده',
+    jRun: 'الآن', jEdit: 'تعديل', jDel: 'حذف',
+    schedCreatedT: 'أُنشئ الجدول', schedCreatedS: n => `${n} حدث على الخادم`,
+    schedPartialT: 'أُنشئ جزئياً', schedPartialS: (a, b) => `${a} من ${b} — راجع السجل`,
+    schedFailT: 'تعذّر إنشاء الجدول',
+    needGameT: 'اختر لعبة أولاً', needRowsT: 'أضف صفاً واحداً على الأقل',
+    badRowT: 'صف غير صالح', badRowS: 'كل صف يحتاج عدد ساعات أكبر من صفر',
+    needIdsT: 'أكمل المعرّفات', needIdsS: 'GAID و AppsFlyer ID مطلوبان للجدولة',
+    delJobQ: 'حذف هذا الحدث من الجدول؟', delGroupQ: n => `حذف الجدول كاملاً (${n} حدث)؟`,
+    deletedT: 'حُذف', queuedT: 'أُرسل للتنفيذ الآن',
+    editHoursQ: 'كم ساعة من الآن؟',
+    jobsLoadFail: 'تعذّر تحميل الجداول: ',
+
+    adminSec: 'إدارة المستخدمين', addUser: 'إضافة مستخدم',
+    fUsername: 'اسم المستخدم', fPassword: 'كلمة المرور', fRole: 'الصلاحية',
+    fQuota: 'الرصيد', fActive: 'الحالة',
+    optUser: 'مستخدم', optAdmin: 'مدير', optActive: 'مفعّل', optOff: 'موقوف',
+    newUserT: 'مستخدم جديد', editUserT: 'تعديل مستخدم',
+    save: 'حفظ', cancel: 'إلغاء',
+    passHint: 'اتركها فارغة لإبقائها كما هي',
+    userAddedT: 'أُضيف المستخدم', userSavedT: 'حُفظت التعديلات', userDelT: 'حُذف المستخدم',
+    delUserQ: u => `حذف المستخدم "${u}" وكل بياناته؟`,
+    needUserT: 'أكمل الحقول', needUserS: 'اسم المستخدم وكلمة المرور مطلوبان',
+    shortPassT: 'كلمة المرور قصيرة', shortPassS: '8 محارف على الأقل',
+    usersFail: 'تعذّر تحميل المستخدمين: ',
+    quotaCell: (a, b) => `الرصيد ${a}/${b}`,
+    noRowsT: 'لا صفوف', noRowsS: 'اضغط «صف جديد» أو اختر قالباً جاهزاً.',
+    otherGroup: 'أحداث مفردة', deleteUser: 'حذف المستخدم',
+
+    kLevel: 'مستوى', kPurchase: 'شراء', kCustom: 'مخصّص',
+    uMin: 'دقيقة', uHour: 'ساعة', uDay: 'يوم',
+    colDelay: 'المهلة',
+    rowNow: 'الآن', rowNoName: 'اكتب اسم الحدث',
+    addNow: 'حدث فوري', sortRows: 'ترتيب زمني', sortedT: 'رُتّبت الصفوف',
+    firedNow: n => `${n} أُرسل فوراً`,
+    jPause: 'إيقاف', jResume: 'استئناف',
+    jsCurrent: 'الموعد الحالي:', jsNew: 'الموعد الجديد:',
+    jsDelay: 'من الآن', jsUnit: 'الوحدة',
+    lvlTag: 'المستوى', apply: 'تطبيق',
+    levelsPh: '3, 7, 12, 30',
+    levelsHint: 'اكتب أرقام المستويات مفصولة بفاصلة. ولتحديد المهلة معها: 3@0 · 7@2h · 12@20h · 30@2d',
+    levelsEmptyT: 'الحقل فارغ', levelsBadT: 'صيغة غير مفهومة',
+    levelsAppliedT: 'طُبّقت المستويات'
+  },
+
+  en: {
+    _dir: 'ltr', _other: 'ع',
+    navGames: 'Games', navSnippets: 'Snippets', navSettings: 'Settings',
+    searchPh: 'Search by name or package',
+    catAll: 'All', catFav: 'Starred',
+    noResT: 'No results', noResS: 'Try a shorter term or clear the category.',
+    noFavT: 'Nothing starred yet', noFavS: 'Tap the star on any game to pin it here.',
+    backAll: 'All games',
+    deviceIds: 'Device IDs',
+    levelPh: 'Level number',
+    sendEvent: 'Send event', sendPurchase: 'Send purchase',
+    dispatchLog: 'Dispatch log',
+    noLogT: 'Nothing sent yet', noLogS: 'Your first event will appear here with its status code.',
+    run: 'Run', clearCode: 'Clear code', clearOut: 'Clear output',
+    install: 'Install', output: 'Output', editorPh: "print('hello')",
+    consoleReady: '// ready', noPkgs: 'No packages added',
+    snippets: 'Ready-made examples',
+    serverSec: 'Server', address: 'Address', railwayHost: 'Railway host',
+    checkNow: 'Check connection now',
+    diagSec: 'Diagnostics log', copyLog: 'Copy log',
+    accountSec: 'Account', reconnect: 'Reconnect and sign in', wipeLocal: 'Clear local data',
+    langSec: 'Language', langLabel: 'Interface language', langSub: 'English / عربي',
+    aboutSec: 'About', version: 'Version',
+    roleAdmin: 'Admin', roleUser: 'User',
+    quotaUnlimited: 'Unlimited quota',
+    quotaFmt: (a, b) => `Remaining: ${a} of ${b}`,
+    railChecking: 'checking…', railConnected: 'connected', railDbDown: 'DB down',
+    railUnavailable: 'unreachable', railSending: 'sending…', railFailed: 'failed',
+    railExpired: 'expired', railAuthFail: 'failed',
+    srvOkT: 'Server is up', srvDbT: 'Server up — database down',
+    srvNoHealth: '/health route unavailable', srvDownT: 'Cannot reach the server',
+    errTimeout: n => `Timed out after ${n}s`,
+    errNet: 'Cannot reach the server (network or CORS)', errUnknown: 'Unknown error',
+    bnrServerDown: 'The server is not responding. Open Settings and check the address, or wait for it to boot.',
+    bnrBadCreds: 'The credentials in this file are wrong. Edit CREDS at the top of the code.',
+    bnrLoginFail: 'Sign-in failed: ', bnrRenewFail: 'Could not renew the session. Check CREDS at the top of the code.',
+    actRetry: 'Retry',
+    sessionReady: 'Session ready: ', sessionRenew: 'Session expired — renewing token',
+    sessionRenewedT: 'Session renewed', sessionRenewedS: 'Try again',
+    copiedT: 'Log copied', copiedS: n => `${n} lines`,
+    copyFailT: 'Copy failed', copyFailS: 'Copy it manually',
+    needLevelT: 'Enter a level number', needLevelS: 'This template requires it',
+    sendingT: 'Sending event', sentT: 'Event accepted', rejectedT: 'Rejected by AppsFlyer',
+    notSentT: 'Event not sent',
+    emptyEditorT: 'Editor is empty', emptyEditorS: 'Write some code first',
+    runRemote: '// running on server…', runLocal: '// running locally…',
+    runDoneFmt: s => `\n// finished in ${s}s\n`, runFailed: '\n// finished with an error\n', runDone: '\n// finished\n',
+    pyNotReadyT: 'Python not ready', pyNotReadyS: 'The runtime is still loading',
+    pipWaitS: 'May take a minute', pipOkT: 'Package installed', pipFailT: 'Install failed',
+    runnerLoading: 'loading…', runnerServer: 'server', runnerLocal: 'local (WASM)', runnerNone: 'unavailable',
+    snipLoadedT: 'Example loaded',
+    wipeConfirm: 'This clears everything stored on this device: session, IDs and settings. Continue?',
+    bootDiag: 'Boot — server: ', pyodideOk: 'Pyodide ready', pyodideFail: 'Could not load Pyodide',
+
+    navSchedule: 'Schedule',
+    tabBuild: 'New schedule', tabActive: 'Active schedules',
+    anchorTitle: 'The clock starts now. ',
+    anchorBody: 'Delays are counted from the moment you create the schedule. Set one to "Now" and it fires immediately. The server handles the rest — no need to keep this page open.',
+    pickGame: 'Game', schedName: 'Schedule name', schedNamePh: 'e.g. Week campaign',
+    schedRows: 'Events', addRow: 'Add row', clearRows: 'Clear',
+    createSched: 'Create schedule',
+    scheduleThis: 'Schedule events for this game',
+    colLevel: 'Level', colHours: 'hours',
+    refresh: 'Refresh',
+    jobsCount: n => `${n} scheduled events`,
+    noJobsT: 'No schedules yet', noJobsS: 'Create one from the first tab, or from inside any game.',
+    stPending: 'pending', stDone: 'sent', stFailed: 'failed', stOff: 'paused',
+    inFmt: (d, h, m) => d > 0 ? `in ${d}d ${h}h` : (h > 0 ? `in ${h}h ${m}m` : `in ${m}m`),
+    duePast: 'due now',
+    jRun: 'Now', jEdit: 'Edit', jDel: 'Delete',
+    schedCreatedT: 'Schedule created', schedCreatedS: n => `${n} events on the server`,
+    schedPartialT: 'Partially created', schedPartialS: (a, b) => `${a} of ${b} — check the log`,
+    schedFailT: 'Could not create the schedule',
+    needGameT: 'Pick a game first', needRowsT: 'Add at least one row',
+    badRowT: 'Invalid row', badRowS: 'Every row needs an hour count above zero',
+    needIdsT: 'Device IDs missing', needIdsS: 'GAID and AppsFlyer ID are required for scheduling',
+    delJobQ: 'Remove this event from the schedule?', delGroupQ: n => `Delete the whole schedule (${n} events)?`,
+    deletedT: 'Deleted', queuedT: 'Queued to run now',
+    editHoursQ: 'How many hours from now?',
+    jobsLoadFail: 'Could not load schedules: ',
+
+    adminSec: 'User management', addUser: 'Add user',
+    fUsername: 'Username', fPassword: 'Password', fRole: 'Role',
+    fQuota: 'Quota', fActive: 'Status',
+    optUser: 'User', optAdmin: 'Admin', optActive: 'Active', optOff: 'Disabled',
+    newUserT: 'New user', editUserT: 'Edit user',
+    save: 'Save', cancel: 'Cancel',
+    passHint: 'Leave blank to keep it unchanged',
+    userAddedT: 'User added', userSavedT: 'Changes saved', userDelT: 'User deleted',
+    delUserQ: u => `Delete user "${u}" and all their data?`,
+    needUserT: 'Fill the fields', needUserS: 'Username and password are required',
+    shortPassT: 'Password too short', shortPassS: 'At least 8 characters',
+    usersFail: 'Could not load users: ',
+    quotaCell: (a, b) => `Quota ${a}/${b}`,
+    noRowsT: 'No rows', noRowsS: 'Tap "Add row" or pick a preset.',
+    otherGroup: 'Single events', deleteUser: 'Delete user',
+
+    kLevel: 'Level', kPurchase: 'Purchase', kCustom: 'Custom',
+    uMin: 'min', uHour: 'hours', uDay: 'days',
+    colDelay: 'Delay',
+    rowNow: 'Now', rowNoName: 'Enter an event name',
+    addNow: 'Instant event', sortRows: 'Sort by time', sortedT: 'Rows sorted',
+    firedNow: n => `${n} sent instantly`,
+    jPause: 'Pause', jResume: 'Resume',
+    jsCurrent: 'Current time:', jsNew: 'New time:',
+    jsDelay: 'From now', jsUnit: 'Unit',
+    lvlTag: 'LEVEL', apply: 'Apply',
+    levelsPh: '3, 7, 12, 30',
+    levelsHint: 'Type level numbers separated by commas. To set the delay too: 3@0 · 7@2h · 12@20h · 30@2d',
+    levelsEmptyT: 'Field is empty', levelsBadT: 'Unrecognised format',
+    levelsAppliedT: 'Levels applied'
+  }
+};
+
+let LANG = localStorage.getItem('ol_lang') || 'ar';
+const t = (k, ...a) => {
+  const v = (I18N[LANG] || I18N.ar)[k];
+  return typeof v === 'function' ? v(...a) : (v !== undefined ? v : k);
+};
+
+function applyLang() {
+  const d = I18N[LANG];
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = d._dir;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  ['lang-btn', 'lang-btn-2'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.textContent = d._other;
+  });
+  redrawDynamic();
+}
+
+function toggleLang() {
+  LANG = LANG === 'ar' ? 'en' : 'ar';
+  localStorage.setItem('ol_lang', LANG);
+  applyLang();
+}
+
+/* كل ما يُبنى بـ JS يُعاد رسمه عند تبديل اللغة */
+function redrawDynamic() {
+  if (typeof renderSchedGames === 'function') renderSchedGames();
+  if (typeof renderRows === 'function') renderRows();
+  if (typeof renderJobs === 'function' && jobsCache.length) renderJobs();
+  if (typeof renderUsers === 'function' && usersCache.length) renderUsers();
+  if (typeof syncSelectLabels === 'function') syncSelectLabels();
+  if (typeof renderChips === 'function') renderChips();
+  if (typeof applyFilters === 'function') applyFilters();
+  if (typeof renderLog === 'function') renderLog();
+  if (typeof renderSnips === 'function') renderSnips();
+  if (typeof renderPkgs === 'function') renderPkgs();
+  if (typeof refreshAccount === 'function') refreshAccount();
+  if (typeof setRunner === 'function') setRunner(runnerKey);
+  const c = document.getElementById('console');
+  if (c && !c.textContent.trim()) c.innerHTML = `<span class="c-note">${t('consoleReady')}</span>`;
+}
 
 const K = {
   server: 'ol_server', token: 'ol_token', user: 'ol_user',
@@ -937,8 +1612,8 @@ function renderDiag() {
 function copyDiag() {
   const txt = diagLines.map(l => `${l.t}  ${l.msg}`).join('\n');
   navigator.clipboard?.writeText(txt)
-    .then(() => toast('ok', '✓', 'نُسخ السجل', diagLines.length + ' سطر'))
-    .catch(() => toast('bad', '!', 'تعذّر النسخ', 'انسخه يدوياً'));
+    .then(() => toast('ok', '✓', t('copiedT'), t('copiedS', diagLines.length)))
+    .catch(() => toast('bad', '!', t('copyFailT'), t('copyFailS')));
 }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -985,9 +1660,9 @@ async function api(path, opts) {
     if (e.status) throw e;
     // تمييز سبب الفشل بدل "Failed to fetch" المبهم
     let reason;
-    if (e.name === 'AbortError') reason = `انتهت المهلة بعد ${(opts.timeout || REQ_TIMEOUT) / 1000} ثانية`;
-    else if (e instanceof TypeError) reason = 'تعذّر الوصول للخادم (شبكة أو CORS)';
-    else reason = e.message || 'خطأ غير معروف';
+    if (e.name === 'AbortError') reason = t('errTimeout', (opts.timeout || REQ_TIMEOUT) / 1000);
+    else if (e instanceof TypeError) reason = t('errNet');
+    else reason = e.message || t('errUnknown');
     diag(`${opts.method || 'GET'} ${path} ✗ ${reason}`, 'err');
     const err = new Error(reason);
     err.network = true;
@@ -1007,13 +1682,13 @@ function rail(seg, state, val) {
 
 /* ═══════════════ SERVER CHECK ═══════════════ */
 async function checkServer(loud) {
-  rail('srv', 'wait', 'يفحص…');
+  rail('srv', 'wait', t('railChecking'));
   try {
     const r = await api('/health', { timeout: 20000 });
     serverUp = true;
     const ok = r && r.ok !== false;
-    rail('srv', ok ? 'ok' : 'err', ok ? 'متصل' : 'DB معطّلة');
-    if (loud) toast(ok ? 'ok' : 'bad', ok ? '✓' : '!', ok ? 'الخادم يعمل' : 'الخادم يعمل — قاعدة البيانات لا',
+    rail('srv', ok ? 'ok' : 'err', ok ? t('railConnected') : t('railDbDown'));
+    if (loud) toast(ok ? 'ok' : 'bad', ok ? '✓' : '!', ok ? t('srvOkT') : t('srvDbT'),
                     (r && r.detail) || '');
     return ok;
   } catch (e) {
@@ -1021,13 +1696,13 @@ async function checkServer(loud) {
     try {
       await api('/', { timeout: 20000 });
       serverUp = true;
-      rail('srv', 'ok', 'متصل');
-      if (loud) toast('ok', '✓', 'الخادم يعمل', 'مسار /health غير متاح');
+      rail('srv', 'ok', t('railConnected'));
+      if (loud) toast('ok', '✓', t('srvOkT'), t('srvNoHealth'));
       return true;
     } catch (e2) {
       serverUp = false;
-      rail('srv', 'err', 'غير متاح');
-      if (loud) toast('bad', '✗', 'تعذّر الوصول للخادم', e2.message);
+      rail('srv', 'err', t('railUnavailable'));
+      if (loud) toast('bad', '✗', t('srvDownT'), e2.message);
       return false;
     }
   }
@@ -1055,7 +1730,7 @@ async function resume() {
   const up = await checkServer(false);
   if (!up) {
     showApp();
-    banner('الخادم لا يستجيب. افتح الإعدادات وتحقّق من العنوان، أو انتظر إقلاعه.', 'إعادة المحاولة');
+    banner(t('bnrServerDown'), t('actRetry'));
     return;
   }
 
@@ -1070,10 +1745,8 @@ async function resume() {
     ready();
   } catch (e) {
     showApp();
-    rail('auth', 'err', 'فشلت');
-    banner(e.status === 401
-      ? 'بيانات الدخول المكتوبة في الملف غير صحيحة. عدّل CREDS في أعلى الكود.'
-      : 'تعذّر تسجيل الدخول: ' + e.message, 'إعادة المحاولة');
+    rail('auth', 'err', t('railAuthFail'));
+    banner(e.status === 401 ? t('bnrBadCreds') : t('bnrLoginFail') + e.message, t('actRetry'));
   }
 }
 
@@ -1086,15 +1759,20 @@ function showApp() {
 function ready() {
   showApp();
   hideBanner();
+  refreshAccount();
+  rail('auth', 'ok', ME.username || '—');
+  document.getElementById('set-server').value = SERVER;
+  diag(t('sessionReady') + ME.username, 'ok');
+  boot();
+}
+
+function refreshAccount() {
+  if (!ME) return;
   document.getElementById('ui-user').textContent = ME.username || '—';
   document.getElementById('ui-initial').textContent = (ME.username || '?')[0].toUpperCase();
-  document.getElementById('ui-role').textContent = ME.role === 'admin' ? 'مدير' : 'مستخدم';
+  document.getElementById('ui-role').textContent = ME.role === 'admin' ? t('roleAdmin') : t('roleUser');
   document.getElementById('ui-quota').textContent =
-    ME.role === 'admin' ? 'رصيد غير محدود' : `الرصيد المتبقي: ${ME.uses_left} من ${ME.max_uses}`;
-  rail('auth', 'ok', ME.username || 'نشط');
-  document.getElementById('set-server').value = SERVER;
-  diag('الجلسة جاهزة: ' + ME.username, 'ok');
-  boot();
+    ME.role === 'admin' ? t('quotaUnlimited') : t('quotaFmt', ME.uses_left, ME.max_uses);
 }
 
 function banner(msg, actionLabel) {
@@ -1115,14 +1793,14 @@ function retry() {
 /* انتهاء الجلسة أثناء الاستخدام: يُجدَّد الرمز صامتاً ويُعاد الطلب مرة واحدة */
 async function guard401(e) {
   if (e.status !== 401) return false;
-  diag('انتهت الجلسة — يجدّد الرمز', 'dim');
+  diag(t('sessionRenew'), 'dim');
   try {
     await signIn();
     rail('auth', 'ok', ME.username);
-    toast('ok', '✓', 'جُدّدت الجلسة', 'أعد المحاولة');
+    toast('ok', '✓', t('sessionRenewedT'), t('sessionRenewedS'));
   } catch (_) {
-    rail('auth', 'err', 'فشلت');
-    banner('تعذّر تجديد الجلسة. تحقّق من CREDS في أعلى الكود.', 'إعادة المحاولة');
+    rail('auth', 'err', t('railAuthFail'));
+    banner(t('bnrRenewFail'), t('actRetry'));
   }
   return true;
 }
@@ -1176,18 +1854,37 @@ const GAMES = [
   {name:"Yarn Loop",package:"com.combo.yarnflow",dev_key:"TGm97uKTJF7qFCvREggWtf",tmpl:"level_complete_{}",cat:"other"}
 ];
 
+/* المفضّلة: مع 31 لعبة، تثبيت ما تستعمله يوفّر بحثاً متكرراً */
+let favs = JSON.parse(localStorage.getItem('ol_favs') || '[]');
+
+function isFav(pkg) { return favs.includes(pkg); }
+function toggleFav(pkg, ev) {
+  if (ev) ev.stopPropagation();
+  favs = isFav(pkg) ? favs.filter(p => p !== pkg) : favs.concat(pkg);
+  localStorage.setItem('ol_favs', JSON.stringify(favs));
+  renderChips(); applyFilters();
+}
+
 const CATS = [
-  { id: 'all', label: 'الكل' },
+  { id: 'all',  key: 'catAll' },
+  { id: 'fav',  key: 'catFav' },
   { id: 'puzzle', label: 'Puzzle' },
-  { id: 'farm', label: 'Farm' },
-  { id: 'merge', label: 'Merge' },
-  { id: 'other', label: 'Other' }
+  { id: 'farm',   label: 'Farm' },
+  { id: 'merge',  label: 'Merge' },
+  { id: 'other',  label: 'Other' }
 ];
+
+function countCat(id) {
+  if (id === 'all') return GAMES.length;
+  if (id === 'fav') return favs.length;
+  return GAMES.filter(g => g.cat === id).length;
+}
 
 function renderChips() {
   document.getElementById('chips').innerHTML = CATS.map(c => {
-    const n = c.id === 'all' ? GAMES.length : GAMES.filter(g => g.cat === c.id).length;
-    return `<button class="chip${c.id === activeCat ? ' active' : ''}" onclick="setCat('${c.id}')">${c.label} ${n}</button>`;
+    const label = c.key ? t(c.key) : c.label;
+    const star = c.id === 'fav' ? '★ ' : '';
+    return `<button class="chip${c.id === activeCat ? ' active' : ''}" onclick="setCat('${c.id}')">${star}${label} ${countCat(c.id)}</button>`;
   }).join('');
 }
 function setCat(id) { activeCat = id; renderChips(); applyFilters(); }
@@ -1195,20 +1892,32 @@ function setCat(id) { activeCat = id; renderChips(); applyFilters(); }
 function applyFilters() {
   const q = document.getElementById('in-search').value.trim().toLowerCase();
   let list = GAMES;
-  if (activeCat !== 'all') list = list.filter(g => g.cat === activeCat);
+  if (activeCat === 'fav') list = list.filter(g => isFav(g.package));
+  else if (activeCat !== 'all') list = list.filter(g => g.cat === activeCat);
   if (q) list = list.filter(g => g.name.toLowerCase().includes(q) || g.package.toLowerCase().includes(q));
 
-  document.getElementById('no-results').style.display = list.length ? 'none' : 'block';
+  // المفضّلة أولاً دائماً
+  list = list.slice().sort((a, b) => (isFav(b.package) ? 1 : 0) - (isFav(a.package) ? 1 : 0));
+
+  const empty = document.getElementById('no-results');
+  empty.style.display = list.length ? 'none' : 'block';
+  if (!list.length) {
+    const fav = activeCat === 'fav' && !q;
+    empty.innerHTML = `<b>${t(fav ? 'noFavT' : 'noResT')}</b><span>${t(fav ? 'noFavS' : 'noResS')}</span>`;
+  }
+
   document.getElementById('game-list').innerHTML = list.map(g => {
     const i = GAMES.indexOf(g);
-    return `<button class="game-item" onclick="openGame(${i})">
+    const on = isFav(g.package);
+    return `<div class="game-item" onclick="openGame(${i})">
       <span class="game-idx">${String(i + 1).padStart(2, '0')}</span>
       <span class="game-meta">
         <span class="game-name">${escapeHtml(g.name)}</span>
         <span class="game-pkg">${escapeHtml(g.package)}</span>
       </span>
       <span class="game-cat">${g.cat.toUpperCase()}</span>
-    </button>`;
+      <button class="star${on ? ' on' : ''}" onclick="toggleFav('${g.package}', event)" aria-label="star">${on ? '★' : '☆'}</button>
+    </div>`;
   }).join('');
 }
 
@@ -1219,7 +1928,10 @@ function openGame(i) {
   document.getElementById('d-pkg').textContent = activeGame.package;
   document.getElementById('d-tmpl').textContent = activeGame.tmpl;
   document.getElementById('d-stepper').style.display = hasNum ? 'flex' : 'none';
-  document.getElementById('in-level').value = hasNum ? '1' : '';
+  // يتذكّر آخر مستوى استُعمل مع هذه اللعبة تحديداً
+  const remembered = JSON.parse(localStorage.getItem('ol_levels') || '{}')[activeGame.package];
+  document.getElementById('in-level').value = hasNum ? (remembered || '1') : '';
+  renderIds();
   eventLog = [];
   renderLog();
   renderPreview();
@@ -1232,8 +1944,17 @@ function bumpLevel(d) {
   renderPreview();
 }
 
+function rememberLevel() {
+  if (!activeGame) return;
+  const v = document.getElementById('in-level').value;
+  const all = JSON.parse(localStorage.getItem('ol_levels') || '{}');
+  if (v) all[activeGame.package] = v; else delete all[activeGame.package];
+  localStorage.setItem('ol_levels', JSON.stringify(all));
+}
+
 function renderPreview() {
   if (!activeGame) return;
+  rememberLevel();
   const t = activeGame.tmpl, v = document.getElementById('in-level').value;
   document.getElementById('d-preview').textContent =
     t.includes('{}') ? (v ? t.replace('{}', v) : '') : t;
@@ -1241,16 +1962,16 @@ function renderPreview() {
 
 /* ═══════════════ DISPATCH ═══════════════ */
 async function dispatchLevel() {
-  const t = activeGame.tmpl, v = document.getElementById('in-level').value;
-  if (t.includes('{}') && !v) return toast('bad', '!', 'أدخل رقم المستوى', 'الحقل مطلوب لهذا القالب');
-  await dispatch('level', t.includes('{}') ? t.replace('{}', v) : t);
+  const tm = activeGame.tmpl, v = document.getElementById('in-level').value;
+  if (tm.includes('{}') && !v) return toast('bad', '!', t('needLevelT'), t('needLevelS'));
+  await dispatch('level', tm.includes('{}') ? tm.replace('{}', v) : tm);
 }
 async function dispatchPurchase() { await dispatch('purchase', 'af_purchase'); }
 
 async function dispatch(kind, evName) {
   if (!activeGame) return;
-  rail('last', 'wait', 'يرسل…');
-  toast('wait', null, 'يرسل الحدث', evName);
+  rail('last', 'wait', t('railSending'));
+  toast('wait', null, t('sendingT'), evName);
 
   const body = {
     appsflyer_id: afid,
@@ -1272,12 +1993,12 @@ async function dispatch(kind, evName) {
     addLog(evName, String(code), ok);
     rail('last', ok ? 'ok' : 'err', evName.slice(0, 18));
     toast(ok ? 'ok' : 'bad', ok ? '✓' : '✗',
-          ok ? 'وصل الحدث' : 'رفضته AppsFlyer', `${evName} · ${code}`);
+          ok ? t('sentT') : t('rejectedT'), `${evName} · ${code}`);
   } catch (e) {
     if (await guard401(e)) return;
     addLog(evName, e.status ? String(e.status) : 'NET', false);
-    rail('last', 'err', 'فشل');
-    toast('bad', '✗', 'لم يُرسل الحدث', e.message);
+    rail('last', 'err', t('railFailed'));
+    toast('bad', '✗', t('notSentT'), e.message);
   }
 }
 
@@ -1292,7 +2013,7 @@ function addLog(name, code, ok) {
 function renderLog() {
   const el = document.getElementById('log');
   if (!eventLog.length) {
-    el.innerHTML = '<div class="empty"><b>لا إرسال بعد</b>أول حدث سيظهر هنا مع رمز الاستجابة.</div>';
+    el.innerHTML = `<div class="empty"><b>${t('noLogT')}</b>${t('noLogS')}</div>`;
     return;
   }
   el.innerHTML = eventLog.map(e => `
@@ -1303,36 +2024,30 @@ function renderLog() {
     </div>`).join('');
 }
 
-/* ═══════════════ IDS ═══════════════ */
+/* ═══════════════ IDS — تُدخَل داخل شاشة اللعبة ═══════════════
+   القيم مشتركة بين كل الألعاب ومحفوظة محلياً، لكن مكان تحريرها
+   صار حيث تُستعمل: شاشة اللعبة. الإعدادات نسخة ثانية للمراجعة.
+═════════════════════════════════════════════════════════════ */
+const ID_FIELDS = { gaid: ['g-gaid', 'set-gaid'], afid: ['g-afid', 'set-afid'] };
+
 function renderIds() {
-  document.getElementById('ui-gaid').textContent = gaid.slice(0, 20) + (gaid.length > 20 ? '…' : '');
-  document.getElementById('ui-afid').textContent = afid.slice(0, 20) + (afid.length > 20 ? '…' : '');
-  document.getElementById('set-gaid').value = gaid;
-  document.getElementById('set-afid').value = afid;
+  for (const [key, ids] of Object.entries(ID_FIELDS)) {
+    const val = key === 'gaid' ? gaid : afid;
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el !== document.activeElement) el.value = val;
+    });
+  }
 }
-function openIds() {
-  document.getElementById('m-gaid').value = gaid;
-  document.getElementById('m-afid').value = afid;
-  document.getElementById('ids-sheet').classList.add('open');
-}
-function closeIds() { document.getElementById('ids-sheet').classList.remove('open'); }
-function saveIdsSheet() {
-  const g = document.getElementById('m-gaid').value.trim();
-  const a = document.getElementById('m-afid').value.trim();
-  if (g) { gaid = g; localStorage.setItem(K.gaid, g); }
-  if (a) { afid = a; localStorage.setItem(K.afid, a); }
-  renderIds(); closeIds();
-  toast('ok', '✓', 'حُفظت المعرّفات', '');
-}
-function saveId(which) {
-  const v = document.getElementById('set-' + which).value.trim();
+
+function saveId(which, srcId) {
+  const el = document.getElementById(srcId);
+  if (!el) return;
+  const v = el.value.trim();
   if (which === 'gaid') { gaid = v; localStorage.setItem(K.gaid, v); }
   else { afid = v; localStorage.setItem(K.afid, v); }
   renderIds();
 }
-document.getElementById('ids-sheet').addEventListener('click', function (e) {
-  if (e.target === this) closeIds();
-});
 
 /* ═══════════════ PYTHON ═══════════════ */
 function cwrite(text, cls) {
@@ -1345,17 +2060,19 @@ function cwrite(text, cls) {
 }
 function clearConsole() { document.getElementById('console').innerHTML = ''; }
 
-function setRunner(label) {
-  document.getElementById('runner-tag').textContent = 'RUNNER: ' + label;
+let runnerKey = 'runnerLoading';
+function setRunner(key) {
+  runnerKey = key || runnerKey;
+  document.getElementById('runner-tag').textContent = 'RUNNER: ' + t(runnerKey);
 }
 
 async function runCode() {
   const code = document.getElementById('editor').value.trim();
-  if (!code) return toast('bad', '!', 'المحرّر فارغ', 'اكتب كوداً أولاً');
+  if (!code) return toast('bad', '!', t('emptyEditorT'), t('emptyEditorS'));
   clearConsole();
 
   if (serverUp && TOKEN) {
-    cwrite('// يشغّل على الخادم…\n', 'note');
+    cwrite(t('runRemote') + '\n', 'note');
     const btn = document.getElementById('btn-run');
     btn.disabled = true;
     const t0 = Date.now();
@@ -1364,7 +2081,7 @@ async function runCode() {
       if (r.stdout) cwrite(r.stdout, 'out');
       if (r.stderr) cwrite(r.stderr, 'err');
       const s = ((Date.now() - t0) / 1000).toFixed(2);
-      cwrite(r.returncode === 0 ? `\n// انتهى في ${s}s\n` : '\n// انتهى بخطأ\n',
+      cwrite(r.returncode === 0 ? t('runDoneFmt', s) : t('runFailed'),
              r.returncode === 0 ? 'ok' : 'bad');
     } catch (e) {
       if (await guard401(e)) return;
@@ -1373,12 +2090,12 @@ async function runCode() {
     return;
   }
 
-  if (!pyReady) return toast('bad', '⏳', 'Python غير جاهز', 'المحرّك ما زال يُحمَّل');
-  cwrite('// يشغّل محلياً…\n', 'note');
+  if (!pyReady) return toast('bad', '⏳', t('pyNotReadyT'), t('pyNotReadyS'));
+  cwrite(t('runLocal') + '\n', 'note');
   try {
     const out = await pyodide.runPythonAsync(code);
     if (out !== undefined && out !== null) cwrite(String(out) + '\n', 'out');
-    cwrite('\n// انتهى\n', 'ok');
+    cwrite(t('runDone'), 'ok');
   } catch (e) {
     cwrite(e.message + '\n', 'err');
   }
@@ -1389,24 +2106,24 @@ async function installPkg() {
   if (!pkg) return;
   const btn = document.getElementById('btn-pip');
   btn.disabled = true;
-  toast('wait', null, 'pip install ' + pkg, 'قد يستغرق دقيقة');
+  toast('wait', null, 'pip install ' + pkg, t('pipWaitS'));
 
   try {
     if (serverUp && TOKEN) {
       const r = await api('/pip', { method: 'POST', body: { package: pkg }, timeout: 70000 });
-      if (!r.success) throw new Error(r.message || 'فشل التثبيت');
+      if (!r.success) throw new Error(r.message || t('pipFailT'));
     } else {
-      if (!pyReady) throw new Error('Python غير جاهز');
+      if (!pyReady) throw new Error(t('pyNotReadyT'));
       await pyodide.runPythonAsync(`import micropip\nawait micropip.install('${pkg}')`);
     }
     if (!pkgs.includes(pkg)) { pkgs.push(pkg); localStorage.setItem(K.pkgs, JSON.stringify(pkgs)); }
     renderPkgs();
     document.getElementById('in-pip').value = '';
-    toast('ok', '✓', 'ثُبّتت المكتبة', pkg);
+    toast('ok', '✓', t('pipOkT'), pkg);
     cwrite('// installed: ' + pkg + '\n', 'ok');
   } catch (e) {
     if (await guard401(e)) return;
-    toast('bad', '✗', 'فشل التثبيت', e.message);
+    toast('bad', '✗', t('pipFailT'), e.message);
     cwrite('// ' + e.message + '\n', 'bad');
   } finally { btn.disabled = false; }
 }
@@ -1414,8 +2131,8 @@ async function installPkg() {
 function renderPkgs() {
   const el = document.getElementById('pkgs');
   el.innerHTML = pkgs.length
-    ? pkgs.map(p => `<span class="pkg">${escapeHtml(p)}<button onclick="dropPkg('${escapeHtml(p)}')" aria-label="إزالة">×</button></span>`).join('')
-    : '<span style="font-size:11.5px;color:var(--muted)">لا مكتبات مضافة</span>';
+    ? pkgs.map(p => `<span class="pkg">${escapeHtml(p)}<button onclick="dropPkg('${escapeHtml(p)}')" aria-label="remove">×</button></span>`).join('')
+    : `<span style="font-size:11.5px;color:var(--muted)">${t('noPkgs')}</span>`;
 }
 function dropPkg(p) {
   pkgs = pkgs.filter(x => x !== p);
@@ -1432,12 +2149,12 @@ function handleTab(e) {
 }
 
 async function loadPyodide_() {
-  setRunner('يحمّل…');
+  setRunner('runnerLoading');
   try {
     await new Promise((res, rej) => {
       const s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
-      s.onload = res; s.onerror = () => rej(new Error('تعذّر تحميل Pyodide'));
+      s.onload = res; s.onerror = () => rej(new Error(t('pyodideFail')));
       document.head.appendChild(s);
     });
     pyodide = await loadPyodide({
@@ -1446,31 +2163,31 @@ async function loadPyodide_() {
       stderr: t => cwrite(t + '\n', 'err')
     });
     pyReady = true;
-    setRunner(serverUp && TOKEN ? 'الخادم' : 'محلي (WASM)');
-    diag('Pyodide جاهز', 'ok');
+    setRunner(serverUp && TOKEN ? 'runnerServer' : 'runnerLocal');
+    diag(t('pyodideOk'), 'ok');
   } catch (e) {
-    setRunner(serverUp && TOKEN ? 'الخادم' : 'غير متاح');
+    setRunner(serverUp && TOKEN ? 'runnerServer' : 'runnerNone');
     diag('Pyodide: ' + e.message, 'err');
   }
 }
 
 /* ═══════════════ SNIPPETS ═══════════════ */
 const SNIPPETS = [
-  { title: 'طباعة والتاريخ', tag: 'basics', desc: 'أول كود — رسالة وتاريخ اليوم.',
+  { title: 'طباعة والتاريخ', titleEn: 'Print and date', tag: 'basics', desc: 'أول كود — رسالة وتاريخ اليوم.', descEn: "Your first script — a message and today's date.",
     code: `from datetime import datetime\n\nprint("مرحباً من Online")\nprint(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))` },
-  { title: 'إحصاءات سريعة', tag: 'math', desc: 'متوسط ووسيط وانحراف معياري بلا مكتبات خارجية.',
+  { title: 'إحصاءات سريعة', titleEn: 'Quick statistics', tag: 'math', desc: 'متوسط ووسيط وانحراف معياري بلا مكتبات خارجية.', descEn: "Mean, median and standard deviation with no external libraries.",
     code: `import statistics\n\nnums = [10, 25, 33, 47, 52, 61, 78, 90]\nprint("المجموع:", sum(nums))\nprint("المتوسط:", round(statistics.mean(nums), 2))\nprint("الوسيط:", statistics.median(nums))\nprint("الانحراف:", round(statistics.stdev(nums), 2))` },
-  { title: 'بناء وقراءة JSON', tag: 'json', desc: 'تحويل بين القواميس ونصّ JSON بالعربية.',
+  { title: 'بناء وقراءة JSON', titleEn: 'Build and read JSON', tag: 'json', desc: 'تحويل بين القواميس ونصّ JSON بالعربية.', descEn: "Convert between dictionaries and JSON text, Arabic-safe.",
     code: `import json\n\ndata = {\n    "game": "Coin Master",\n    "package": "com.moonactive.coinmaster",\n    "events": [\n        {"name": "village_5_complete", "status": 200}\n    ]\n}\n\ntxt = json.dumps(data, indent=2, ensure_ascii=False)\nprint(txt)\nprint("عدد الأحداث:", len(json.loads(txt)["events"]))` },
-  { title: 'استخراج بـ Regex', tag: 're', desc: 'التقاط المعرّفات والحزم من نصّ سجل.',
+  { title: 'استخراج بـ Regex', titleEn: 'Extract with Regex', tag: 're', desc: 'التقاط المعرّفات والحزم من نصّ سجل.', descEn: "Pull IDs and packages out of a log string.",
     code: `import re\n\ntext = """\nGAID: 70ebe327-e224-4b1e-adb0-b09a27f78a0f\nPackage: com.moonactive.coinmaster\nStatus: 200 OK\n"""\n\nfor label, pat in [("GAID", r"GAID: ([0-9a-f-]{36})"),\n                   ("Package", r"Package: ([\\w.]+)"),\n                   ("Status", r"Status: (\\d+)")]:\n    m = re.search(pat, text)\n    print(label, "=", m.group(1) if m else "غير موجود")` },
-  { title: 'توليد معرّفات', tag: 'utils', desc: 'GAID و AppsFlyer ID جديدين بالصيغة الصحيحة.',
+  { title: 'توليد معرّفات', titleEn: 'Generate identifiers', tag: 'utils', desc: 'GAID و AppsFlyer ID جديدين بالصيغة الصحيحة.', descEn: "Fresh GAID and AppsFlyer ID in the correct format.",
     code: `import uuid, random, time\n\ndef gen_gaid():\n    return str(uuid.uuid4())\n\ndef gen_afid():\n    return f"{int(time.time() * 1000)}-{random.randint(10**18, 10**19 - 1)}"\n\nfor i in range(3):\n    print(f"--- {i+1} ---")\n    print("GAID:", gen_gaid())\n    print("AFID:", gen_afid())` },
-  { title: 'مصفوفات numpy', tag: 'numpy', desc: 'يتطلب تثبيت numpy من حقل pip.',
+  { title: 'مصفوفات numpy', titleEn: 'numpy arrays', tag: 'numpy', desc: 'يتطلب تثبيت numpy من حقل pip.', descEn: "Requires installing numpy from the pip field.",
     code: `import numpy as np\n\narr = np.arange(1, 11)\nprint("المصفوفة:", arr)\nprint("المتوسط:", np.mean(arr))\nprint("الانحراف:", round(float(np.std(arr)), 4))\nprint(np.reshape(arr, (2, 5)))` },
-  { title: 'جدول pandas', tag: 'pandas', desc: 'يتطلب تثبيت pandas من حقل pip.',
+  { title: 'جدول pandas', titleEn: 'pandas table', tag: 'pandas', desc: 'يتطلب تثبيت pandas من حقل pip.', descEn: "Requires installing pandas from the pip field.",
     code: `import pandas as pd\n\ndf = pd.DataFrame({\n    "Game": ["Coin Master", "Gardenscapes", "Match Factory"],\n    "Sent": [45, 32, 67],\n    "Rate": [0.95, 0.88, 0.97]\n})\n\nprint(df.to_string(index=False))\nprint("متوسط المرسل:", round(df["Sent"].mean(), 1))` },
-  { title: 'بناء حدث AppsFlyer', tag: 'AF', desc: 'تحضير الجسم الكامل جاهزاً للإرسال.',
+  { title: 'بناء حدث AppsFlyer', titleEn: 'Build an AppsFlyer event', tag: 'AF', desc: 'تحضير الجسم الكامل جاهزاً للإرسال.', descEn: "Prepare the full request body, ready to send.",
     code: `import json\nfrom datetime import datetime, timezone\n\ndef build(package, dev_key, afid, gaid, event, revenue=None):\n    return {\n        "url": f"https://api2.appsflyer.com/inappevent/{package}",\n        "headers": {"Content-Type": "application/json", "authentication": dev_key},\n        "body": {\n            "appsflyer_id": afid,\n            "advertising_id": gaid,\n            "eventName": event,\n            "eventTime": datetime.now(timezone.utc).isoformat(),\n            "eventValue": json.dumps({"af_revenue": str(revenue), "af_currency": "USD"}) if revenue else "{}"\n        }\n    }\n\nreq = build("com.moonactive.coinmaster", "H3KjoCRVTiVgA5mWSAHtCe",\n            "1779417828531-7129893952045055065",\n            "70ebe327-e224-4b1e-adb0-b09a27f78a0f",\n            "village_5_complete")\nprint(json.dumps(req, indent=2, ensure_ascii=False))` }
 ];
 
@@ -1478,18 +2195,616 @@ function renderSnips() {
   document.getElementById('snips').innerHTML = SNIPPETS.map((s, i) => `
     <button class="snip" onclick="loadSnip(${i})">
       <span class="snip-head">
-        <span class="snip-title">${escapeHtml(s.title)}</span>
+        <span class="snip-title">${escapeHtml(LANG === 'en' ? s.titleEn : s.title)}</span>
         <span class="snip-tag">${escapeHtml(s.tag)}</span>
       </span>
-      <span class="snip-desc" style="display:block">${escapeHtml(s.desc)}</span>
+      <span class="snip-desc" style="display:block">${escapeHtml(LANG === 'en' ? s.descEn : s.desc)}</span>
       <span class="snip-code" style="display:block">${escapeHtml(s.code.slice(0, 140))}</span>
     </button>`).join('');
 }
 function loadSnip(i) {
   document.getElementById('editor').value = SNIPPETS[i].code;
   switchPage('python');
-  toast('ok', '✓', 'حُمّل المثال', SNIPPETS[i].title);
+  toast('ok', '✓', t('snipLoadedT'), SNIPPETS[i][LANG === 'en' ? 'titleEn' : 'title']);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCHEDULING — الإرسال الآلي
+   ───────────────────────────────────────────────────────────────
+   القرار الهندسي: الجدولة تعيش على الخادم لا في المتصفح.
+   مؤقّت في الصفحة يموت لحظة إغلاق التبويب أو قفل الهاتف، وحدث
+   بعد 100 ساعة لن يصل أبداً. الخادم عنده Celery + scheduled_jobs
+   أصلاً، فنستعمله: كل صف في الجدول يصير مهمة مستقلّة بموعدها.
+
+   ولماذا مهمة لكل حدث بدل مهمة واحدة بعدة أحداث؟ لأن الجدول
+   الواحد له run_at واحد على الخادم — فلا يمكنه تفريق الأحداث على
+   ساعات مختلفة. الفصل يعطي أيضاً تعديلاً وحذفاً لكل حدث وحده.
+
+   المرساة: لحظة الضغط على "إنشاء الجدول". كل الساعات تُضاف إليها.
+═══════════════════════════════════════════════════════════════ */
+
+/* نموذج الصف:
+   { kind: 'level'|'purchase'|'custom', level, custom, delay, unit }
+   delay = 0  ⇒  يُرسل فوراً عند إنشاء الجدول.
+   unit: 'm' دقيقة | 'h' ساعة | 'd' يوم — لأن "بعد 90 دقيقة" و
+   "بعد 3 أيام" أوضح من كسور الساعات. */
+let schedRows = [];
+let jobsCache = [];
+let cdTimer = null;
+let editingJob = null;
+
+const UNIT_MS = { m: 60000, h: 3600000, d: 86400000 };
+
+/* الخادم يخزّن TIMESTAMPTZ والحاوية تعمل بتوقيت UTC،
+   فنرسل UTC صريحاً ونعرض التوقيت المحلي دائماً. */
+function toServerTime(d) {
+  const z = n => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${z(d.getUTCMonth() + 1)}-${z(d.getUTCDate())} ` +
+         `${z(d.getUTCHours())}:${z(d.getUTCMinutes())}:${z(d.getUTCSeconds())}`;
+}
+function fmtLocal(d) {
+  return d.toLocaleString(LANG === 'ar' ? 'ar' : 'en-GB',
+    { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function countdown(target) {
+  const ms = target - Date.now();
+  if (ms <= 0) return t('duePast');
+  const m = Math.floor(ms / 60000), h = Math.floor(m / 60), d = Math.floor(h / 24);
+  return t('inFmt', d, h % 24, m % 60);
+}
+function rowMs(r) { return Math.max(0, Number(r.delay) || 0) * UNIT_MS[r.unit || 'h']; }
+
+/* ── التبويبات ── */
+function setSchedTab(which) {
+  const build = which === 'build';
+  document.getElementById('sched-build').style.display = build ? 'block' : 'none';
+  document.getElementById('sched-active').style.display = build ? 'none' : 'block';
+  document.getElementById('seg-build').classList.toggle('active', build);
+  document.getElementById('seg-active').classList.toggle('active', !build);
+  if (!build) loadJobs(false);
+}
+
+/* ── منتقي اللعبة ── */
+function renderSchedGames() {
+  const sel = document.getElementById('sc-game');
+  if (!sel) return;
+  const keep = sel.value;
+  sel.innerHTML = GAMES.map((g, i) => `<option value="${i}">${escapeHtml(g.name)}</option>`).join('');
+  if (keep) sel.value = keep;
+}
+function schedGame() {
+  const el = document.getElementById('sc-game');
+  const i = el ? parseInt(el.value, 10) : NaN;
+  return isNaN(i) ? null : GAMES[i];
+}
+function onSchedGameChange() { renderRows(); }
+
+/* اسم الحدث الناتج عن الصف */
+function rowEventName(r, g) {
+  if (r.kind === 'purchase') return 'af_purchase';
+  if (r.kind === 'custom') return (r.custom || '').trim();
+  if (!g) return '';
+  return g.tmpl.includes('{}') ? g.tmpl.replace('{}', r.level || 1) : g.tmpl;
+}
+
+/* ── الصفوف ── */
+function addRow(opts) {
+  const n = schedRows.length;
+  schedRows.push(Object.assign(
+    { kind: 'level', level: n + 1, custom: '', delay: n === 0 ? 0 : n, unit: 'h' },
+    opts || {}));
+  renderRows();
+}
+function clearRows() { schedRows = []; renderRows(); }
+function dropRow(i) { schedRows.splice(i, 1); renderRows(); }
+function dupRow(i) {
+  schedRows.splice(i + 1, 0, Object.assign({}, schedRows[i]));
+  renderRows();
+}
+function moveRow(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= schedRows.length) return;
+  [schedRows[i], schedRows[j]] = [schedRows[j], schedRows[i]];
+  renderRows();
+}
+function setRow(i, field, val) {
+  schedRows[i][field] = (field === 'kind' || field === 'unit' || field === 'custom')
+    ? val : (val === '' ? '' : Number(val));
+  renderRows();
+}
+function setNow(i) {
+  schedRows[i].delay = 0;
+  renderRows();
+}
+/* تعبئة أرقام المستويات دفعةً واحدة.
+   يقبل:  3,7,12       → مستويات فقط، تُطبَّق على الصفوف بالترتيب
+          3@0 7@2h 12@20h → مستوى مع مهلته (m/h/d، الافتراضي ساعة)
+   وينشئ الصفوف الناقصة تلقائياً. */
+function applyLevels() {
+  const raw = document.getElementById('sc-levels').value.trim();
+  if (!raw) return toast('bad', '!', t('levelsEmptyT'), t('levelsHint'));
+
+  const parts = raw.split(/[,\s]+/).filter(Boolean);
+  const parsed = [];
+  for (const p of parts) {
+    const m = /^(\d+)(?:@(\d+)([mhd])?)?$/i.exec(p);
+    if (!m) return toast('bad', '!', t('levelsBadT'), p);
+    parsed.push({
+      level: parseInt(m[1], 10),
+      delay: m[2] !== undefined ? parseInt(m[2], 10) : null,
+      unit: (m[3] || 'h').toLowerCase()
+    });
+  }
+
+  parsed.forEach((p, i) => {
+    if (!schedRows[i]) schedRows[i] = { kind: 'level', level: 1, custom: '', delay: i, unit: 'h' };
+    const r = schedRows[i];
+    r.kind = 'level';
+    r.level = p.level;
+    if (p.delay !== null) { r.delay = p.delay; r.unit = p.unit; }
+  });
+  // إن كانت الصفوف أكثر من الأرقام، احذف الزائد
+  if (schedRows.length > parsed.length) schedRows.length = parsed.length;
+
+  renderRows();
+  document.getElementById('sc-levels').value = '';
+  toast('ok', '✓', t('levelsAppliedT'), t('jobsCount', parsed.length));
+}
+
+function sortRows() {
+  schedRows.sort((a, b) => rowMs(a) - rowMs(b));
+  renderRows();
+  toast('ok', '✓', t('sortedT'), '');
+}
+/* القوالب تضبط المهل فقط، وتحافظ على أرقام المستويات التي أدخلتها */
+function fillPreset(hoursArr) {
+  schedRows = hoursArr.map((h, i) => {
+    const old = schedRows[i];
+    return {
+      kind: old ? old.kind : 'level',
+      level: old ? old.level : i + 1,
+      custom: old ? old.custom : '',
+      delay: h, unit: 'h'
+    };
+  });
+  renderRows();
+}
+
+function renderRows() {
+  const box = document.getElementById('sc-rows');
+  if (!box) return;
+  const g = schedGame();
+  const now = Date.now();
+
+  if (!schedRows.length) {
+    box.innerHTML = `<div class="empty" style="padding:28px 16px"><b>${t('noRowsT')}</b><span>${t('noRowsS')}</span></div>`;
+    return;
+  }
+
+  const hasLvl = g && g.tmpl.includes('{}');
+
+  box.innerHTML = schedRows.map((r, i) => {
+    const isNow = Number(r.delay) === 0;
+    const ev = rowEventName(r, g);
+    const when = isNow ? t('rowNow') : fmtLocal(new Date(now + rowMs(r)));
+    const bad = !ev;
+
+    // حقل وسط الصف يتبدّل حسب نوع الحدث
+    let mid = '';
+    if (r.kind === 'level' && hasLvl) {
+      mid = `<span class="srow-unit lvl">${t('lvlTag')}</span>
+             <input class="srow-in hero" type="number" min="1" inputmode="numeric" value="${r.level}"
+               onchange="setRow(${i},'level',this.value)" aria-label="${t('colLevel')}">`;
+    } else if (r.kind === 'custom') {
+      mid = `<input class="srow-in" style="text-align:start;direction:ltr" value="${escapeHtml(r.custom)}"
+               placeholder="event_name" onchange="setRow(${i},'custom',this.value)" aria-label="${t('kCustom')}">`;
+    }
+
+    return `<div class="srow${isNow ? ' now' : ''}">
+      <span class="srow-n">#${i + 1}</span>
+
+      <select class="srow-sel${mid ? '' : ' grow'}" onchange="setRow(${i},'kind',this.value)">
+        <option value="level"    ${r.kind === 'level' ? 'selected' : ''}>${t('kLevel')}</option>
+        <option value="purchase" ${r.kind === 'purchase' ? 'selected' : ''}>${t('kPurchase')}</option>
+        <option value="custom"   ${r.kind === 'custom' ? 'selected' : ''}>${t('kCustom')}</option>
+      </select>
+      ${mid}
+
+      <button class="srow-move" onclick="moveRow(${i},-1)" aria-label="up">▲</button>
+      <button class="srow-move" onclick="moveRow(${i},1)" aria-label="down">▼</button>
+      <button class="srow-move" onclick="dupRow(${i})" aria-label="duplicate">⧉</button>
+      <button class="srow-x" onclick="dropRow(${i})" aria-label="remove">×</button>
+
+      <span class="srow-break"></span>
+
+      <button class="srow-now${isNow ? ' on' : ''}" onclick="setNow(${i})">${t('rowNow')}</button>
+      <input class="srow-in" type="number" min="0" step="1" inputmode="numeric" value="${r.delay}"
+             onchange="setRow(${i},'delay',this.value)" aria-label="${t('colDelay')}">
+      <select class="srow-sel" onchange="setRow(${i},'unit',this.value)">
+        <option value="m" ${r.unit === 'm' ? 'selected' : ''}>${t('uMin')}</option>
+        <option value="h" ${r.unit === 'h' ? 'selected' : ''}>${t('uHour')}</option>
+        <option value="d" ${r.unit === 'd' ? 'selected' : ''}>${t('uDay')}</option>
+      </select>
+
+      <span class="srow-when">${bad ? `<span class="dim">${t('rowNoName')}</span>`
+        : `${escapeHtml(ev)} <span class="dim">·</span> ${when}`}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── الإنشاء ── */
+async function createSchedule() {
+  const g = schedGame();
+  if (!g) return toast('bad', '!', t('needGameT'), '');
+  if (!schedRows.length) return toast('bad', '!', t('needRowsT'), '');
+  if (schedRows.some(r => !rowEventName(r, g))) return toast('bad', '!', t('badRowT'), t('rowNoName'));
+  if (!gaid.trim() || !afid.trim()) return toast('bad', '!', t('needIdsT'), t('needIdsS'));
+
+  const btn = document.getElementById('btn-create-sched');
+  btn.disabled = true;
+  toast('wait', null, t('createSched'), g.name);
+
+  const sid = Math.random().toString(36).slice(2, 7).toUpperCase();
+  const label = (document.getElementById('sc-name').value.trim() || g.name).slice(0, 40);
+  const anchorMs = Date.now();          // ← المرساة: هذه اللحظة بالضبط
+
+  // بالترتيب الزمني حتى يكون سجل الخادم مقروءاً
+  const ordered = schedRows.slice().sort((a, b) => rowMs(a) - rowMs(b));
+
+  let done = 0, fired = 0;
+  for (const r of ordered) {
+    const ev = rowEventName(r, g);
+    const ms = rowMs(r);
+    const tag = ms === 0 ? 'now' : `+${r.delay}${r.unit}`;
+    try {
+      const res = await api('/jobs', {
+        method: 'POST',
+        body: {
+          name: `[S:${sid}] ${label} · ${tag}`,
+          events: [{ name: ev }],
+          run_at: toServerTime(new Date(anchorMs + ms)),
+          package: g.package,
+          dev_key: g.dev_key,
+          gaid: gaid.trim(),
+          afid: afid.trim(),
+          os: 'android'
+        }
+      });
+      done++;
+      // "الآن" لا ينتظر دورة الجدولة التالية — يُدفع للتنفيذ فوراً
+      if (ms === 0 && res && res.id) {
+        try { await api(`/jobs/${res.id}/run`, { method: 'POST' }); fired++; }
+        catch (e2) { diag(`immediate run failed for #${res.id}: ${e2.message}`, 'err'); }
+      }
+    } catch (e) {
+      if (await guard401(e)) { btn.disabled = false; return; }
+      diag(`schedule row ${tag} failed: ${e.message}`, 'err');
+    }
+  }
+
+  btn.disabled = false;
+  if (done === ordered.length) {
+    toast('ok', '✓', t('schedCreatedT'),
+          t('schedCreatedS', done) + (fired ? ' · ' + t('firedNow', fired) : ''));
+    schedRows = []; renderRows();
+    document.getElementById('sc-name').value = '';
+    setSchedTab('active');
+  } else if (done > 0) {
+    toast('bad', '!', t('schedPartialT'), t('schedPartialS', done, ordered.length));
+    setSchedTab('active');
+  } else {
+    toast('bad', '✗', t('schedFailT'), '');
+  }
+}
+
+/* من داخل شاشة اللعبة */
+function openBuilder() {
+  switchPage('schedule');
+  setSchedTab('build');
+  if (activeGame) {
+    const i = GAMES.indexOf(activeGame);
+    if (i >= 0) document.getElementById('sc-game').value = String(i);
+  }
+  if (!schedRows.length) fillPreset([1, 2, 20, 50, 100]);
+  else renderRows();
+}
+
+/* ── الجداول القائمة ── */
+async function loadJobs(loud) {
+  const box = document.getElementById('jobs-list');
+  try {
+    jobsCache = await api('/jobs');
+    renderJobs();
+    if (loud) toast('ok', '✓', t('refresh'), t('jobsCount', jobsCache.length));
+  } catch (e) {
+    if (await guard401(e)) return;
+    box.innerHTML = `<div class="empty"><b>${t('noJobsT')}</b><span>${escapeHtml(t('jobsLoadFail') + e.message)}</span></div>`;
+  }
+}
+
+function jobState(j) {
+  if (!j.enabled) return 'off';
+  if (!j.last_run) return 'pending';
+  return /ok|success|20[01]|sent/i.test(String(j.last_status || '')) ? 'done' : 'failed';
+}
+
+function renderJobs() {
+  const box = document.getElementById('jobs-list');
+  document.getElementById('jobs-count').textContent = t('jobsCount', jobsCache.length);
+
+  if (!jobsCache.length) {
+    box.innerHTML = `<div class="empty"><b>${t('noJobsT')}</b><span>${t('noJobsS')}</span></div>`;
+    return;
+  }
+
+  // تجميع حسب وسم الجدول المضمّن في الاسم
+  const groups = {};
+  jobsCache.forEach(j => {
+    const m = /^\[S:([A-Z0-9]+)\]\s*(.*?)\s*·\s*\+/.exec(j.name || '');
+    const key = m ? m[1] : '_';
+    (groups[key] = groups[key] || { label: m ? m[2] : t('otherGroup'), jobs: [] }).jobs.push(j);
+  });
+
+  box.innerHTML = Object.entries(groups).map(([key, g]) => {
+    const jobs = g.jobs.slice().sort((a, b) => new Date(a.run_at) - new Date(b.run_at));
+    const pkg = jobs[0].package || '';
+    return `<div class="sched-group">
+      <div class="sched-group-head">
+        <div style="flex:1;min-width:0">
+          <div class="sched-group-title">${escapeHtml(g.label)}</div>
+          <div class="sched-group-sub">${escapeHtml(pkg)} · ${jobs.length}</div>
+        </div>
+        ${key !== '_' ? `<button class="sched-group-x" onclick="delGroup('${key}')">${t('jDel')}</button>` : ''}
+      </div>
+      ${jobs.map(j => {
+        const st = jobState(j);
+        const when = new Date(j.run_at);
+        const ev = (Array.isArray(j.events) && j.events[0] && j.events[0].name) || j.name;
+        const tail = st === 'pending'
+          ? `${fmtLocal(when)} · <span class="cd">${countdown(when)}</span>`
+          : `${fmtLocal(when)} · ${t('st' + st[0].toUpperCase() + st.slice(1))}`;
+        return `<div class="job">
+          <span class="job-state ${st}"></span>
+          <span class="job-body">
+            <span class="job-name">${escapeHtml(ev)}</span>
+            <span class="job-when">${tail}</span>
+          </span>
+          <span class="job-acts">
+            <button class="job-btn" onclick="runJobNow(${j.id})">${t('jRun')}</button>
+            <button class="job-btn" onclick="toggleJob(${j.id})">${j.enabled ? t('jPause') : t('jResume')}</button>
+            <button class="job-btn" onclick="openJobSheet(${j.id})">${t('jEdit')}</button>
+            <button class="job-btn danger" onclick="delJob(${j.id})">${t('jDel')}</button>
+          </span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+async function runJobNow(id) {
+  try {
+    await api(`/jobs/${id}/run`, { method: 'POST' });
+    toast('ok', '✓', t('queuedT'), '#' + id);
+    setTimeout(() => loadJobs(false), 1500);
+  } catch (e) { if (!await guard401(e)) toast('bad', '✗', t('notSentT'), e.message); }
+}
+
+function openJobSheet(id) {
+  const j = jobsCache.find(x => x.id === id);
+  if (!j) return;
+  editingJob = j;
+  const ev = (Array.isArray(j.events) && j.events[0] && j.events[0].name) || j.name;
+  const mins = Math.round((new Date(j.run_at) - Date.now()) / 60000);
+
+  document.getElementById('js-title').textContent = ev;
+  // نختار الوحدة الأنسب تلقائياً حتى لا يرى المستخدم 4320 دقيقة
+  let d = Math.max(0, mins), u = 'm';
+  if (d >= 1440 && d % 1440 === 0) { d = d / 1440; u = 'd'; }
+  else if (d >= 60) { d = Math.round(d / 60); u = 'h'; }
+  document.getElementById('js-delay').value = d;
+  document.getElementById('js-unit').value = u;
+  document.getElementById('js-enabled').value = j.enabled ? '1' : '0';
+  document.getElementById('js-when').textContent = fmtLocal(new Date(j.run_at));
+  syncSelectLabels();
+  previewJobTime();
+  document.getElementById('job-sheet').classList.add('open');
+}
+function closeJobSheet() { document.getElementById('job-sheet').classList.remove('open'); }
+
+function previewJobTime() {
+  const d = Number(document.getElementById('js-delay').value) || 0;
+  const u = document.getElementById('js-unit').value;
+  const el = document.getElementById('js-preview');
+  el.textContent = d === 0 ? t('rowNow') : fmtLocal(new Date(Date.now() + d * UNIT_MS[u]));
+}
+
+async function saveJob() {
+  if (!editingJob) return;
+  const d = Number(document.getElementById('js-delay').value) || 0;
+  const u = document.getElementById('js-unit').value;
+  const en = parseInt(document.getElementById('js-enabled').value, 10);
+  const btn = document.getElementById('js-save');
+  btn.disabled = true;
+  try {
+    await api(`/jobs/${editingJob.id}`, {
+      method: 'PUT',
+      body: { run_at: toServerTime(new Date(Date.now() + d * UNIT_MS[u])), enabled: en }
+    });
+    toast('ok', '✓', t('userSavedT'), '#' + editingJob.id);
+    closeJobSheet();
+    loadJobs(false);
+  } catch (e) {
+    if (!await guard401(e)) toast('bad', '✗', t('schedFailT'), e.message);
+  } finally { btn.disabled = false; }
+}
+
+async function toggleJob(id) {
+  const j = jobsCache.find(x => x.id === id);
+  if (!j) return;
+  try {
+    await api(`/jobs/${id}`, { method: 'PUT', body: { enabled: j.enabled ? 0 : 1 } });
+    toast('ok', '✓', j.enabled ? t('stOff') : t('stPending'), '#' + id);
+    loadJobs(false);
+  } catch (e) { if (!await guard401(e)) toast('bad', '✗', t('schedFailT'), e.message); }
+}
+
+async function delJob(id) {
+  if (!confirm(t('delJobQ'))) return;
+  try {
+    await api(`/jobs/${id}`, { method: 'DELETE' });
+    toast('ok', '✓', t('deletedT'), '#' + id);
+    loadJobs(false);
+  } catch (e) { if (!await guard401(e)) toast('bad', '✗', t('schedFailT'), e.message); }
+}
+
+async function delGroup(key) {
+  const ids = jobsCache.filter(j => (j.name || '').startsWith(`[S:${key}]`)).map(j => j.id);
+  if (!ids.length || !confirm(t('delGroupQ', ids.length))) return;
+  let n = 0;
+  for (const id of ids) {
+    try { await api(`/jobs/${id}`, { method: 'DELETE' }); n++; }
+    catch (e) { if (await guard401(e)) return; }
+  }
+  toast('ok', '✓', t('deletedT'), t('jobsCount', n));
+  loadJobs(false);
+}
+
+/* العدّاد الحيّ: إعادة رسم كل 30 ثانية بينما الصفحة ظاهرة فقط،
+   وإعادة جلب من الخادم كل 5 دقائق لالتقاط ما نُفّذ فعلاً. */
+function startCountdowns() {
+  clearInterval(cdTimer);
+  let ticks = 0;
+  cdTimer = setInterval(() => {
+    const page = document.getElementById('page-schedule');
+    const box = document.getElementById('sched-active');
+    if (!page || !page.classList.contains('active')) return;
+    if (!box || box.style.display === 'none') return;
+    if (++ticks % 10 === 0) loadJobs(false);   // كل 5 دقائق
+    else if (jobsCache.length) renderJobs();
+  }, 30000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — إدارة المستخدمين
+═══════════════════════════════════════════════════════════════ */
+let usersCache = [];
+let editingUser = null;
+
+function isAdmin() { return ME && ME.role === 'admin'; }
+
+async function loadUsers() {
+  if (!isAdmin()) return;
+  document.getElementById('admin-block').style.display = 'block';
+  try {
+    usersCache = await api('/admin/users');
+    renderUsers();
+  } catch (e) {
+    if (await guard401(e)) return;
+    document.getElementById('users-list').innerHTML =
+      `<div class="empty"><span>${escapeHtml(t('usersFail') + e.message)}</span></div>`;
+  }
+}
+
+function renderUsers() {
+  document.getElementById('users-list').innerHTML = usersCache.map(u => `
+    <div class="user-card" onclick="openUserSheet(${u.id})">
+      <span class="user-av">${escapeHtml((u.username || '?')[0].toUpperCase())}</span>
+      <span class="user-body">
+        <span class="user-name">${escapeHtml(u.username)}</span>
+        <span class="user-sub">${t('quotaCell', u.uses_left, u.max_uses)}</span>
+      </span>
+      ${!u.active ? `<span class="user-badge off">${t('optOff').toUpperCase()}</span>` : ''}
+      <span class="user-badge${u.role === 'admin' ? ' admin' : ''}">${(u.role === 'admin' ? t('optAdmin') : t('optUser')).toUpperCase()}</span>
+    </div>`).join('');
+}
+
+function openUserSheet(id) {
+  editingUser = id != null ? usersCache.find(u => u.id === id) : null;
+  const nu = !editingUser;
+  document.getElementById('us-title').textContent = t(nu ? 'newUserT' : 'editUserT');
+  document.getElementById('us-name').value = nu ? '' : editingUser.username;
+  document.getElementById('us-name').disabled = !nu;
+  document.getElementById('us-pass').value = '';
+  document.getElementById('us-pass').placeholder = nu ? '' : t('passHint');
+  document.getElementById('us-role').value = nu ? 'user' : editingUser.role;
+  document.getElementById('us-quota').value = nu ? 100 : editingUser.max_uses;
+  document.getElementById('us-active-wrap').style.display = nu ? 'none' : 'block';
+  document.getElementById('us-active').value = nu ? '1' : String(editingUser.active ? 1 : 0);
+  document.getElementById('us-save').textContent = t('save');
+  const del = document.getElementById('us-del');
+  del.style.display = nu ? 'none' : 'block';
+  del.onclick = nu ? null : () => delUser(editingUser.id);
+  syncSelectLabels();
+  document.getElementById('user-sheet').classList.add('open');
+}
+function closeUserSheet() { document.getElementById('user-sheet').classList.remove('open'); }
+
+function syncSelectLabels() {
+  const r = document.getElementById('us-role');
+  if (r) { r.options[0].textContent = t('optUser'); r.options[1].textContent = t('optAdmin'); }
+  const a = document.getElementById('us-active');
+  if (a) { a.options[0].textContent = t('optActive'); a.options[1].textContent = t('optOff'); }
+  const je = document.getElementById('js-enabled');
+  if (je) { je.options[0].textContent = t('optActive'); je.options[1].textContent = t('optOff'); }
+  const ju = document.getElementById('js-unit');
+  if (ju) { ju.options[0].textContent = t('uMin'); ju.options[1].textContent = t('uHour'); ju.options[2].textContent = t('uDay'); }
+}
+
+async function saveUser() {
+  const name = document.getElementById('us-name').value.trim();
+  const pass = document.getElementById('us-pass').value;
+  const role = document.getElementById('us-role').value;
+  const quota = parseInt(document.getElementById('us-quota').value, 10) || 0;
+  const btn = document.getElementById('us-save');
+
+  if (!editingUser) {
+    if (!name || !pass) return toast('bad', '!', t('needUserT'), t('needUserS'));
+    if (pass.length < 8) return toast('bad', '!', t('shortPassT'), t('shortPassS'));
+  } else if (pass && pass.length < 8) {
+    return toast('bad', '!', t('shortPassT'), t('shortPassS'));
+  }
+
+  btn.disabled = true;
+  try {
+    if (!editingUser) {
+      await api('/admin/users', {
+        method: 'POST',
+        body: { username: name, password: pass, role, max_uses: quota }
+      });
+      toast('ok', '✓', t('userAddedT'), name);
+    } else {
+      const body = {
+        role, max_uses: quota, uses_left: quota,
+        active: parseInt(document.getElementById('us-active').value, 10)
+      };
+      if (pass) body.password = pass;
+      await api(`/admin/users/${editingUser.id}`, { method: 'PUT', body });
+      toast('ok', '✓', t('userSavedT'), editingUser.username);
+    }
+    closeUserSheet();
+    loadUsers();
+  } catch (e) {
+    if (!await guard401(e)) toast('bad', '✗', t('needUserT'), e.message);
+  } finally { btn.disabled = false; }
+}
+
+async function delUser(id) {
+  const u = usersCache.find(x => x.id === id);
+  if (!u || !confirm(t('delUserQ', u.username))) return;
+  try {
+    await api(`/admin/users/${id}`, { method: 'DELETE' });
+    toast('ok', '✓', t('userDelT'), u.username);
+    closeUserSheet();
+    loadUsers();
+  } catch (e) { if (!await guard401(e)) toast('bad', '✗', t('userDelT'), e.message); }
+}
+
+document.getElementById('user-sheet').addEventListener('click', function (e) {
+  if (e.target === this) closeUserSheet();
+});
+document.getElementById('job-sheet').addEventListener('click', function (e) {
+  if (e.target === this) closeJobSheet();
+});
 
 /* ═══════════════ TOAST ═══════════════ */
 function toast(kind, glyph, title, detail) {
@@ -1506,13 +2821,19 @@ function toast(kind, glyph, title, detail) {
 
 /* ═══════════════ MISC ═══════════════ */
 function wipe() {
-  if (!confirm('سيُمسح كل ما هو محفوظ على هذا الجهاز: الجلسة والمعرّفات والإعدادات. متابعة؟')) return;
+  if (!confirm(t('wipeConfirm'))) return;
   localStorage.clear();
   location.reload();
 }
 
 /* ═══════════════ BOOT ═══════════════ */
 function boot() {
+  applyLang();
+  renderSchedGames();
+  renderRows();
+  loadJobs(false);
+  loadUsers();
+  startCountdowns();
   renderChips();
   applyFilters();
   renderIds();
@@ -1530,7 +2851,8 @@ document.getElementById('set-server').addEventListener('change', function () {
   checkServer(true);
 });
 
-diag('البدء — الخادم: ' + SERVER);
+applyLang();
+diag(t('bootDiag') + SERVER);
 resume();
 
 if ('serviceWorker' in navigator) {
